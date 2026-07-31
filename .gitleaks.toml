@@ -1,0 +1,18 @@
+title = "rosarinhoemanel"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = """
+A configuração web do Firebase não é um segredo: vai dentro do JavaScript que
+qualquer visitante descarrega, e não há maneira de a esconder. Está no
+.env.example para quem clona o repositório conseguir arrancar. Quem protege os
+dados são as regras do Firestore, o App Check e a restrição da API key a
+referrers HTTP — ver SECURITY.md.
+
+Isto isenta apenas este ficheiro. Uma chave Google que apareça em qualquer
+outro sítio continua a reprovar o CI.
+"""
+paths = ['''^\.env\.example$''']
+regexes = ['''AIzaSy[0-9A-Za-z_-]{33}''']

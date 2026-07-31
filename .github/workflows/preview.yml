@@ -18,7 +18,9 @@ concurrency:
 jobs:
   preview:
     name: Publicar pré-visualização
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository
+      && vars.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
     runs-on: ubuntu-latest
     permissions:
       contents: read

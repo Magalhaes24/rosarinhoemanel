@@ -14,6 +14,9 @@ concurrency:
 jobs:
   deploy:
     name: Firebase Hosting (produção)
+    # Só corre depois de a infraestrutura estar criada (ver infra/README.md) e
+    # das variáveis definidas. Sem isto, cada push falhava até lá.
+    if: vars.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
     runs-on: ubuntu-latest
     environment: producao
     permissions:
