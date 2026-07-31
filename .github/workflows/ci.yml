@@ -121,5 +121,18 @@ jobs:
       # removido continua lá.
       - name: gitleaks
         run: |
+          set +e
           docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.24.3 \
-            git /repo --config /repo/.gitleaks.toml --redact --no-banner --exit-code 1
+            git /repo --config /repo/.gitleaks.toml --redact --no-banner --exit-code 1 \
+            --report-format json --report-path /repo/gitleaks.json
+          codigo=$?
+          set -e
+          if [ "$codigo" -ne 0 ] && [ -f gitleaks.json ]; then
+            echo "--- achados (regra, ficheiro, linha, commit — sem o valor) ---"
+            python3 -c "
+import json
+for f in json.load(open('gitleaks.json')):
+    print(f\"{f['RuleID']}  {f['File']}:{f['StartLine']}  commit={f['Commit'][:8]}\")
+"
+          fi
+          exit $codigo

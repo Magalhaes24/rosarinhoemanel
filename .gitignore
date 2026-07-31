@@ -31,3 +31,5 @@ infra/*.tfvars
 !infra/*.tfvars.example
 infra/.terraform.lock.hcl
 crash.log
+
+gitleaks.json
