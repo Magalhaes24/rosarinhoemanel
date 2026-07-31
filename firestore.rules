@@ -1,16 +1,33 @@
 rules_version = '2';
 
-// Modelo de segurança: o site é público e ninguém faz login, por isso qualquer
-// pessoa pode ESCREVER uma resposta — mas mais nada. Nunca é possível ler,
-// alterar ou apagar seja o que for a partir do site. Para ver as respostas,
-// usa a consola do Firebase ou a Admin SDK (que ignora estas regras).
+// Modelo de segurança.
 //
-// A quantidade de escrita abusiva é travada pelo App Check (ver src/lib/firebase.js).
+// Convidados (sem sessão): podem CRIAR uma resposta e mais nada. Não leem,
+// não alteram, não apagam, não listam.
+//
+// Administração: exatamente UMA conta, identificada pelo UID abaixo. É a única
+// que lê. Nem essa pode alterar ou apagar respostas a partir do site — para
+// isso usa-se a consola do Firebase, que corre com privilégios de admin.
+//
+// O volume de escrita abusiva é travado pelo App Check (src/lib/firebase.js).
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Texto não vazio, sem exceder um limite, e sem ser só espaços.
+    // ⚠️ SUBSTITUIR pelo UID da conta de administração.
+    //    Firebase Console > Authentication > Users > copiar o "User UID".
+    //    Enquanto for este valor, ninguém consegue ler nada — o que é o
+    //    comportamento seguro por omissão.
+    function adminUid() {
+      return 'SUBSTITUIR_PELO_UID_DO_ADMIN';
+    }
+
+    function ehAdmin() {
+      return request.auth != null
+        && request.auth.uid == adminUid();
+    }
+
+    // Texto não vazio, dentro de um limite, e que não seja só espaços.
     function textoValido(v, maxLen) {
       return v is string
         && v.size() <= maxLen
@@ -27,7 +44,8 @@ service cloud.firestore {
     }
 
     match /rsvps/{doc} {
-      allow read, update, delete: if false;
+      allow read: if ehAdmin();
+      allow update, delete: if false;
       allow create: if
         request.resource.data.keys().hasOnly(['nome', 'presenca', 'criadoEm']) &&
         request.resource.data.keys().hasAll(['nome', 'presenca', 'criadoEm']) &&
@@ -37,7 +55,8 @@ service cloud.firestore {
     }
 
     match /presentes/{doc} {
-      allow read, update, delete: if false;
+      allow read: if ehAdmin();
+      allow update, delete: if false;
       allow create: if
         request.resource.data.keys().hasOnly(['nome', 'presente', 'mensagem', 'criadoEm']) &&
         request.resource.data.keys().hasAll(['nome', 'presente', 'mensagem', 'criadoEm']) &&
@@ -47,7 +66,7 @@ service cloud.firestore {
         dataDoServidor();
     }
 
-    // Tudo o resto fechado.
+    // Tudo o resto fechado, para toda a gente.
     match /{document=**} {
       allow read, write: if false;
     }

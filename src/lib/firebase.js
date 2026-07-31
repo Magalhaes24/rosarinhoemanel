@@ -1,5 +1,4 @@
 import { getApp, getApps, initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
 import { getAnalytics, isSupported } from 'firebase/analytics'
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check'
 
@@ -40,7 +39,7 @@ if (recaptchaKey && !globalThis.__appCheckIniciado) {
   })
 }
 
-export const db = getFirestore(app)
+// O Firestore é carregado a pedido — ver src/lib/enviar.js.
 
 // Analytics só arranca no browser e quando é suportado.
 isSupported()

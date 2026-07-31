@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { db } from '../lib/firebase.js'
+import { enviar } from '../lib/enviar.js'
 import './Form.css'
 
 const OPCOES = [
@@ -27,10 +26,9 @@ export default function RsvpForm() {
     }
     setEstado('a-enviar')
     try {
-      await addDoc(collection(db, 'rsvps'), {
+      await enviar('rsvps', {
         nome: nome.trim().slice(0, 120),
         presenca,
-        criadoEm: serverTimestamp(),
       })
       setEstado('ok')
       setNome('')

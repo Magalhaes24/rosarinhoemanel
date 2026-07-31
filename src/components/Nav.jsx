@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink } from '../lib/router.jsx'
 import './Nav.css'
 
 const links = [
@@ -8,8 +9,17 @@ const links = [
 ]
 
 export default function Nav() {
+  const [deslocada, setDeslocada] = useState(false)
+
+  useEffect(() => {
+    const aoDeslizar = () => setDeslocada(window.scrollY > 8)
+    aoDeslizar()
+    window.addEventListener('scroll', aoDeslizar, { passive: true })
+    return () => window.removeEventListener('scroll', aoDeslizar)
+  }, [])
+
   return (
-    <header className="nav">
+    <header className={'nav' + (deslocada ? ' is-deslocada' : '')}>
       <NavLink to="/" className="nav__logo" aria-label="Rosarinho e Manel — início">
         <img src="/images/logo.png" alt="" />
       </NavLink>

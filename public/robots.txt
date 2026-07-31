@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin
+
+# Nota: isto é apenas uma indicação aos motores de busca, não é segurança.
+# Quem protege a área de administração são as regras do Firestore.

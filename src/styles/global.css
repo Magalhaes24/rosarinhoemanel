@@ -67,9 +67,19 @@
   --sans: 'Garet', 'Poppins', 'Segoe UI', sans-serif;
   --form-serif: 'The Seasons', 'Cormorant Garamond', Georgia, serif;
 
-  /* 1 unidade = 1pt do rascunho (tela de 1024pt de largura).
-     Permite reproduzir a maquete à escala em qualquer ecrã. */
-  --pt: calc(min(100vw, 1600px) / 1024);
+}
+
+/* 1 unidade = 1pt do rascunho (tela de 1024pt de largura). Permite reproduzir
+   a maquete à escala em qualquer ecrã.
+   Usa `cqw` e não `vw` de propósito: `100vw` inclui a largura da barra de
+   scroll, o que tornava o site ~1,2% maior do que o espaço disponível e
+   arrastava um desvio acumulado ao longo da página. */
+html {
+  container-type: inline-size;
+}
+
+body {
+  --pt: calc(min(100cqw, 1600px) / 1024);
   --nav-h: calc(42 * var(--pt));
 }
 
@@ -102,11 +112,13 @@ button {
 }
 
 /* Tipos base reutilizados nas três páginas */
+/* As entrelinhas vêm medidas do rascunho: linhas de 92pt distam 82pt
+   (0,89) e as de 30pt distam 42pt (1,4). */
 .display {
   font-family: var(--serif);
   font-weight: 400;
   font-size: calc(92 * var(--pt));
-  line-height: 1.08;
+  line-height: 0.89;
   margin: 0;
   letter-spacing: -0.005em;
 }
@@ -114,22 +126,22 @@ button {
 .corpo {
   font-family: var(--sans);
   font-size: calc(30 * var(--pt));
-  line-height: 1.34;
+  line-height: 1.4;
   margin: 0;
 }
 
 .corpo-sm {
   font-family: var(--sans);
   font-size: calc(22 * var(--pt));
-  line-height: 1.38;
+  line-height: 1.4;
   margin: 0;
 }
 
 @media (max-width: 760px) {
-  :root {
+  body {
     /* No telemóvel a tela deixa de ser 1024pt: passa a comportar-se
-       como se tivesse ~600pt de largura, para o texto respirar. */
-    --pt: calc(100vw / 620);
+       como se tivesse ~620pt de largura, para o texto respirar. */
+    --pt: calc(100cqw / 620);
     --nav-h: 56px;
   }
   .display {

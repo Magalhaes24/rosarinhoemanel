@@ -3,6 +3,10 @@ dist
 .firebase
 .DS_Store
 
+# Registos dos emuladores do Firebase
+*-debug.log
+firebase-debug.*.log
+
 # Rascunho original do Canva (11 MB). As fotografias já estão em public/images;
 # manter o PDF pesaria em cada clone do repositório, para sempre.
 Rascunho-site.pdf

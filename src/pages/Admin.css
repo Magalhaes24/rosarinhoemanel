@@ -1,0 +1,208 @@
+/* A área de administração não segue a maquete do site — é uma ferramenta de
+   trabalho. Usa a mesma paleta para não destoar, mas medidas em px, para ser
+   legível em qualquer ecrã sem depender da escala do rascunho. */
+
+.admin {
+  min-height: calc(100vh - var(--nav-h));
+  background: var(--creme);
+  padding: 32px 20px 64px;
+  font-family: var(--sans);
+  color: var(--quase-preto);
+}
+
+.admin__titulo {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 400;
+  margin: 0;
+}
+
+/* ---------------- Login ---------------- */
+.admin__login {
+  display: grid;
+  place-items: center;
+  min-height: 60vh;
+}
+
+.admin__caixa {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 14px;
+  padding: 28px 26px 24px;
+  box-shadow: 0 4px 20px rgba(41, 38, 33, 0.08);
+}
+
+.admin__campo {
+  display: block;
+  margin-top: 18px;
+}
+
+.admin__campo span {
+  display: block;
+  font-size: 13px;
+  color: var(--castanho);
+  margin-bottom: 6px;
+}
+
+.admin__campo input {
+  width: 100%;
+  font: inherit;
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  color: var(--quase-preto);
+}
+
+.admin__campo input:focus {
+  border-color: var(--dourado);
+  box-shadow: 0 0 0 3px rgba(146, 111, 27, 0.12);
+}
+
+.admin__botao {
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px;
+  border: none;
+  border-radius: 24px;
+  background: var(--dourado-botao);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  transition: filter 0.18s ease;
+}
+
+.admin__botao:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.admin__botao:disabled {
+  opacity: 0.6;
+}
+
+.admin__erro {
+  margin: 14px 0 0;
+  color: #a8392e;
+  font-size: 14px;
+  text-align: center;
+}
+
+.admin__vazio {
+  color: #7a746c;
+  font-size: 15px;
+}
+
+/* ---------------- Painel ---------------- */
+.admin__painel {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.admin__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin__sessao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--castanho);
+}
+
+.admin__sair {
+  border: 1px solid var(--castanho);
+  background: transparent;
+  color: var(--castanho);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  transition: background 0.18s ease;
+}
+
+.admin__sair:hover {
+  background: var(--botao-creme);
+}
+
+.admin__resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin: 28px 0 8px;
+}
+
+.admin__cartao {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  border: 1px solid rgba(41, 38, 33, 0.08);
+}
+
+.admin__cartao strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.admin__cartao span {
+  font-size: 13px;
+  color: #7a746c;
+}
+
+.admin__seccao {
+  margin-top: 40px;
+}
+
+.admin__seccao h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0 0 14px;
+}
+
+/* Tabelas largas rolam dentro da sua caixa; a página nunca rola na horizontal. */
+.admin__tabela-scroll {
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(41, 38, 33, 0.08);
+}
+
+.admin__tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.admin__tabela th,
+.admin__tabela td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(41, 38, 33, 0.07);
+  vertical-align: top;
+}
+
+.admin__tabela th {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a746c;
+  white-space: nowrap;
+}
+
+.admin__tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin__tabela tbody tr:hover {
+  background: rgba(148, 177, 122, 0.07);
+}

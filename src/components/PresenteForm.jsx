@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { db } from '../lib/firebase.js'
+import { enviar } from '../lib/enviar.js'
 import './Form.css'
 
 export default function PresenteForm() {
@@ -23,11 +22,10 @@ export default function PresenteForm() {
     }
     setEstado('a-enviar')
     try {
-      await addDoc(collection(db, 'presentes'), {
+      await enviar('presentes', {
         nome: nome.trim().slice(0, 120),
         presente: presente.trim().slice(0, 200),
         mensagem: mensagem.trim().slice(0, 1000),
-        criadoEm: serverTimestamp(),
       })
       setEstado('ok')
       setNome('')

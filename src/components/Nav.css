@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 calc(14 * var(--pt));
+  padding: 0 calc(11 * var(--pt));
 }
 
 .nav__logo {
@@ -24,7 +24,7 @@
 .nav__links {
   display: flex;
   align-items: center;
-  gap: calc(24 * var(--pt));
+  gap: calc(18 * var(--pt));
 }
 
 .nav__link {

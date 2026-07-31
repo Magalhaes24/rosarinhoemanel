@@ -14,14 +14,14 @@ export default function Presentes() {
     <main className="presentes">
       {/* ---------- Para a casa ---------- */}
       <section className="presentes__bloco" id="casa">
-        <h1 className="display presentes__titulo">Para a casa</h1>
+        <h1 className="display presentes__titulo" data-revelar>Para a casa</h1>
       </section>
 
       {/* ---------- Lua de mel ---------- */}
       <section className="presentes__bloco" id="lua">
-        <h2 className="display presentes__titulo">Lua de mel</h2>
+        <h2 className="display presentes__titulo" data-revelar>Lua de mel</h2>
 
-        <div className="destinos">
+        <div className="destinos" data-revelar>
           <Separador />
           {DESTINOS.map((d) => (
             <span key={d} className="destinos__item">
@@ -31,7 +31,7 @@ export default function Presentes() {
           ))}
         </div>
 
-        <div className="presentes__carrossel">
+        <div className="presentes__carrossel" data-revelar style={{ '--atraso': '0.14s' }}>
           <Carousel
             slides={fotosLuaDeMel}
             perView={5}
@@ -43,7 +43,7 @@ export default function Presentes() {
 
       {/* ---------- IBAN + formulário ---------- */}
       <section className="contribuicao">
-        <div className="contribuicao__texto">
+        <div className="contribuicao__texto" data-revelar>
           <p>A melhor forma de nos ajudarem é com uma contribuição para o IBAN abaixo.</p>
           <p>
             Para conseguirmos agradecer a todos, deixem por favor uma nota com o presente que

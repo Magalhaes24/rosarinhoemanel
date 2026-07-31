@@ -26,6 +26,7 @@ Build de produção: `npm run build` (gera `dist/`).
 | `/`          | Por onde começar?     | Hero, Missa, Copo d'água, confirmação de presença, história, lista de presentes, drivers, hotéis |
 | `/noivos`    | Quem são os noivos?   | Carrossel de infância + 2018 / 2022 / 2026                       |
 | `/presentes` | O que dar?            | Para a casa, Lua de mel (carrossel de destinos), IBAN e mensagem |
+| `/admin`     | —                     | Área de administração. Não aparece no menu. Uma única conta.     |
 
 ## Escala do layout
 
@@ -38,6 +39,15 @@ O rascunho foi desenhado numa tela de **1024 pt** de largura. O CSS define
 e todas as medidas são escritas como `calc(N * var(--pt))`, em que `N` é o
 valor em pontos medido no PDF. Assim o site é a maquete à escala em qualquer
 ecrã, até 1600 px. Abaixo de 760 px entra um layout empilhado.
+
+## Testes
+
+```bash
+npm run test:regras
+```
+
+Corre 32 testes das regras do Firestore contra o emulador (precisa de Java).
+Ver [SECURITY.md](SECURITY.md).
 
 ## Fontes
 
@@ -64,6 +74,16 @@ A infraestrutura (Firestore, regras, Hosting, identidade do CI) é gerida por
 Terraform em [`infra/`](infra/) — ver [infra/README.md](infra/README.md) para o
 arranque inicial. O pipeline **não** publica as regras do Firestore: isso é do
 Terraform, de propósito.
+
+## Antes de pôr no ar
+
+1. Criar a base de dados Firestore (consola > Firestore > Criar base de dados).
+2. Criar a conta de administração em *Authentication > Users*, copiar o UID para
+   `VITE_ADMIN_UID` (no `.env` e nas variáveis do GitHub) **e** para
+   `firestore.rules`.
+3. Desligar **"Enable create (sign-up)"** em *Authentication > Settings*.
+4. Registar a app em *App Check* e pôr a chave em `VITE_RECAPTCHA_SITE_KEY`.
+5. Restringir a API key a referrers HTTP na consola Google Cloud.
 
 ## Por acabar
 

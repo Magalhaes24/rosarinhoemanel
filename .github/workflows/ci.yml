@@ -45,6 +45,34 @@ jobs:
           VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
           VITE_RECAPTCHA_SITE_KEY: ${{ vars.VITE_RECAPTCHA_SITE_KEY }}
 
+  regras:
+    name: Regras do Firestore
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # O emulador do Firestore corre em Java.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - run: npm ci
+
+      # Exercita o firestore.rules do repositório: quem cria, quem lê,
+      # o que é rejeitado. Falha o PR se alguma proteção cair.
+      - name: Testar regras
+        run: npm run test:regras
+
   audit:
     name: Auditoria de dependências
     runs-on: ubuntu-latest
@@ -62,9 +90,17 @@ jobs:
 
       - run: npm ci
 
-      # Falha se houver vulnerabilidades altas ou críticas.
-      - name: npm audit
-        run: npm audit --audit-level=high
+      # Bloqueante: o que vai dentro do bundle que o convidado descarrega.
+      # Aqui a exigência é total — qualquer vulnerabilidade reprova o PR.
+      - name: Dependências de produção
+        run: npm audit --omit=dev --audit-level=low
+
+      # Informativo: as ferramentas de desenvolvimento (sobretudo a CLI do
+      # Firebase) arrastam dezenas de pacotes transitivos que ficam atrás nas
+      # correções. Não chegam ao browser, por isso não travam o PR — mas ficam
+      # visíveis no registo para não passarem despercebidas.
+      - name: Ferramentas de desenvolvimento (informativo)
+        run: npm audit || true
 
   secrets:
     name: Procurar segredos no código

@@ -7,7 +7,9 @@ export default function Noivos() {
     <main className="noivos">
       {/* ---------- Infância ---------- */}
       <section className="noivos__intro">
-        <h1 className="display noivos__titulo">Rosarinho e Manel</h1>
+        <h1 className="display noivos__titulo" data-revelar>
+          Rosarinho e Manel
+        </h1>
         <Carousel
           slides={fotosInfancia}
           fit="natural"
@@ -18,18 +20,18 @@ export default function Noivos() {
 
       {/* ---------- 2018 ---------- */}
       <section className="ano ano--creme">
-        <div className="ano__texto">
+        <div className="ano__texto" data-revelar>
           <h2 className="display ano__numero">2018</h2>
           <p className="corpo-sm">Conhecemos-nos em agosto de 2018, no campo do MAPA.</p>
         </div>
-        <div className="ano__foto">
+        <div className="ano__foto" data-revelar style={{ '--atraso': '0.16s' }}>
           <img src="/images/mapa-2018.jpeg" alt="Campo do MAPA, agosto de 2018" />
         </div>
       </section>
 
       {/* ---------- 2022 ---------- */}
       <section className="ano ano--azul ano--centrado">
-        <div className="ano__texto">
+        <div className="ano__texto" data-revelar>
           <h2 className="display ano__numero">2022</h2>
           <p className="corpo-sm">
             Depois de 4 anos de amizade, começámos a namorar no dia 13 de agosto de 2022.
@@ -50,13 +52,13 @@ export default function Noivos() {
 
       {/* ---------- 2026 ---------- */}
       <section className="ano ano--creme">
-        <div className="ano__texto">
+        <div className="ano__texto" data-revelar>
           <h2 className="display ano__numero">2026</h2>
           <p className="corpo-sm">
             Ficámos noivos no dia 10 de Janeiro deste ano! No santuário da Peninha, em Sintra
           </p>
         </div>
-        <div className="ano__foto ano__foto--alta">
+        <div className="ano__foto ano__foto--alta" data-revelar style={{ '--atraso': '0.16s' }}>
           <img src="/images/noivado-2026.jpeg" alt="O pedido, no santuário da Peninha" />
         </div>
       </section>
