@@ -1,0 +1,13 @@
+# Copia para terraform.tfvars e ajusta. O .tfvars não vai para o git.
+
+project_id         = "rosarinhoemanel-9e854"
+region             = "europe-west1"
+firestore_location = "eur3"
+
+github_owner = "Magalhaes24"
+github_repo  = "rosarinhoemanel"
+
+hosting_site_id = "rosarinhoemanel-9e854"
+
+# Deixa vazio até teres domínio próprio.
+custom_domain = ""

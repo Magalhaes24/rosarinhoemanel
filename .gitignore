@@ -1,0 +1,29 @@
+node_modules
+dist
+.firebase
+.DS_Store
+
+# Rascunho original do Canva (11 MB). As fotografias já estão em public/images;
+# manter o PDF pesaria em cada clone do repositório, para sempre.
+Rascunho-site.pdf
+
+# Ambiente — nunca commitar
+.env
+.env.*
+!.env.example
+*.local
+
+# Credenciais
+*service-account*.json
+*-key.json
+credentials.json
+gha-creds-*.json
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/*.tfvars
+!infra/*.tfvars.example
+infra/.terraform.lock.hcl
+crash.log

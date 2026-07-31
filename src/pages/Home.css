@@ -1,0 +1,305 @@
+/* Todas as medidas em `var(--pt)` correspondem 1:1 aos pontos da maquete
+   original (tela de 1024pt de largura). */
+
+/* ---------------- Hero ---------------- */
+.hero {
+  display: grid;
+  grid-template-columns: 557fr 467fr;
+  height: calc(577 * var(--pt));
+}
+
+.hero__panel {
+  background: var(--verde-fundo);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 calc(40 * var(--pt)) calc(58 * var(--pt)) calc(60 * var(--pt));
+}
+
+.hero__nomes {
+  color: var(--creme-texto);
+}
+
+.hero__data {
+  font-family: var(--sans);
+  font-size: calc(30 * var(--pt));
+  color: var(--creme-texto);
+  margin: calc(26 * var(--pt)) 0 0;
+}
+
+.hero__foto {
+  overflow: hidden;
+}
+
+.hero__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+/* ---------------- Bandas fotográficas ---------------- */
+.banda {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.banda--missa {
+  height: calc(521 * var(--pt));
+}
+
+.banda--copo {
+  height: calc(524 * var(--pt));
+}
+
+.banda__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.banda--copo .banda__bg {
+  object-position: center 62%;
+}
+
+.banda__caixa {
+  position: relative;
+  width: calc(593 * var(--pt));
+  max-width: 92%;
+  background: rgba(239, 232, 227, 0.42);
+  padding: calc(18 * var(--pt)) calc(24 * var(--pt)) calc(24 * var(--pt));
+  text-align: center;
+}
+
+.banda--missa .banda__caixa {
+  margin-top: calc(-150 * var(--pt));
+  color: var(--navy);
+}
+
+.banda--copo .banda__caixa {
+  margin-top: calc(150 * var(--pt));
+  color: var(--oliva);
+}
+
+.banda__titulo {
+  color: inherit;
+}
+
+.banda__local,
+.banda__hora {
+  color: inherit;
+}
+
+/* ---------------- RSVP ---------------- */
+.rsvp {
+  background: var(--azul);
+  min-height: calc(541 * var(--pt));
+  padding: calc(60 * var(--pt)) calc(40 * var(--pt)) calc(28 * var(--pt));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rsvp__texto {
+  color: var(--creme-texto);
+  text-align: center;
+  max-width: calc(760 * var(--pt));
+}
+
+.rsvp__cartao {
+  width: calc(478 * var(--pt));
+  max-width: 100%;
+  margin-top: calc(38 * var(--pt));
+}
+
+/* ---------------- História ---------------- */
+.historia {
+  background: var(--creme-2);
+  min-height: calc(445 * var(--pt));
+  display: grid;
+  grid-template-columns: 1fr calc(354 * var(--pt));
+  align-items: center;
+  column-gap: calc(40 * var(--pt));
+  padding-left: calc(48 * var(--pt));
+  padding-right: calc(57 * var(--pt));
+}
+
+.historia__texto {
+  text-align: center;
+  color: var(--castanho);
+  padding-bottom: calc(20 * var(--pt));
+}
+
+.historia__texto .corpo {
+  color: var(--castanho);
+  max-width: calc(540 * var(--pt));
+  margin: 0 auto;
+}
+
+.botao-aqui {
+  display: inline-block;
+  margin-top: calc(46 * var(--pt));
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: calc(30 * var(--pt));
+  color: var(--castanho);
+  text-decoration: none;
+  background: var(--botao-creme);
+  border: calc(3 * var(--pt)) solid var(--castanho);
+  border-radius: calc(12 * var(--pt));
+  padding: calc(12 * var(--pt)) calc(52 * var(--pt));
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.botao-aqui:hover {
+  background: #ddc9a4;
+  transform: translateY(calc(-2 * var(--pt)));
+}
+
+.historia__arco {
+  align-self: end;
+  height: calc(400 * var(--pt));
+}
+
+.historia__arco img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(177 * var(--pt)) calc(177 * var(--pt)) 0 0;
+}
+
+/* ---------------- Lista de presentes ---------------- */
+.presentes-cta {
+  background: var(--verde-fundo);
+  min-height: calc(460 * var(--pt));
+  padding: calc(46 * var(--pt)) calc(40 * var(--pt)) calc(60 * var(--pt));
+  text-align: center;
+}
+
+.presentes-cta__titulo {
+  color: var(--creme-texto);
+}
+
+.presentes-cta__botoes {
+  margin-top: calc(122 * var(--pt));
+  display: flex;
+  justify-content: center;
+  gap: calc(298 * var(--pt));
+  flex-wrap: wrap;
+}
+
+.botao-contorno {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: calc(30 * var(--pt));
+  color: var(--quase-preto);
+  text-decoration: none;
+  background: var(--creme);
+  border: calc(3 * var(--pt)) solid var(--castanho-escuro);
+  border-radius: calc(6 * var(--pt));
+  padding: calc(8 * var(--pt)) calc(24 * var(--pt));
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.botao-contorno:hover {
+  background: #fff;
+  transform: translateY(calc(-2 * var(--pt)));
+}
+
+/* ---------------- Drivers ---------------- */
+.drivers {
+  background: var(--azul);
+  min-height: calc(378 * var(--pt));
+  padding: calc(50 * var(--pt)) calc(25 * var(--pt)) 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.drivers__texto {
+  color: var(--quase-preto);
+  max-width: calc(950 * var(--pt));
+}
+
+.drivers__tel {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: calc(2 * var(--pt)) solid transparent;
+}
+
+.drivers__tel:hover {
+  border-bottom-color: currentColor;
+}
+
+.drivers__carros {
+  width: 100%;
+  margin-top: calc(18 * var(--pt));
+}
+
+/* ---------------- Onde ficar ---------------- */
+.hoteis {
+  background: var(--creme-2);
+  min-height: calc(576 * var(--pt));
+  padding: calc(56 * var(--pt)) calc(40 * var(--pt));
+  text-align: center;
+}
+
+.hoteis__titulo {
+  color: #000;
+}
+
+/* ---------------- Telemóvel ---------------- */
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .hero__panel {
+    padding: calc(70 * var(--pt)) calc(40 * var(--pt)) calc(50 * var(--pt));
+  }
+  .hero__foto {
+    height: 64vh;
+  }
+
+  .banda--missa,
+  .banda--copo {
+    height: calc(430 * var(--pt));
+  }
+  .banda--missa .banda__caixa,
+  .banda--copo .banda__caixa {
+    margin-top: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .historia {
+    grid-template-columns: 1fr;
+    row-gap: calc(40 * var(--pt));
+    padding: calc(60 * var(--pt)) calc(30 * var(--pt)) 0;
+  }
+  .historia__arco {
+    height: calc(430 * var(--pt));
+    width: calc(380 * var(--pt));
+    margin: 0 auto;
+  }
+  .historia__arco img {
+    border-radius: calc(190 * var(--pt)) calc(190 * var(--pt)) 0 0;
+  }
+
+  .presentes-cta__botoes {
+    margin-top: calc(60 * var(--pt));
+    gap: calc(30 * var(--pt));
+  }
+
+  .drivers {
+    padding: calc(50 * var(--pt)) calc(30 * var(--pt)) 0;
+  }
+
+  .hoteis {
+    min-height: calc(360 * var(--pt));
+  }
+}

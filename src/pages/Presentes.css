@@ -1,0 +1,154 @@
+.presentes {
+  background: var(--creme);
+  padding-bottom: calc(70 * var(--pt));
+}
+
+.presentes__bloco {
+  padding-left: calc(40 * var(--pt));
+  padding-right: calc(40 * var(--pt));
+  scroll-margin-top: var(--nav-h);
+}
+
+/* O espaço entre blocos vive no padding (e não em margens do título),
+   caso contrário as margens colapsam e as secções encolhem. */
+#casa {
+  padding-top: calc(56 * var(--pt));
+  padding-bottom: calc(400 * var(--pt));
+}
+
+#lua {
+  padding-top: calc(40 * var(--pt));
+}
+
+.presentes__titulo {
+  color: var(--verde);
+  text-align: center;
+  margin: 0;
+}
+
+#lua .presentes__titulo {
+  margin-bottom: calc(120 * var(--pt));
+}
+
+/* ---------------- Fita de destinos ---------------- */
+.destinos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(10 * var(--pt));
+  color: var(--verde);
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: calc(30 * var(--pt));
+}
+
+.destinos__item {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--pt));
+  white-space: nowrap;
+}
+
+/* Traço com losangos nas pontas, como no rascunho */
+.destinos__sep {
+  position: relative;
+  flex: 1 1 calc(120 * var(--pt));
+  min-width: calc(40 * var(--pt));
+  height: calc(3 * var(--pt));
+  background: currentColor;
+}
+
+.destinos__sep::before,
+.destinos__sep::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(9 * var(--pt));
+  height: calc(9 * var(--pt));
+  background: currentColor;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.destinos__sep::before {
+  left: calc(-4 * var(--pt));
+}
+
+.destinos__sep::after {
+  right: calc(-4 * var(--pt));
+}
+
+/* No rascunho as fotografias dos destinos vão de ponta a ponta, sem folga. */
+.presentes__carrossel {
+  margin-top: calc(12 * var(--pt));
+  margin-left: calc(-40 * var(--pt));
+  margin-right: calc(-40 * var(--pt));
+  color: var(--verde);
+}
+
+.presentes__carrossel .carousel {
+  --gap: 0px;
+}
+
+.presentes__carrossel .carousel__arrow--prev {
+  left: calc(12 * var(--pt));
+}
+
+.presentes__carrossel .carousel__arrow--next {
+  right: calc(12 * var(--pt));
+}
+
+/* ---------------- Contribuição ---------------- */
+.contribuicao {
+  margin-top: calc(120 * var(--pt));
+  padding: 0 calc(40 * var(--pt));
+  display: grid;
+  grid-template-columns: 1fr calc(370 * var(--pt));
+  align-items: start;
+  column-gap: calc(60 * var(--pt));
+}
+
+.contribuicao__texto {
+  text-align: center;
+  font-family: var(--form-serif);
+  font-size: calc(22 * var(--pt));
+  line-height: 1.42;
+  color: #000;
+  padding-top: calc(20 * var(--pt));
+}
+
+.contribuicao__texto p {
+  margin: 0 0 calc(34 * var(--pt));
+  max-width: calc(560 * var(--pt));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contribuicao__iban {
+  margin-top: calc(46 * var(--pt));
+}
+
+@media (max-width: 760px) {
+  #casa {
+    padding-bottom: calc(140 * var(--pt));
+  }
+
+  #lua .presentes__titulo {
+    margin-bottom: calc(70 * var(--pt));
+  }
+
+  .destinos {
+    font-size: calc(26 * var(--pt));
+    flex-wrap: wrap;
+  }
+  .destinos__sep {
+    min-width: calc(24 * var(--pt));
+  }
+
+  .contribuicao {
+    grid-template-columns: 1fr;
+    row-gap: calc(40 * var(--pt));
+  }
+  .contribuicao__texto {
+    font-size: calc(24 * var(--pt));
+  }
+}

@@ -1,0 +1,55 @@
+rules_version = '2';
+
+// Modelo de segurança: o site é público e ninguém faz login, por isso qualquer
+// pessoa pode ESCREVER uma resposta — mas mais nada. Nunca é possível ler,
+// alterar ou apagar seja o que for a partir do site. Para ver as respostas,
+// usa a consola do Firebase ou a Admin SDK (que ignora estas regras).
+//
+// A quantidade de escrita abusiva é travada pelo App Check (ver src/lib/firebase.js).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Texto não vazio, sem exceder um limite, e sem ser só espaços.
+    function textoValido(v, maxLen) {
+      return v is string
+        && v.size() <= maxLen
+        && v.trim().size() > 0;
+    }
+
+    function textoOpcional(v, maxLen) {
+      return v is string && v.size() <= maxLen;
+    }
+
+    // A data tem de ser a do servidor: impede datas forjadas pelo cliente.
+    function dataDoServidor() {
+      return request.resource.data.criadoEm == request.time;
+    }
+
+    match /rsvps/{doc} {
+      allow read, update, delete: if false;
+      allow create: if
+        request.resource.data.keys().hasOnly(['nome', 'presenca', 'criadoEm']) &&
+        request.resource.data.keys().hasAll(['nome', 'presenca', 'criadoEm']) &&
+        textoValido(request.resource.data.nome, 120) &&
+        request.resource.data.presenca in ['sim', 'nao'] &&
+        dataDoServidor();
+    }
+
+    match /presentes/{doc} {
+      allow read, update, delete: if false;
+      allow create: if
+        request.resource.data.keys().hasOnly(['nome', 'presente', 'mensagem', 'criadoEm']) &&
+        request.resource.data.keys().hasAll(['nome', 'presente', 'mensagem', 'criadoEm']) &&
+        textoValido(request.resource.data.nome, 120) &&
+        textoValido(request.resource.data.presente, 200) &&
+        textoOpcional(request.resource.data.mensagem, 1000) &&
+        dataDoServidor();
+    }
+
+    // Tudo o resto fechado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

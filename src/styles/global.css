@@ -1,0 +1,138 @@
+/* ------------------------------------------------------------------
+   Tipografia
+   As três fontes do projeto (Lovelace Text, Garet, The Seasons) são
+   comerciais. Coloca os ficheiros .woff2 em /public/fonts (ver
+   public/fonts/README.md). Enquanto não existirem, o browser cai
+   automaticamente para os substitutos do Google Fonts abaixo, que
+   foram escolhidos por serem visualmente próximos.
+------------------------------------------------------------------ */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap');
+
+@font-face {
+  font-family: 'Lovelace Text';
+  src: url('/fonts/LovelaceText-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lovelace Text';
+  src: url('/fonts/LovelaceText-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Garet';
+  src: url('/fonts/Garet-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Garet';
+  src: url('/fonts/Garet-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'The Seasons';
+  src: url('/fonts/TheSeasons-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'The Seasons';
+  src: url('/fonts/TheSeasons-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  /* Paleta retirada diretamente do rascunho */
+  --verde: #94b17a;
+  --verde-fundo: #94b079;
+  --azul: #95b9d4;
+  --creme: #efe8e3;
+  --creme-2: #efe7dd;
+  --creme-texto: #efe9e4;
+  --dourado: #926f1b;
+  --dourado-claro: #a88c48;
+  --dourado-botao: #bea880;
+  --castanho: #8d7050;
+  --castanho-escuro: #4a3a2c;
+  --navy: #272d41;
+  --oliva: #434431;
+  --quase-preto: #292621;
+  --botao-creme: #e7d9bc;
+
+  --serif: 'Lovelace Text', 'Playfair Display', Georgia, serif;
+  --sans: 'Garet', 'Poppins', 'Segoe UI', sans-serif;
+  --form-serif: 'The Seasons', 'Cormorant Garamond', Georgia, serif;
+
+  /* 1 unidade = 1pt do rascunho (tela de 1024pt de largura).
+     Permite reproduzir a maquete à escala em qualquer ecrã. */
+  --pt: calc(min(100vw, 1600px) / 1024);
+  --nav-h: calc(42 * var(--pt));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--creme);
+  color: var(--quase-preto);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Tipos base reutilizados nas três páginas */
+.display {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: calc(92 * var(--pt));
+  line-height: 1.08;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.corpo {
+  font-family: var(--sans);
+  font-size: calc(30 * var(--pt));
+  line-height: 1.34;
+  margin: 0;
+}
+
+.corpo-sm {
+  font-family: var(--sans);
+  font-size: calc(22 * var(--pt));
+  line-height: 1.38;
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  :root {
+    /* No telemóvel a tela deixa de ser 1024pt: passa a comportar-se
+       como se tivesse ~600pt de largura, para o texto respirar. */
+    --pt: calc(100vw / 620);
+    --nav-h: 56px;
+  }
+  .display {
+    font-size: calc(64 * var(--pt));
+  }
+}

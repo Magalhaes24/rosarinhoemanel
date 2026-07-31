@@ -1,0 +1,90 @@
+.noivos__intro {
+  background: var(--azul);
+  padding: calc(60 * var(--pt)) calc(28 * var(--pt)) calc(70 * var(--pt));
+  color: var(--quase-preto);
+}
+
+.noivos__titulo {
+  color: #000;
+  text-align: center;
+  margin-bottom: calc(80 * var(--pt));
+}
+
+/* ---------------- Secções de ano ---------------- */
+.ano {
+  display: grid;
+  grid-template-columns: 1fr calc(380 * var(--pt));
+  align-items: center;
+  column-gap: calc(50 * var(--pt));
+  padding: calc(60 * var(--pt)) calc(57 * var(--pt));
+}
+
+.ano--creme {
+  background: var(--creme);
+}
+
+.ano--azul {
+  background: var(--azul);
+}
+
+.ano--centrado {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding-top: calc(70 * var(--pt));
+  padding-bottom: calc(90 * var(--pt));
+}
+
+.ano__texto {
+  text-align: center;
+  color: #000;
+  max-width: calc(620 * var(--pt));
+  margin: 0 auto;
+}
+
+.ano__numero {
+  color: #000;
+  margin-bottom: calc(30 * var(--pt));
+}
+
+.ano__texto .corpo-sm {
+  color: #000;
+  max-width: calc(500 * var(--pt));
+  margin: 0 auto;
+}
+
+.ano__foto {
+  height: calc(282 * var(--pt));
+}
+
+.ano__foto--alta {
+  height: calc(460 * var(--pt));
+}
+
+.ano__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ano__carrossel {
+  width: 100%;
+  margin-top: calc(56 * var(--pt));
+}
+
+@media (max-width: 760px) {
+  .noivos__intro {
+    padding: calc(50 * var(--pt)) calc(28 * var(--pt)) calc(60 * var(--pt));
+  }
+  .noivos__titulo {
+    margin-bottom: calc(50 * var(--pt));
+  }
+  .ano {
+    grid-template-columns: 1fr;
+    row-gap: calc(40 * var(--pt));
+    padding: calc(60 * var(--pt)) calc(30 * var(--pt));
+  }
+  .ano__foto,
+  .ano__foto--alta {
+    height: calc(420 * var(--pt));
+  }
+}
