@@ -3,16 +3,18 @@ title = "rosarinhoemanel"
 [extend]
 useDefault = true
 
-[[allowlists]]
+[allowlist]
 description = """
-A configuração web do Firebase não é um segredo: vai dentro do JavaScript que
-qualquer visitante descarrega, e não há maneira de a esconder. Está no
-.env.example para quem clona o repositório conseguir arrancar. Quem protege os
-dados são as regras do Firestore, o App Check e a restrição da API key a
-referrers HTTP — ver SECURITY.md.
+Isenta um único commit do histórico.
 
-Isto isenta apenas este ficheiro. Uma chave Google que apareça em qualquer
-outro sítio continua a reprovar o CI.
+O commit 697875c tinha a configuração web do Firebase escrita no .env.example
+com os valores reais. Não é um segredo — essa configuração vai dentro do
+JavaScript que qualquer visitante descarrega, e não há maneira de a esconder;
+quem protege os dados são as regras do Firestore, o App Check e a restrição da
+API key a referrers HTTP (ver SECURITY.md). Mesmo assim, o .env.example passou
+a levar apenas marcadores, que é o que um ficheiro de exemplo deve ter.
+
+A isenção é só deste commit. Qualquer chave nova, em qualquer ficheiro ou
+commit, continua a reprovar o CI.
 """
-paths = ['''^\.env\.example$''']
-regexes = ['''AIzaSy[0-9A-Za-z_-]{33}''']
+commits = ["697875c0326fe9fcc1fc2d420f970c98e6c14cf5"]
