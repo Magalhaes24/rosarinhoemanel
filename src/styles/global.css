@@ -52,6 +52,9 @@
   --azul: #95b9d4;
   --creme: #efe8e3;
   --creme-2: #efe7dd;
+  /* A barra de navegação é um tom mais escuro que as secções, para se
+     destacar do creme quando se faz scroll por cima delas. */
+  --creme-nav: #e0d4cb;
   --creme-texto: #efe9e4;
   --dourado: #926f1b;
   --dourado-claro: #a88c48;

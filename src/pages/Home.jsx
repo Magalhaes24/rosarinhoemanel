@@ -1,4 +1,5 @@
 import { Link } from '../lib/router.jsx'
+import { caminho } from '../lib/caminho.js'
 import RsvpForm from '../components/RsvpForm.jsx'
 import './Home.css'
 
@@ -15,13 +16,13 @@ export default function Home() {
           <p className="hero__data">5 | 12 | 2026</p>
         </div>
         <div className="hero__foto">
-          <img src="/images/hero-casal.png" alt="Rosarinho e Manel" />
+          <img src={caminho('/images/hero-casal.png')} alt="Rosarinho e Manel" />
         </div>
       </section>
 
       {/* ---------- Missa ---------- */}
       <section className="banda banda--missa">
-        <img className="banda__bg" src="/images/igreja.png" alt="" data-revelar-zoom />
+        <img className="banda__bg" src={caminho('/images/igreja.png')} alt="" data-revelar-zoom />
         <div className="banda__caixa" data-revelar>
           <h2 className="display banda__titulo">Missa</h2>
           <p className="corpo banda__local">Igreja de Santa Isabel, Lisboa</p>
@@ -31,7 +32,7 @@ export default function Home() {
 
       {/* ---------- Copo d'água ---------- */}
       <section className="banda banda--copo">
-        <img className="banda__bg" src="/images/quinta.png" alt="" data-revelar-zoom />
+        <img className="banda__bg" src={caminho('/images/quinta.png')} alt="" data-revelar-zoom />
         <div className="banda__caixa" data-revelar>
           <h2 className="display banda__titulo">Copo d’água</h2>
           <p className="corpo banda__local">Quinta de D. Carlos, Alenquer</p>
@@ -63,7 +64,7 @@ export default function Home() {
           </Link>
         </div>
         <div className="historia__arco" data-revelar style={{ '--atraso': '0.16s' }}>
-          <img src="/images/casal-arco.jpeg" alt="Rosarinho e Manel" />
+          <img src={caminho('/images/casal-arco.jpeg')} alt="Rosarinho e Manel" />
         </div>
       </section>
 
@@ -98,7 +99,7 @@ export default function Home() {
         </p>
         <img
           className="drivers__carros"
-          src="/images/carros.png"
+          src={caminho('/images/carros.png')}
           alt=""
           data-revelar
           style={{ '--atraso': '0.12s' }}

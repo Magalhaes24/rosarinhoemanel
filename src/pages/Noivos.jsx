@@ -1,4 +1,5 @@
 import Carousel from '../components/Carousel.jsx'
+import { caminho } from '../lib/caminho.js'
 import { fotosInfancia, fotosNamoro, molduras2022 } from '../data/fotos.js'
 import './Noivos.css'
 
@@ -26,7 +27,7 @@ export default function Noivos() {
           <p className="corpo-sm">Conhecemos-nos em agosto de 2018, no campo do MAPA.</p>
         </div>
         <div className="ano__foto" data-revelar style={{ '--atraso': '0.16s' }}>
-          <img src="/images/mapa-2018.jpeg" alt="Campo do MAPA, agosto de 2018" />
+          <img src={caminho('/images/mapa-2018.jpeg')} alt="Campo do MAPA, agosto de 2018" />
         </div>
       </section>
 
@@ -59,7 +60,7 @@ export default function Noivos() {
           </p>
         </div>
         <div className="ano__foto ano__foto--alta" data-revelar style={{ '--atraso': '0.16s' }}>
-          <img src="/images/noivado-2026.jpeg" alt="O pedido, no santuário da Peninha" />
+          <img src={caminho('/images/noivado-2026.jpeg')} alt="O pedido, no santuário da Peninha" />
         </div>
       </section>
     </main>

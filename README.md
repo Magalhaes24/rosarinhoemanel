@@ -66,9 +66,32 @@ ver as respostas, usa a consola do Firebase. Ver [SECURITY.md](SECURITY.md).
 
 ## Deploy
 
-Automático: cada push para `main` publica em produção
-([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)). Cada pull
-request ganha um canal de pré-visualização que expira em 7 dias.
+Há dois destinos, ambos automáticos a cada push para `main`. Ler
+[SECURITY.md](SECURITY.md#4-onde-o-site-está-alojado-muda-a-proteção) antes de
+escolher — **não são equivalentes em segurança**.
+
+### GitHub Pages — [`pages.yml`](.github/workflows/pages.yml)
+
+Publica em `https://magalhaes24.github.io/rosarinhoemanel/`. Não precisa de
+Google Cloud nem de Terraform. Para arrancar:
+
+1. *Settings > Pages > Build and deployment > Source*: **GitHub Actions**
+2. *Settings > Secrets and variables > Actions > Variables*: as `VITE_*`
+   (nenhuma é secret — ver `.env.example`)
+3. *Firebase Console > Authentication > Settings > Authorized domains*:
+   acrescentar `magalhaes24.github.io`
+
+O Pages não sabe reescrever URLs, por isso o build gera um `404.html` igual ao
+`index.html` — um acesso direto a `/noivos` serve a mesma aplicação e o
+encaminhador trata do resto. O site vive num subdiretório, por isso o build usa
+`VITE_BASE`; todos os caminhos passam por `caminho()`
+([src/lib/caminho.js](src/lib/caminho.js)).
+
+### Firebase Hosting — [`deploy.yml`](.github/workflows/deploy.yml)
+
+Publica na raiz do domínio, com todos os cabeçalhos de segurança. Precisa da
+infraestrutura criada primeiro — ver [infra/README.md](infra/README.md). Cada
+pull request ganha um canal de pré-visualização que expira em 7 dias.
 
 A infraestrutura (Firestore, regras, Hosting, identidade do CI) é gerida por
 Terraform em [`infra/`](infra/) — ver [infra/README.md](infra/README.md) para o

@@ -1,0 +1,77 @@
+name: GitHub Pages
+
+# Publica o site em https://magalhaes24.github.io/rosarinhoemanel/
+#
+# Antes da primeira corrida, no repositório:
+#   Settings > Pages > Build and deployment > Source: "GitHub Actions"
+#
+# Se mais tarde ligares um domínio próprio, muda VITE_BASE para "/" e põe o
+# domínio em Settings > Pages > Custom domain.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+# Uma publicação de cada vez, sem cancelar a que já está a decorrer.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # O site vive num subdiretório com o nome do repositório. Sem isto,
+          # o browser iria buscar os ficheiros à raiz do github.io.
+          VITE_BASE: /${{ github.event.repository.name }}/
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+          VITE_ADMIN_UID: ${{ vars.VITE_ADMIN_UID }}
+          VITE_RECAPTCHA_SITE_KEY: ${{ vars.VITE_RECAPTCHA_SITE_KEY }}
+
+      # Impede o Jekyll de processar a pasta e de ignorar ficheiros com _
+      - name: .nojekyll
+        run: touch dist/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Publicar
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - id: pages
+        uses: actions/deploy-pages@v4

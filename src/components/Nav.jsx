@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from '../lib/router.jsx'
+import { caminho } from '../lib/caminho.js'
 import './Nav.css'
 
 const links = [
@@ -21,7 +22,7 @@ export default function Nav() {
   return (
     <header className={'nav' + (deslocada ? ' is-deslocada' : '')}>
       <NavLink to="/" className="nav__logo" aria-label="Rosarinho e Manel — início">
-        <img src="/images/logo.png" alt="" />
+        <img src={caminho('/images/logo.png')} alt="" />
       </NavLink>
       <nav className="nav__links">
         {links.map((l) => (

@@ -71,7 +71,36 @@ tratam disso), mas não há razão para deixar.
 a API key a referrers HTTP em *Google Cloud Console > APIs e Serviços >
 Credenciais*.
 
-## 4. Conteúdo e cabeçalhos
+## 4. Onde o site está alojado muda a proteção
+
+O projeto pode ser publicado em dois sítios, e **não são equivalentes em
+segurança**:
+
+| Proteção                          | Firebase Hosting | GitHub Pages |
+| --------------------------------- | :--------------: | :----------: |
+| Content-Security-Policy           |  cabeçalho HTTP  | `<meta>` (quase toda) |
+| `frame-ancestors` (anti-clickjacking) |      sim     | **não** — ignorado em `<meta>` |
+| `X-Frame-Options`                 |       sim        | **não** |
+| Strict-Transport-Security (HSTS)  |       sim        | **não** |
+| `X-Content-Type-Options: nosniff` |       sim        | não (mas o Pages já serve tipos corretos) |
+| `Referrer-Policy`, `Permissions-Policy` |   sim      | **não** |
+| HTTPS forçado                     |       sim        | sim, com *Enforce HTTPS* ligado |
+
+O GitHub Pages não deixa configurar cabeçalhos. A CSP vai em `<meta>` (injetada
+no build — ver `vite.config.js`), o que cobre a maior parte, mas
+**`frame-ancestors` só funciona em cabeçalho**: em Pages o site pode ser
+embebido num iframe por terceiros.
+
+Para um site de casamento é um risco pequeno — não há sessão de convidado para
+roubar, e a área de administração fica protegida pelas regras do Firestore de
+qualquer forma. Mas convém saber. Se o clickjacking incomodar, o Firebase
+Hosting (já configurado em `firebase.json` e `infra/`) não tem esta limitação.
+
+**Ao publicar em Pages, acrescentar `magalhaes24.github.io` em**
+*Firebase Console > Authentication > Settings > Authorized domains*, senão o
+login da administração é recusado.
+
+## 5. Conteúdo e cabeçalhos
 
 [`firebase.json`](firebase.json) envia CSP restritiva (`default-src 'self'`,
 sem `unsafe-eval`, `frame-ancestors 'none'`, `object-src 'none'`, só os
@@ -86,7 +115,7 @@ domínios de que o site precisa), HSTS de um ano com `preload`,
 Não há `dangerouslySetInnerHTML`, `innerHTML`, `eval` nem `new Function` em
 lado nenhum do código — verificado por varrimento.
 
-## 5. Dependências
+## 6. Dependências
 
 O `react-router` foi **removido**. Ambos os ramos tinham avisos sem correção
 disponível: o ramo 6 um *open redirect* para XSS via `<Link>`
@@ -106,7 +135,7 @@ ferramentas de desenvolvimento — sobretudo a CLI do Firebase — arrastam paco
 transitivos com avisos; ficam registados no CI mas não travam o PR, porque não
 chegam ao browser.
 
-## 6. Pipeline
+## 7. Pipeline
 
 - **Sem chaves de longa duração no repositório.** O deploy autentica-se por
   Workload Identity Federation: o GitHub emite um token de vida curta e o

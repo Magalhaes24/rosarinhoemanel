@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { BASE } from './caminho.js'
 
 /**
  * Encaminhador mínimo, feito à medida das quatro rotas deste site.
@@ -24,9 +25,23 @@ import {
 
 const Contexto = createContext(null)
 
+/**
+ * As rotas do site (`/noivos`) são escritas sem o prefixo de instalação. Estas
+ * duas funções traduzem entre isso e o endereço real do browser, que em
+ * GitHub Pages leva `/rosarinhoemanel` à frente.
+ */
+function semBase(pathname) {
+  if (BASE && pathname.startsWith(BASE)) return pathname.slice(BASE.length) || '/'
+  return pathname
+}
+
+function comBase(destino) {
+  return BASE + destino
+}
+
 function lerLocalizacao() {
   return {
-    pathname: window.location.pathname,
+    pathname: semBase(window.location.pathname),
     hash: window.location.hash,
     search: window.location.search,
   }
@@ -42,7 +57,7 @@ export function Router({ children }) {
   }, [])
 
   const navegar = useCallback((destino, { substituir = false } = {}) => {
-    const url = new URL(destino, window.location.origin)
+    const url = new URL(comBase(destino), window.location.origin)
 
     // Nunca navega para fora do site através desta função.
     if (url.origin !== window.location.origin) return
@@ -115,8 +130,10 @@ export function Link({ to, className, children, onClick, ...resto }) {
     navegar(to)
   }
 
+  // O href leva o prefixo para o clique do meio e o "abrir em novo separador"
+  // continuarem a funcionar.
   return (
-    <a href={to} className={className} onClick={aoClicar} {...resto}>
+    <a href={comBase(to)} className={className} onClick={aoClicar} {...resto}>
       {children}
     </a>
   )
@@ -140,7 +157,7 @@ export function NavLink({ to, end = false, className, children, onClick, ...rest
 
   return (
     <a
-      href={to}
+      href={comBase(to)}
       className={typeof className === 'function' ? className({ isActive: ativo }) : className}
       aria-current={ativo ? 'page' : undefined}
       onClick={aoClicar}
