@@ -1,5 +1,5 @@
 import Carousel from '../components/Carousel.jsx'
-import { fotosInfancia, fotosNamoro } from '../data/fotos.js'
+import { fotosInfancia, fotosNamoro, molduras2022 } from '../data/fotos.js'
 import './Noivos.css'
 
 export default function Noivos() {
@@ -14,6 +14,7 @@ export default function Noivos() {
           slides={fotosInfancia}
           fit="natural"
           height={260}
+          auto
           label="Fotografias de infância"
         />
       </section>
@@ -38,16 +39,15 @@ export default function Noivos() {
             Aqui estão algumas fotografias dos anos que se seguiram.
           </p>
         </div>
-        {fotosNamoro.length > 0 && (
-          <div className="ano__carrossel">
-            <Carousel
-              slides={fotosNamoro}
-              fit="natural"
-              height={260}
-              label="Fotografias do namoro"
-            />
-          </div>
-        )}
+        <div className="ano__carrossel">
+          <Carousel
+            slides={fotosNamoro.length ? fotosNamoro : molduras2022}
+            fit="natural"
+            height={260}
+            auto={fotosNamoro.length > 0}
+            label="Fotografias do namoro"
+          />
+        </div>
       </section>
 
       {/* ---------- 2026 ---------- */}

@@ -81,6 +81,20 @@ html {
 body {
   --pt: calc(min(100cqw, 1600px) / 1024);
   --nav-h: calc(42 * var(--pt));
+
+  /* Folga vertical. O rascunho foi desenhado com a Lovelace Text, a Garet e a
+     The Seasons; com as substitutas do Google Fonts, que têm altura de x e
+     hastes diferentes, as mesmas medidas leem-se mais apertadas. Este número
+     abre o espaçamento na vertical sem tocar em larguras nem em tamanhos de
+     letra — é o único sítio a mexer para dar mais ou menos ar.
+       1    = medidas exatas do rascunho
+       1.25 = atual
+     Quando as fontes reais estiverem em /public/fonts, voltar a 1. */
+  --respiro: 1.25;
+
+  /* Unidade de espaçamento vertical: usar em paddings, margens, alturas de
+     secção e espaços entre elementos. As larguras continuam em `--pt`. */
+  --esp: calc(var(--pt) * var(--respiro));
 }
 
 * {
@@ -112,13 +126,15 @@ button {
 }
 
 /* Tipos base reutilizados nas três páginas */
-/* As entrelinhas vêm medidas do rascunho: linhas de 92pt distam 82pt
-   (0,89) e as de 30pt distam 42pt (1,4). */
+/* No rascunho as linhas de 92pt distam 82pt (0,89) e as de 30pt distam 42pt
+   (1,4). A Lovelace Text aguenta 0,89 sem as linhas se tocarem; a Playfair
+   Display, que a substitui, tem hastes mais longas e à mesma entrelinha fica
+   com as linhas coladas. Daí o acréscimo. */
 .display {
   font-family: var(--serif);
   font-weight: 400;
   font-size: calc(92 * var(--pt));
-  line-height: 0.89;
+  line-height: 1;
   margin: 0;
   letter-spacing: -0.005em;
 }
@@ -126,14 +142,14 @@ button {
 .corpo {
   font-family: var(--sans);
   font-size: calc(30 * var(--pt));
-  line-height: 1.4;
+  line-height: 1.5;
   margin: 0;
 }
 
 .corpo-sm {
   font-family: var(--sans);
   font-size: calc(22 * var(--pt));
-  line-height: 1.4;
+  line-height: 1.5;
   margin: 0;
 }
 

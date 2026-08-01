@@ -5,7 +5,7 @@
   background: #fff;
   border: calc(1.4 * var(--pt)) solid var(--dourado-botao);
   border-radius: calc(14 * var(--pt));
-  padding: calc(20 * var(--pt)) calc(22 * var(--pt)) calc(16 * var(--pt));
+  padding: calc(26 * var(--esp)) calc(22 * var(--pt)) calc(22 * var(--esp));
   box-shadow: 0 calc(3 * var(--pt)) calc(12 * var(--pt)) rgba(0, 0, 0, 0.07);
   font-family: var(--form-serif);
   color: var(--dourado);
@@ -16,11 +16,11 @@
   font-weight: 700;
   font-size: calc(17 * var(--pt));
   color: var(--dourado);
-  margin: 0 0 calc(16 * var(--pt));
+  margin: 0 0 calc(22 * var(--esp));
 }
 
 .form-field {
-  margin-bottom: calc(14 * var(--pt));
+  margin-bottom: calc(18 * var(--esp));
 }
 
 .form-field__label {
@@ -29,7 +29,7 @@
   font-weight: 700;
   font-size: calc(9 * var(--pt));
   color: var(--dourado);
-  margin-bottom: calc(5 * var(--pt));
+  margin-bottom: calc(7 * var(--esp));
 }
 
 .form-field input[type='text'],
@@ -42,7 +42,7 @@
   background: #fff;
   border: calc(1 * var(--pt)) solid var(--dourado-botao);
   border-radius: calc(5 * var(--pt));
-  padding: calc(6 * var(--pt)) calc(8 * var(--pt));
+  padding: calc(9 * var(--esp)) calc(8 * var(--pt));
   outline: none;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
@@ -61,7 +61,7 @@
 /* Opções de rádio no estilo "pill" do rascunho */
 .form-options {
   display: grid;
-  gap: calc(8 * var(--pt));
+  gap: calc(11 * var(--esp));
 }
 
 .form-option {
@@ -69,7 +69,7 @@
   background: var(--creme);
   border: calc(1 * var(--pt)) solid transparent;
   border-radius: calc(6 * var(--pt));
-  padding: calc(9 * var(--pt)) calc(10 * var(--pt));
+  padding: calc(12 * var(--esp)) calc(10 * var(--pt));
   font-family: var(--form-serif);
   font-size: calc(9.5 * var(--pt));
   color: var(--dourado);
@@ -94,7 +94,7 @@
 
 .form-submit {
   width: 100%;
-  margin-top: calc(14 * var(--pt));
+  margin-top: calc(20 * var(--esp));
   background: var(--dourado-botao);
   color: var(--dourado);
   font-family: var(--form-serif);
@@ -102,7 +102,7 @@
   font-size: calc(10.5 * var(--pt));
   border: none;
   border-radius: calc(20 * var(--pt));
-  padding: calc(8 * var(--pt)) calc(12 * var(--pt));
+  padding: calc(11 * var(--esp)) calc(12 * var(--pt));
   transition: filter 0.18s ease;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .form-note {
-  margin: calc(6 * var(--pt)) 0 0;
+  margin: calc(10 * var(--esp)) 0 0;
   text-align: center;
   font-family: var(--form-serif);
   font-size: calc(6 * var(--pt));

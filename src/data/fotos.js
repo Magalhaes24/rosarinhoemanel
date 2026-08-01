@@ -19,6 +19,13 @@ export const fotosInfancia = [
 // Fotografias dos anos de namoro (2022 →). Ainda por acrescentar.
 export const fotosNamoro = []
 
+// Enquanto `fotosNamoro` estiver vazio mostram-se estas molduras, só para se
+// perceber o aspeto que a secção vai ter. Assim que acrescentares a primeira
+// fotografia acima, desaparecem sozinhas — não é preciso mexer aqui.
+export const molduras2022 = ['3 / 4', '4 / 3', '3 / 4', '1 / 1', '4 / 3', '3 / 4'].map(
+  (proporcao, i) => ({ id: `moldura-${i + 1}`, placeholder: true, proporcao })
+)
+
 export const fotosLuaDeMel = [
   { src: '/images/lua-peru-1.jpeg', alt: 'Machu Picchu, Peru' },
   { src: '/images/lua-peru-2.jpeg', alt: 'Ruas do Peru' },

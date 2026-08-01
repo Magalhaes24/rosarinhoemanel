@@ -1,6 +1,6 @@
 .presentes {
   background: var(--creme);
-  padding-bottom: calc(70 * var(--pt));
+  padding-bottom: calc(84 * var(--esp));
 }
 
 .presentes__bloco {
@@ -9,15 +9,15 @@
   scroll-margin-top: var(--nav-h);
 }
 
-/* O espaço entre blocos vive no padding (e não em margens do título),
-   caso contrário as margens colapsam e as secções encolhem. */
+/* O espaço entre blocos vive no padding (e não em margens do título), caso
+   contrário as margens colapsam e as secções encolhem. */
 #casa {
-  padding-top: calc(56 * var(--pt));
-  padding-bottom: calc(400 * var(--pt));
+  padding-top: calc(66 * var(--esp));
+  padding-bottom: calc(400 * var(--esp));
 }
 
 #lua {
-  padding-top: calc(40 * var(--pt));
+  padding-top: calc(48 * var(--esp));
 }
 
 .presentes__titulo {
@@ -27,7 +27,7 @@
 }
 
 #lua .presentes__titulo {
-  margin-bottom: calc(120 * var(--pt));
+  margin-bottom: calc(130 * var(--esp));
 }
 
 /* ---------------- Fita de destinos ---------------- */
@@ -49,7 +49,7 @@
   white-space: nowrap;
 }
 
-/* Traço com losangos nas pontas, como no rascunho */
+/* Traço com losangos nas pontas, como no rascunho. */
 .destinos__sep {
   position: relative;
   flex: 1 1 calc(120 * var(--pt));
@@ -79,7 +79,7 @@
 
 /* No rascunho as fotografias dos destinos vão de ponta a ponta, sem folga. */
 .presentes__carrossel {
-  margin-top: calc(12 * var(--pt));
+  margin-top: calc(26 * var(--esp));
   margin-left: calc(-40 * var(--pt));
   margin-right: calc(-40 * var(--pt));
   color: var(--verde);
@@ -99,7 +99,7 @@
 
 /* ---------------- Contribuição ---------------- */
 .contribuicao {
-  margin-top: calc(120 * var(--pt));
+  margin-top: calc(132 * var(--esp));
   padding: 0 calc(40 * var(--pt));
   display: grid;
   /* Largura do cartão medida no rascunho: x de 660 a 907. */
@@ -112,16 +112,14 @@
   text-align: center;
   font-family: var(--form-serif);
   font-size: calc(22 * var(--pt));
-  line-height: 1.42;
+  line-height: 1.55;
   color: #000;
-  padding-top: calc(20 * var(--pt));
+  padding-top: calc(26 * var(--esp));
 }
 
 .contribuicao__texto p {
-  margin: 0 0 calc(34 * var(--pt));
+  margin: 0 auto calc(42 * var(--esp));
   max-width: calc(560 * var(--pt));
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* No rascunho o "IBAN:" fica à mesma distância que os restantes parágrafos. */
@@ -131,11 +129,11 @@
 
 @media (max-width: 760px) {
   #casa {
-    padding-bottom: calc(140 * var(--pt));
+    padding-bottom: calc(140 * var(--esp));
   }
 
   #lua .presentes__titulo {
-    margin-bottom: calc(70 * var(--pt));
+    margin-bottom: calc(76 * var(--esp));
   }
 
   .destinos {
@@ -148,7 +146,7 @@
 
   .contribuicao {
     grid-template-columns: 1fr;
-    row-gap: calc(40 * var(--pt));
+    row-gap: calc(46 * var(--esp));
   }
   .contribuicao__texto {
     font-size: calc(24 * var(--pt));

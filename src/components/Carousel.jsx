@@ -4,15 +4,20 @@ import './Carousel.css'
 /**
  * Carrossel horizontal.
  *
- * slides  – [{ src, alt }]
- * fit     – 'natural': altura fixa, largura conforme a proporção de cada foto
- *           (não corta nada — bom para fotos de orientações diferentes)
- *           'cover': grelha uniforme recortada (fita corrida, como no rascunho)
- * perView – só em fit="cover": quantas fotos cabem de cada vez
- * aspect  – só em fit="cover"
- * height  – só em fit="natural": altura da fita, em pontos do rascunho
+ * slides   – [{ src, alt }] ou [{ id, placeholder: true, proporcao }]
+ * fit      – 'natural': altura fixa, largura conforme a proporção de cada foto
+ *            (não corta nada — bom para fotos de orientações diferentes)
+ *            'cover': grelha uniforme recortada (fita corrida, como no rascunho)
+ * perView  – só em fit="cover": quantas fotos cabem de cada vez
+ * aspect   – só em fit="cover"
+ * height   – só em fit="natural": altura da fita, em pontos do rascunho
+ * auto     – anda sozinho, em loop sem fim
+ * intervalo– milissegundos entre avanços automáticos
  *
- * Navega por páginas (um ecrã de cada vez), com setas, teclado e arrastar.
+ * O loop sem costura faz-se duplicando as fotografias: quando o scroll passa
+ * do fim da primeira cópia, recua-se instantaneamente essa distância. Como o
+ * conteúdo é igual, não se vê nada — e não há o solavanco de rebobinar até ao
+ * início que os carrosséis costumam ter.
  */
 export default function Carousel({
   slides,
@@ -20,6 +25,8 @@ export default function Carousel({
   perView = 4,
   aspect = '3 / 4',
   height = 300,
+  auto = false,
+  intervalo = 3200,
   label,
 }) {
   const trackRef = useRef(null)
@@ -27,27 +34,43 @@ export default function Carousel({
   const [paginas, setPaginas] = useState(1)
   const [noInicio, setNoInicio] = useState(true)
   const [noFim, setNoFim] = useState(false)
+  const [aArrastar, setAArrastar] = useState(false)
+  const [parado, setParado] = useState(false)
+  // Assume-se visível: o observador serve para PARAR quando sai do ecrã, não
+  // para arrancar. Se por alguma razão não disparar, o carrossel anda na mesma.
+  const [noEcra, setNoEcra] = useState(true)
+
+  // Em loop, a lista aparece duas vezes.
+  const lista = auto ? [...slides, ...slides] : slides
 
   const medir = useCallback(() => {
     const t = trackRef.current
     if (!t) return
+    if (auto) return // em loop as setas nunca desativam e não há pontos
     const max = t.scrollWidth - t.clientWidth
     setPaginas(Math.max(1, Math.ceil(t.scrollWidth / t.clientWidth)))
     setPagina(t.clientWidth ? Math.round(t.scrollLeft / t.clientWidth) : 0)
     setNoInicio(t.scrollLeft <= 1)
     setNoFim(t.scrollLeft >= max - 1)
-  }, [])
+  }, [auto])
+
+  /** Mantém o scroll dentro da primeira cópia, sem que se note. */
+  const normalizar = useCallback(() => {
+    const t = trackRef.current
+    if (!t || !auto) return
+    const metade = t.scrollWidth / 2
+    if (metade <= 0) return
+    if (t.scrollLeft >= metade) t.scrollLeft -= metade
+    else if (t.scrollLeft < 0) t.scrollLeft += metade
+  }, [auto])
 
   useEffect(() => {
     const t = trackRef.current
     if (!t) return
     medir()
-
     t.addEventListener('scroll', medir, { passive: true })
-
     const ro = new ResizeObserver(medir)
     ro.observe(t)
-
     return () => {
       t.removeEventListener('scroll', medir)
       ro.disconnect()
@@ -60,14 +83,45 @@ export default function Carousel({
     t.scrollTo({ left: p * t.clientWidth, behavior: 'smooth' })
   }, [])
 
+  /** Avança/recua uma fotografia (em loop) ou um ecrã (fora do loop). */
   const passo = useCallback(
     (dir) => {
       const t = trackRef.current
       if (!t) return
-      t.scrollBy({ left: dir * t.clientWidth, behavior: 'smooth' })
+      if (!auto) {
+        t.scrollBy({ left: dir * t.clientWidth, behavior: 'smooth' })
+        return
+      }
+      normalizar()
+      const filhos = Array.from(t.children)
+      const alvo =
+        dir > 0
+          ? filhos.find((c) => c.offsetLeft > t.scrollLeft + 2)
+          : [...filhos].reverse().find((c) => c.offsetLeft < t.scrollLeft - 2)
+      if (alvo) t.scrollTo({ left: alvo.offsetLeft, behavior: 'smooth' })
     },
-    []
+    [auto, normalizar]
   )
+
+  // Só anda quando está à vista — não vale a pena mexer fora do ecrã.
+  useEffect(() => {
+    if (!auto) return
+    const t = trackRef.current
+    if (!t) return
+    const io = new IntersectionObserver(([e]) => setNoEcra(e.isIntersecting), {
+      threshold: 0.15,
+    })
+    io.observe(t)
+    return () => io.disconnect()
+  }, [auto])
+
+  // Relógio do avanço automático.
+  useEffect(() => {
+    if (!auto || parado || aArrastar || !noEcra) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = window.setInterval(() => passo(1), intervalo)
+    return () => window.clearInterval(id)
+  }, [auto, parado, aArrastar, noEcra, intervalo, passo])
 
   function aoTeclar(e) {
     if (e.key === 'ArrowRight') {
@@ -81,11 +135,11 @@ export default function Carousel({
 
   // Arrastar com o rato (no telemóvel o scroll nativo já chega)
   const arrasto = useRef(null)
-  const [aArrastar, setAArrastar] = useState(false)
 
   function aoPremir(e) {
     if (e.pointerType === 'touch') return
     const t = trackRef.current
+    normalizar()
     arrasto.current = { x: e.clientX, left: t.scrollLeft }
     setAArrastar(true)
     t.setPointerCapture(e.pointerId)
@@ -102,6 +156,7 @@ export default function Carousel({
     trackRef.current.releasePointerCapture(e.pointerId)
     arrasto.current = null
     setAArrastar(false)
+    normalizar()
   }
 
   const estilo =
@@ -110,12 +165,19 @@ export default function Carousel({
       : { '--per-view': perView, '--aspect': aspect }
 
   return (
-    <div className={`carousel carousel--${fit}`} style={estilo}>
+    <div
+      className={`carousel carousel--${fit}` + (auto ? ' carousel--loop' : '')}
+      style={estilo}
+      onMouseEnter={() => auto && setParado(true)}
+      onMouseLeave={() => auto && setParado(false)}
+      onFocusCapture={() => auto && setParado(true)}
+      onBlurCapture={() => auto && setParado(false)}
+    >
       <button
         type="button"
         className="carousel__arrow carousel__arrow--prev"
         onClick={() => passo(-1)}
-        disabled={noInicio}
+        disabled={!auto && noInicio}
         aria-label="Fotografias anteriores"
       >
         <span aria-hidden="true">‹</span>
@@ -136,16 +198,22 @@ export default function Carousel({
         {/* `onLoad={medir}`: em fit="natural" a largura de cada foto só se
             conhece depois de carregar, e sem isso o número de páginas e o
             estado das setas ficavam desatualizados. */}
-        {slides.map((s) => (
-          <li className="carousel__item" key={s.src}>
-            <img
-              src={s.src}
-              alt={s.alt || ''}
-              loading="lazy"
-              draggable="false"
-              onDragStart={(e) => e.preventDefault()}
-              onLoad={medir}
-            />
+        {lista.map((s, i) => (
+          <li className="carousel__item" key={`${s.src || s.id}-${i}`} aria-hidden={auto && i >= slides.length}>
+            {s.placeholder ? (
+              <div className="carousel__moldura" style={{ aspectRatio: s.proporcao }}>
+                <span>fotografia a acrescentar</span>
+              </div>
+            ) : (
+              <img
+                src={s.src}
+                alt={s.alt || ''}
+                loading="lazy"
+                draggable="false"
+                onDragStart={(e) => e.preventDefault()}
+                onLoad={medir}
+              />
+            )}
           </li>
         ))}
       </ul>
@@ -154,20 +222,23 @@ export default function Carousel({
         type="button"
         className="carousel__arrow carousel__arrow--next"
         onClick={() => passo(1)}
-        disabled={noFim}
+        disabled={!auto && noFim}
         aria-label="Fotografias seguintes"
       >
         <span aria-hidden="true">›</span>
       </button>
 
-      {paginas > 1 && (
+      {!auto && paginas > 1 && (
         <div className="carousel__dots">
           {Array.from({ length: paginas }, (_, i) => (
             <button
               key={i}
               type="button"
               className={'carousel__dot' + (i === pagina ? ' is-active' : '')}
-              onClick={() => irPara(i)}
+              onClick={() => {
+                setPagina(i)
+                irPara(i)
+              }}
               aria-label={`Ir para o grupo ${i + 1} de ${paginas}`}
               aria-current={i === pagina}
             />
