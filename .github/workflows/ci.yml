@@ -127,12 +127,8 @@ jobs:
             --report-format json --report-path /repo/gitleaks.json
           codigo=$?
           set -e
-          if [ "$codigo" -ne 0 ] && [ -f gitleaks.json ]; then
-            echo "--- achados (regra, ficheiro, linha, commit — sem o valor) ---"
-            python3 -c "
-import json
-for f in json.load(open('gitleaks.json')):
-    print(f\"{f['RuleID']}  {f['File']}:{f['StartLine']}  commit={f['Commit'][:8]}\")
-"
+          if [ "$codigo" -ne 0 ] && [ -s gitleaks.json ]; then
+            echo "--- achados: regra, ficheiro, linha e commit (o valor nunca é impresso) ---"
+            jq -r '.[] | "\(.RuleID)  \(.File):\(.StartLine)  commit=\(.Commit[0:8])"' gitleaks.json
           fi
           exit $codigo
