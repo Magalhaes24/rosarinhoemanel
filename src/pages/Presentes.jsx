@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import PresenteForm from '../components/PresenteForm.jsx'
 import Carousel from '../components/Carousel.jsx'
 import { fotosLuaDeMel } from '../data/fotos.js'
@@ -81,14 +82,17 @@ export default function Presentes() {
           {t('lua.titulo')}
         </h2>
 
+        {/* Achatado de propósito: separadores e nomes são todos filhos diretos
+            do mesmo flex. Se os separadores ficarem aninhados dentro dos nomes,
+            só o primeiro cresce e empurra tudo para um lado. */}
         <div className="destinos" data-revelar>
-          <Separador />
           {destinos.map((d) => (
-            <span key={d} className="destinos__item">
-              {d}
+            <Fragment key={d}>
               <Separador />
-            </span>
+              <span className="destinos__item">{d}</span>
+            </Fragment>
           ))}
+          <Separador />
         </div>
 
         <div className="presentes__carrossel" data-revelar style={{ '--atraso': '0.14s' }}>

@@ -127,7 +127,11 @@ a.loja__item:hover {
 }
 
 /* ---------------- Fita de destinos ---------------- */
+/* No rascunho a fita toca as duas margens da página (o primeiro losango está
+   em x=0 e o último em x=1024), por isso anula-se aqui o recuo do bloco. */
 .destinos {
+  margin-left: calc(-40 * var(--pt));
+  margin-right: calc(-40 * var(--pt));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,9 +143,7 @@ a.loja__item:hover {
 }
 
 .destinos__item {
-  display: flex;
-  align-items: center;
-  gap: calc(10 * var(--pt));
+  flex: 0 0 auto;
   white-space: nowrap;
 }
 
