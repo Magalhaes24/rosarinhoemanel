@@ -54,15 +54,32 @@ export default function Carousel({
     setNoFim(t.scrollLeft >= max - 1)
   }, [auto])
 
-  /** Mantém o scroll dentro da primeira cópia, sem que se note. */
-  const normalizar = useCallback(() => {
+  /**
+   * Salta uma cópia inteira, sem animação. Como as duas cópias são iguais, o
+   * salto é invisível — serve só para haver sempre fotografias do lado para
+   * onde se vai a seguir.
+   *
+   * É isto que faz o loop funcionar nos dois sentidos: `scrollLeft` nunca pode
+   * ser negativo, por isso, para recuar a partir do início, avança-se primeiro
+   * uma cópia e só depois se anima para trás.
+   */
+  const saltarCopia = useCallback((sentido) => {
     const t = trackRef.current
-    if (!t || !auto) return
+    if (!t) return
     const metade = t.scrollWidth / 2
     if (metade <= 0) return
-    if (t.scrollLeft >= metade) t.scrollLeft -= metade
-    else if (t.scrollLeft < 0) t.scrollLeft += metade
-  }, [auto])
+    t.scrollLeft += sentido * metade
+  }, [])
+
+  const primeiroAntes = () => {
+    const t = trackRef.current
+    return [...t.children].reverse().find((c) => c.offsetLeft < t.scrollLeft - 2)
+  }
+
+  const primeiroDepois = () => {
+    const t = trackRef.current
+    return [...t.children].find((c) => c.offsetLeft > t.scrollLeft + 2)
+  }
 
   useEffect(() => {
     const t = trackRef.current
@@ -92,15 +109,20 @@ export default function Carousel({
         t.scrollBy({ left: dir * t.clientWidth, behavior: 'smooth' })
         return
       }
-      normalizar()
-      const filhos = Array.from(t.children)
-      const alvo =
-        dir > 0
-          ? filhos.find((c) => c.offsetLeft > t.scrollLeft + 2)
-          : [...filhos].reverse().find((c) => c.offsetLeft < t.scrollLeft - 2)
+
+      // Trabalha-se sempre a partir da primeira cópia. Sem isto, perto do fim
+      // o destino calculado cai para lá do scroll máximo, o browser corta-o, e
+      // o carrossel fica preso sem dar sinal de erro.
+      const metade = t.scrollWidth / 2
+      if (metade > 0 && t.scrollLeft >= metade) t.scrollLeft -= metade
+
+      // Para recuar a partir do início é preciso primeiro haver início.
+      if (dir < 0 && !primeiroAntes()) saltarCopia(+1)
+
+      const alvo = dir > 0 ? primeiroDepois() : primeiroAntes()
       if (alvo) t.scrollTo({ left: alvo.offsetLeft, behavior: 'smooth' })
     },
-    [auto, normalizar]
+    [auto, saltarCopia]
   )
 
   // Só anda quando está à vista — não vale a pena mexer fora do ecrã.
@@ -139,7 +161,15 @@ export default function Carousel({
   function aoPremir(e) {
     if (e.pointerType === 'touch') return
     const t = trackRef.current
-    normalizar()
+
+    // Antes de começar a arrastar, garante folga dos dois lados: encostado ao
+    // início não haveria para onde puxar à esquerda.
+    if (auto) {
+      const metade = t.scrollWidth / 2
+      if (t.scrollLeft >= metade) saltarCopia(-1)
+      if (t.scrollLeft < t.clientWidth && metade > 2 * t.clientWidth) saltarCopia(+1)
+    }
+
     arrasto.current = { x: e.clientX, left: t.scrollLeft }
     setAArrastar(true)
     t.setPointerCapture(e.pointerId)
@@ -148,7 +178,21 @@ export default function Carousel({
   function aoMover(e) {
     const a = arrasto.current
     if (!a) return
-    trackRef.current.scrollLeft = a.left - (e.clientX - a.x)
+    const t = trackRef.current
+    t.scrollLeft = a.left - (e.clientX - a.x)
+
+    // Se durante o arrasto se chegar a uma ponta, salta-se a cópia e continua
+    // — o rato não perde o fio, e o ponto de partida acompanha o salto.
+    if (auto) {
+      const metade = t.scrollWidth / 2
+      if (t.scrollLeft >= metade) {
+        saltarCopia(-1)
+        a.left -= metade
+      } else if (t.scrollLeft <= 0 && metade > 0) {
+        saltarCopia(+1)
+        a.left += metade
+      }
+    }
   }
 
   function aoLargar(e) {
@@ -156,7 +200,6 @@ export default function Carousel({
     trackRef.current.releasePointerCapture(e.pointerId)
     arrasto.current = null
     setAArrastar(false)
-    normalizar()
   }
 
   const estilo =
