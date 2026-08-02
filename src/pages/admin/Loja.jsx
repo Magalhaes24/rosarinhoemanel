@@ -6,8 +6,6 @@ import {
   doc,
   getFirestore,
   onSnapshot,
-  orderBy,
-  query,
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore'
@@ -115,17 +113,36 @@ export default function Loja() {
   const [aEditar, setAEditar] = useState(null) // null | 'novo' | id
 
   useEffect(() => {
-    const q = query(collection(db, COLECAO), orderBy('ordem', 'asc'))
+    // Sem `orderBy`: o Firestore excluiria documentos sem o campo `ordem`,
+    // e um presente criado à mão na consola desapareceria daqui sem aviso.
     return onSnapshot(
-      q,
-      (snap) => setItens(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
-      (e) => setErro(e.message)
+      collection(db, COLECAO),
+      (snap) => {
+        const lista = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+        lista.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+        setItens(lista)
+        setErro('')
+      },
+      (e) =>
+        setErro(
+          e.code === 'permission-denied'
+            ? 'Sem permissão para ler a lista. Falta publicar as regras: npm run regras'
+            : e.message
+        )
     )
   }, [])
 
   async function criar(item) {
     const ordem = (itens?.length ? Math.max(...itens.map((i) => i.ordem ?? 0)) : 0) + 10
-    await addDoc(collection(db, COLECAO), { ...item, ordem, criadoEm: serverTimestamp() })
+    try {
+      await addDoc(collection(db, COLECAO), { ...item, ordem, criadoEm: serverTimestamp() })
+    } catch (e) {
+      throw new Error(
+        e.code === 'permission-denied'
+          ? 'Sem permissão para gravar. As regras ainda não foram publicadas — corre «npm run regras».'
+          : e.message
+      )
+    }
     setAEditar(null)
   }
 

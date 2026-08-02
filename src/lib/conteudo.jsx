@@ -60,6 +60,8 @@ export function ConteudoProvider({ children }) {
   const [tema, setTema] = useState({ ...temaPadrao, ...(guardado?.tema || {}) })
   const [textos, setTextos] = useState({ ...textosPadrao, ...(guardado?.textos || {}) })
   const [presentesCasa, setPresentesCasa] = useState(null)
+  // Distingue «ainda não chegou» de «chegou vazio» de «não foi possível ler».
+  const [erroPresentes, setErroPresentes] = useState('')
 
   // Tema -> variáveis CSS, sempre que muda.
   useEffect(() => {
@@ -77,7 +79,7 @@ export function ConteudoProvider({ children }) {
     // sempre.
     const desistir = window.setTimeout(
       () => setPresentesCasa((atual) => atual ?? []),
-      5000
+      3000
     )
 
     import('firebase/firestore')
@@ -99,10 +101,23 @@ export function ConteudoProvider({ children }) {
           () => {} // sem conteúdo gravado ainda, ou sem rede: fica o padrão
         )
 
+        // Sem `orderBy` de propósito: o Firestore exclui da consulta qualquer
+        // documento a que falte o campo ordenado. Um presente criado à mão na
+        // consola, sem `ordem`, desapareceria do site sem dar erro nenhum.
+        // A lista é curta — ordena-se aqui.
         cancelarPresentes = fs.onSnapshot(
-          fs.query(fs.collection(db, 'presentes-casa'), fs.orderBy('ordem', 'asc')),
-          (snap) => setPresentesCasa(snap.docs.map((x) => ({ id: x.id, ...x.data() }))),
-          () => setPresentesCasa([])
+          fs.collection(db, 'presentes-casa'),
+          (snap) => {
+            const itens = snap.docs.map((x) => ({ id: x.id, ...x.data() }))
+            itens.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+            setPresentesCasa(itens)
+            setErroPresentes('')
+          },
+          (e) => {
+            setPresentesCasa([])
+            setErroPresentes(e.code || e.message)
+            console.error('Lista de presentes:', e.code, e.message)
+          }
         )
       })
       .catch(() => {})
@@ -120,10 +135,11 @@ export function ConteudoProvider({ children }) {
       tema,
       textos,
       presentesCasa,
+      erroPresentes,
       /** t('hero.nome1') — devolve o texto atual, ou a própria chave se faltar. */
       t: (chave) => textos[chave] ?? chave,
     }),
-    [tema, textos, presentesCasa]
+    [tema, textos, presentesCasa, erroPresentes]
   )
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>
