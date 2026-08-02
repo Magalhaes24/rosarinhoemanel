@@ -548,3 +548,63 @@
 .admin__grupo {
   margin-bottom: 10px;
 }
+
+/* ---------------- Escolher tipo de secção ---------------- */
+.admin__tipos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+  align-items: stretch;
+}
+
+.admin__tipo {
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.admin__tipo:hover {
+  background: var(--botao-creme);
+  transform: translateY(-2px);
+}
+
+.admin__tipo strong {
+  display: block;
+  font-size: 15px;
+  color: var(--quase-preto);
+}
+
+.admin__tipo span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #7a746c;
+  line-height: 1.4;
+}
+
+.admin__lista-item.is-escondida {
+  opacity: 0.55;
+}
+
+.admin__lista-item.is-escondida strong {
+  text-decoration: line-through;
+}
+
+.admin__aviso {
+  color: #9a6b1b;
+  font-size: 14px;
+}
+
+.admin__campo-ajuda {
+  font-style: normal;
+  color: #9a938a;
+}
+
+.admin__lista-item .admin__form {
+  width: 100%;
+  margin-top: 14px;
+}

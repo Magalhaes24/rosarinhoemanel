@@ -1,10 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { app } from './firebase.js'
-import {
-  temaPadrao,
-  textosPadrao,
-  variavelCss,
-} from '../data/conteudoPadrao.js'
+import { temaPadrao, textosPadrao, variavelCss } from '../data/conteudoPadrao.js'
+import { paginasPadrao } from '../data/paginasPadrao.js'
 
 /**
  * Conteúdo do site: tema, textos e lista de presentes.
@@ -59,6 +56,7 @@ export function ConteudoProvider({ children }) {
 
   const [tema, setTema] = useState({ ...temaPadrao, ...(guardado?.tema || {}) })
   const [textos, setTextos] = useState({ ...textosPadrao, ...(guardado?.textos || {}) })
+  const [paginas, setPaginas] = useState({ ...paginasPadrao, ...(guardado?.paginas || {}) })
   const [presentesCasa, setPresentesCasa] = useState(null)
   // Distingue «ainda não chegou» de «chegou vazio» de «não foi possível ler».
   const [erroPresentes, setErroPresentes] = useState('')
@@ -92,11 +90,16 @@ export function ConteudoProvider({ children }) {
           (snap) => {
             const d = snap.data()
             if (!d) return
-            const novoTema = { ...temaPadrao, ...(d.tema || {}) }
-            const novosTextos = { ...textosPadrao, ...(d.textos || {}) }
-            setTema(novoTema)
-            setTextos(novosTextos)
-            guardarCache({ tema: d.tema || {}, textos: d.textos || {} })
+            setTema({ ...temaPadrao, ...(d.tema || {}) })
+            setTextos({ ...textosPadrao, ...(d.textos || {}) })
+            // As páginas substituem-se inteiras, não se fundem: uma lista de
+            // secções fundida com a original daria uma ordem sem sentido.
+            setPaginas({ ...paginasPadrao, ...(d.paginas || {}) })
+            guardarCache({
+              tema: d.tema || {},
+              textos: d.textos || {},
+              paginas: d.paginas || {},
+            })
           },
           () => {} // sem conteúdo gravado ainda, ou sem rede: fica o padrão
         )
@@ -134,12 +137,13 @@ export function ConteudoProvider({ children }) {
     () => ({
       tema,
       textos,
+      paginas,
       presentesCasa,
       erroPresentes,
       /** t('hero.nome1') — devolve o texto atual, ou a própria chave se faltar. */
       t: (chave) => textos[chave] ?? chave,
     }),
-    [tema, textos, presentesCasa, erroPresentes]
+    [tema, textos, paginas, presentesCasa, erroPresentes]
   )
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>

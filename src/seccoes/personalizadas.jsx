@@ -1,0 +1,254 @@
+import Carousel from '../components/Carousel.jsx'
+import './seccoes.css'
+
+/**
+ * Tipos de secção que o admin pode acrescentar.
+ *
+ * Cada um declara os campos que a administração mostra e o componente que os
+ * desenha. Acrescentar um tipo novo é acrescentar uma entrada aqui — nem a
+ * administração nem o encaminhamento precisam de saber nada sobre ele.
+ *
+ * As cores vêm todas do tema (variáveis CSS), para uma secção nova nunca
+ * destoar do resto do site nem sobreviver a uma mudança de paleta.
+ */
+
+export const FUNDOS = [
+  ['creme', 'Creme'],
+  ['creme2', 'Creme alternativo'],
+  ['verde', 'Verde'],
+  ['azul', 'Azul'],
+  ['branco', 'Branco'],
+]
+
+/** Um fundo escuro pede texto claro. */
+function classesFundo(fundo) {
+  return `seccao--fundo-${fundo || 'creme'}`
+}
+
+function Titulo({ texto, className = '' }) {
+  if (!texto) return null
+  return <h2 className={`display seccao__titulo ${className}`}>{texto}</h2>
+}
+
+/** Texto simples, com título opcional. */
+function Texto({ dados }) {
+  return (
+    <section className={`seccao seccao--texto ${classesFundo(dados.fundo)}`}>
+      <div className="seccao__interior" data-revelar>
+        <Titulo texto={dados.titulo} />
+        {dados.corpo && (
+          <p className="corpo seccao__corpo" style={{ textAlign: dados.alinhamento || 'center' }}>
+            {dados.corpo}
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+/** Fotografia a toda a largura com uma caixa por cima — como a «Missa». */
+function Banda({ dados }) {
+  return (
+    <section className="seccao banda banda--personalizada">
+      {dados.foto && <img className="banda__bg" src={dados.foto} alt="" data-revelar-zoom />}
+      <div className="banda__caixa" data-revelar>
+        <Titulo texto={dados.titulo} className="banda__titulo" />
+        {dados.linha1 && <p className="corpo banda__local">{dados.linha1}</p>}
+        {dados.linha2 && <p className="corpo banda__hora">{dados.linha2}</p>}
+      </div>
+    </section>
+  )
+}
+
+/** Texto de um lado, fotografia do outro — como os anos na página dos noivos. */
+function TextoEFoto({ dados }) {
+  const fotoADireita = dados.lado !== 'esquerda'
+  return (
+    <section
+      className={`seccao seccao--duas ${classesFundo(dados.fundo)} ${
+        fotoADireita ? '' : 'seccao--invertida'
+      }`}
+    >
+      <div className="seccao__texto" data-revelar>
+        <Titulo texto={dados.titulo} />
+        {dados.corpo && <p className="corpo-sm seccao__corpo">{dados.corpo}</p>}
+      </div>
+      <div className="seccao__foto" data-revelar style={{ '--atraso': '0.16s' }}>
+        {dados.foto && <img src={dados.foto} alt={dados.legenda || ''} />}
+      </div>
+    </section>
+  )
+}
+
+/** Carrossel de fotografias. */
+function Galeria({ dados }) {
+  const fotos = (dados.fotos || '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((src) => ({ src, alt: '' }))
+
+  return (
+    <section className={`seccao seccao--galeria ${classesFundo(dados.fundo)}`}>
+      <div className="seccao__interior" data-revelar>
+        <Titulo texto={dados.titulo} />
+        {fotos.length > 0 && (
+          <div className="seccao__carrossel">
+            <Carousel
+              slides={fotos}
+              fit="natural"
+              height={260}
+              auto={dados.automatico !== false}
+              label={dados.titulo || 'Fotografias'}
+            />
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+/** Título com um ou dois botões — como a chamada para a lista de presentes. */
+function Botoes({ dados }) {
+  const botoes = [
+    { texto: dados.botao1, destino: dados.destino1 },
+    { texto: dados.botao2, destino: dados.destino2 },
+  ].filter((b) => b.texto)
+
+  return (
+    <section className={`seccao seccao--botoes ${classesFundo(dados.fundo)}`}>
+      <div className="seccao__interior" data-revelar>
+        <Titulo texto={dados.titulo} />
+        {botoes.length > 0 && (
+          <div className="seccao__botoes">
+            {botoes.map((b, i) => (
+              <a key={i} className="botao-contorno" href={b.destino || '#'}>
+                {b.texto}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+/** Espaço vazio, para dar respiro entre secções. */
+function Espaco({ dados }) {
+  return (
+    <section
+      className={`seccao seccao--espaco ${classesFundo(dados.fundo)}`}
+      style={{ height: `calc(${dados.altura || 200} * var(--esp))` }}
+      aria-hidden="true"
+    />
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Registo. `campos` é o que a administração mostra; `omissao` é o estado
+// inicial ao acrescentar.
+// ---------------------------------------------------------------------------
+
+const campoFundo = { chave: 'fundo', etiqueta: 'Fundo', tipo: 'escolha', opcoes: FUNDOS }
+
+export const tiposPersonalizados = {
+  texto: {
+    nome: 'Texto',
+    descricao: 'Um título e um parágrafo.',
+    Componente: Texto,
+    omissao: { titulo: 'Novo título', corpo: '', fundo: 'creme', alinhamento: 'center' },
+    campos: [
+      { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
+      { chave: 'corpo', etiqueta: 'Texto', tipo: 'textoLongo' },
+      campoFundo,
+      {
+        chave: 'alinhamento',
+        etiqueta: 'Alinhamento',
+        tipo: 'escolha',
+        opcoes: [
+          ['center', 'Centrado'],
+          ['left', 'À esquerda'],
+        ],
+      },
+    ],
+  },
+
+  banda: {
+    nome: 'Fotografia com texto por cima',
+    descricao: 'Uma fotografia a toda a largura, com uma caixa de texto ao centro.',
+    Componente: Banda,
+    omissao: { titulo: 'Novo título', linha1: '', linha2: '', foto: '' },
+    campos: [
+      { chave: 'foto', etiqueta: 'Fotografia', tipo: 'foto' },
+      { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
+      { chave: 'linha1', etiqueta: 'Primeira linha', tipo: 'texto' },
+      { chave: 'linha2', etiqueta: 'Segunda linha', tipo: 'texto' },
+    ],
+  },
+
+  textoEFoto: {
+    nome: 'Texto e fotografia',
+    descricao: 'Texto de um lado, fotografia do outro.',
+    Componente: TextoEFoto,
+    omissao: { titulo: '', corpo: '', foto: '', lado: 'direita', fundo: 'creme' },
+    campos: [
+      { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
+      { chave: 'corpo', etiqueta: 'Texto', tipo: 'textoLongo' },
+      { chave: 'foto', etiqueta: 'Fotografia', tipo: 'foto' },
+      {
+        chave: 'lado',
+        etiqueta: 'Fotografia',
+        tipo: 'escolha',
+        opcoes: [
+          ['direita', 'À direita'],
+          ['esquerda', 'À esquerda'],
+        ],
+      },
+      campoFundo,
+    ],
+  },
+
+  galeria: {
+    nome: 'Galeria',
+    descricao: 'Carrossel de fotografias.',
+    Componente: Galeria,
+    omissao: { titulo: '', fotos: '', fundo: 'creme', automatico: true },
+    campos: [
+      { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
+      {
+        chave: 'fotos',
+        etiqueta: 'Fotografias',
+        tipo: 'listaDeFotos',
+        ajuda: 'Um endereço por linha.',
+      },
+      { chave: 'automatico', etiqueta: 'Andar sozinho', tipo: 'booleano' },
+      campoFundo,
+    ],
+  },
+
+  botoes: {
+    nome: 'Título com botões',
+    descricao: 'Um título e até dois botões.',
+    Componente: Botoes,
+    omissao: { titulo: 'Novo título', botao1: '', destino1: '', botao2: '', destino2: '', fundo: 'verde' },
+    campos: [
+      { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
+      { chave: 'botao1', etiqueta: 'Primeiro botão', tipo: 'texto' },
+      { chave: 'destino1', etiqueta: 'Destino do primeiro', tipo: 'texto', ajuda: '/noivos ou https://…' },
+      { chave: 'botao2', etiqueta: 'Segundo botão', tipo: 'texto' },
+      { chave: 'destino2', etiqueta: 'Destino do segundo', tipo: 'texto' },
+      campoFundo,
+    ],
+  },
+
+  espaco: {
+    nome: 'Espaço',
+    descricao: 'Uma faixa vazia, para separar secções.',
+    Componente: Espaco,
+    omissao: { altura: 200, fundo: 'creme' },
+    campos: [
+      { chave: 'altura', etiqueta: 'Altura', tipo: 'numero', min: 40, max: 800, passo: 20 },
+      campoFundo,
+    ],
+  },
+}

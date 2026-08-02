@@ -1,0 +1,158 @@
+/* Secções acrescentadas pela administração.
+   As medidas seguem as do rascunho (--pt na horizontal, --esp na vertical) e as
+   cores vêm do tema, para uma secção nova nunca destoar do resto do site. */
+
+.seccao {
+  position: relative;
+}
+
+.seccao__interior {
+  max-width: calc(940 * var(--pt));
+  margin: 0 auto;
+  padding: calc(80 * var(--esp)) calc(40 * var(--pt));
+  text-align: center;
+}
+
+.seccao__titulo {
+  margin-bottom: calc(30 * var(--esp));
+}
+
+.seccao__corpo {
+  max-width: calc(620 * var(--pt));
+  margin: 0 auto;
+  white-space: pre-line;
+}
+
+/* ---------------- Fundos ---------------- */
+.seccao--fundo-creme {
+  background: var(--creme);
+  color: var(--quase-preto);
+}
+
+.seccao--fundo-creme2 {
+  background: var(--creme-2);
+  color: var(--quase-preto);
+}
+
+.seccao--fundo-branco {
+  background: #fff;
+  color: var(--quase-preto);
+}
+
+/* Nos fundos com cor, o texto passa a claro — senão fica ilegível. */
+.seccao--fundo-verde {
+  background: var(--verde-fundo);
+  color: var(--creme-texto);
+}
+
+.seccao--fundo-azul {
+  background: var(--azul);
+  color: var(--creme-texto);
+}
+
+.seccao--fundo-verde .seccao__titulo,
+.seccao--fundo-azul .seccao__titulo,
+.seccao--fundo-verde .seccao__corpo,
+.seccao--fundo-azul .seccao__corpo {
+  color: inherit;
+}
+
+/* ---------------- Fotografia com texto por cima ---------------- */
+.banda--personalizada {
+  min-height: calc(500 * var(--esp));
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/* Sem fotografia, a caixa precisa de um fundo para não ficar a pairar. */
+.banda--personalizada:not(:has(.banda__bg)) {
+  background: var(--creme-2);
+}
+
+/* ---------------- Texto e fotografia ---------------- */
+.seccao--duas {
+  display: grid;
+  grid-template-columns: 1fr calc(380 * var(--pt));
+  align-items: center;
+  column-gap: calc(50 * var(--pt));
+  padding: calc(74 * var(--esp)) calc(57 * var(--pt));
+}
+
+.seccao--duas.seccao--invertida {
+  grid-template-columns: calc(380 * var(--pt)) 1fr;
+}
+
+.seccao--duas.seccao--invertida .seccao__texto {
+  order: 2;
+}
+
+.seccao--duas.seccao--invertida .seccao__foto {
+  order: 1;
+}
+
+.seccao__texto {
+  text-align: center;
+  max-width: calc(620 * var(--pt));
+  margin: 0 auto;
+}
+
+.seccao__foto {
+  height: calc(320 * var(--esp));
+}
+
+.seccao__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------------- Galeria ---------------- */
+.seccao--galeria .seccao__interior {
+  max-width: none;
+}
+
+.seccao__carrossel {
+  min-width: 0;
+  margin-top: calc(40 * var(--esp));
+}
+
+/* ---------------- Botões ---------------- */
+.seccao__botoes {
+  margin-top: calc(60 * var(--esp));
+  display: flex;
+  justify-content: center;
+  gap: calc(60 * var(--pt));
+  flex-wrap: wrap;
+}
+
+/* ---------------- Telemóvel ---------------- */
+@media (max-width: 760px) {
+  .seccao__interior {
+    padding: calc(70 * var(--esp)) calc(30 * var(--pt));
+  }
+
+  .seccao--duas,
+  .seccao--duas.seccao--invertida {
+    grid-template-columns: 1fr;
+    row-gap: calc(46 * var(--esp));
+    padding: calc(70 * var(--esp)) calc(30 * var(--pt));
+  }
+
+  .seccao--duas.seccao--invertida .seccao__texto,
+  .seccao--duas.seccao--invertida .seccao__foto {
+    order: 0;
+  }
+
+  .seccao__foto {
+    height: calc(420 * var(--esp));
+  }
+
+  .banda--personalizada {
+    min-height: calc(430 * var(--esp));
+  }
+
+  .seccao__botoes {
+    gap: calc(30 * var(--pt));
+  }
+}

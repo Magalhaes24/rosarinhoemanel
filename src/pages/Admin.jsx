@@ -3,6 +3,7 @@ import { entrar, sair, observarSessao, ehAdmin, mensagemDeErro } from '../lib/au
 import Respostas from './admin/Respostas.jsx'
 import Loja from './admin/Loja.jsx'
 import Aparencia from './admin/Aparencia.jsx'
+import Layout from './admin/Layout.jsx'
 import './Admin.css'
 
 function Login() {
@@ -64,6 +65,7 @@ function Login() {
 const SEPARADORES = [
   { id: 'respostas', nome: 'Respostas' },
   { id: 'loja', nome: 'Lista de presentes' },
+  { id: 'layout', nome: 'Secções' },
   { id: 'textos', nome: 'Textos' },
   { id: 'tema', nome: 'Aparência' },
 ]
@@ -99,6 +101,7 @@ function Painel({ utilizador }) {
 
       {separador === 'respostas' && <Respostas />}
       {separador === 'loja' && <Loja />}
+      {separador === 'layout' && <Layout />}
       {separador === 'textos' && <Aparencia separador="textos" />}
       {separador === 'tema' && <Aparencia separador="tema" />}
     </div>
