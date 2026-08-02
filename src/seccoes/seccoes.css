@@ -59,7 +59,7 @@
 
 /* ---------------- Fotografia com texto por cima ---------------- */
 .banda--personalizada {
-  min-height: calc(500 * var(--esp));
+  min-height: min(calc(500 * var(--esp)), var(--ecra-util));
   display: grid;
   place-items: center;
   overflow: hidden;

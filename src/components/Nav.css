@@ -45,15 +45,31 @@
 
 @media (max-width: 760px) {
   .nav {
-    padding: 0 14px;
+    padding: 0 12px;
+    gap: 8px;
   }
   .nav__logo img {
-    height: 22px;
+    height: 20px;
   }
   .nav__links {
-    gap: 12px;
+    gap: 10px;
+    min-width: 0;
   }
+  /* Acompanha a largura do ecrã, mas nunca fica ilegível nem desproporcionado.
+     Os três rótulos são longos e têm de caber numa linha até aos 320px. */
   .nav__link {
-    font-size: 11px;
+    font-size: clamp(9px, 2.9vw, 13px);
+  }
+}
+
+@media (max-width: 380px) {
+  .nav {
+    padding: 0 8px;
+  }
+  .nav__logo img {
+    height: 17px;
+  }
+  .nav__links {
+    gap: 7px;
   }
 }

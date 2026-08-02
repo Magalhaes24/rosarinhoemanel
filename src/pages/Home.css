@@ -3,10 +3,13 @@
    do `--respiro` aplicada — ver global.css. */
 
 /* ---------------- Hero ---------------- */
+/* As secções de ecrã inteiro nunca passam do espaço visível. Sem este limite,
+   numa janela larga mas baixa a altura — que deriva da LARGURA — crescia para
+   além do ecrã e cortava o conteúdo (a data do hero, por exemplo). */
 .hero {
   display: grid;
   grid-template-columns: 557fr 467fr;
-  min-height: calc(577 * var(--esp));
+  min-height: min(calc(577 * var(--esp)), var(--ecra-util));
 }
 
 .hero__panel {
@@ -30,10 +33,17 @@
 }
 
 .hero__foto {
+  position: relative;
   overflow: hidden;
 }
 
+/* Absoluta de propósito. Com `height: 100%` dentro de um contentor de altura
+   automática, o 100% resolve para a altura natural da imagem — e era a
+   fotografia que esticava o hero para lá do ecrã, não o texto. Assim a coluna
+   não tem altura própria e quem manda é o texto e o limite do ecrã. */
 .hero__foto img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -49,11 +59,11 @@
 }
 
 .banda--missa {
-  min-height: calc(521 * var(--esp));
+  min-height: min(calc(521 * var(--esp)), var(--ecra-util));
 }
 
 .banda--copo {
-  min-height: calc(524 * var(--esp));
+  min-height: min(calc(524 * var(--esp)), var(--ecra-util));
 }
 
 .banda__bg {
@@ -263,7 +273,8 @@
     padding: calc(80 * var(--esp)) calc(40 * var(--pt)) calc(56 * var(--esp));
   }
   .hero__foto {
-    height: 64vh;
+    height: 58svh;
+    min-height: calc(300 * var(--pt));
   }
 
   .banda--missa,

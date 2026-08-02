@@ -82,8 +82,19 @@ html {
 }
 
 body {
-  --pt: calc(min(100cqw, 1600px) / 1024);
+  /* Largura da tela virtual, em pontos. O rascunho foi desenhado para 1024;
+     em ecrãs pequenos reduz-se, para que o mesmo desenho dê letra maior e
+     margens menores em vez de encolher tudo por igual. É o único número a
+     mexer para reafinar uma gama de tamanhos. */
+  --tela: 1024;
+
+  --pt: calc(min(100cqw, 1600px) / var(--tela));
   --nav-h: calc(42 * var(--pt));
+
+  /* Altura útil abaixo do menu. `svh` e não `vh`: nos telemóveis o `vh` conta
+     com a barra de endereço recolhida, e o conteúdo ficava cortado até se
+     fazer scroll. */
+  --ecra-util: calc(100svh - var(--nav-h));
 
   /* Folga vertical. O rascunho foi desenhado com a Lovelace Text, a Garet e a
      The Seasons; com as substitutas do Google Fonts, que têm altura de x e
@@ -160,14 +171,40 @@ button {
   margin: 0;
 }
 
+/* Quatro gamas de tamanho, em vez do salto único que havia entre telemóvel e
+   computador. Cada uma só muda a largura da tela virtual — tudo o resto é
+   proporcional e acompanha. */
+
+/* Tablets e janelas estreitas de computador */
+@media (max-width: 1023px) {
+  body {
+    --tela: 860;
+  }
+}
+
+/* Telemóveis grandes e tablets pequenos */
 @media (max-width: 760px) {
   body {
-    /* No telemóvel a tela deixa de ser 1024pt: passa a comportar-se
-       como se tivesse ~620pt de largura, para o texto respirar. */
-    --pt: calc(100cqw / 620);
+    --tela: 620;
     --nav-h: 56px;
   }
   .display {
-    font-size: calc(64 * var(--pt));
+    font-size: calc(64 * var(--pt) * var(--escala-titulos));
+  }
+}
+
+/* Telemóveis comuns */
+@media (max-width: 480px) {
+  body {
+    --tela: 480;
+    --nav-h: 52px;
+  }
+}
+
+/* Telemóveis pequenos (iPhone SE e afins) */
+@media (max-width: 380px) {
+  body {
+    --tela: 400;
+    --nav-h: 48px;
   }
 }
