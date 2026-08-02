@@ -1,15 +1,17 @@
-import { Routes, Route, useLocation } from './lib/router.jsx'
 import { lazy, Suspense, useEffect } from 'react'
+import { Routes, Route, useLocation } from './lib/router.jsx'
+import { ConteudoProviderEdicao } from './lib/edicao.jsx'
 import Nav from './components/Nav.jsx'
+import BarraEdicao from './components/BarraEdicao.jsx'
 import Home from './pages/Home.jsx'
 import Noivos from './pages/Noivos.jsx'
 import Presentes from './pages/Presentes.jsx'
 import useRevelar from './hooks/useRevelar.js'
+import './styles/animacoes.css'
 
 // A área de administração arrasta o SDK de autenticação do Firebase. Fica em
 // separado para que os convidados — que são toda a gente — não o descarreguem.
 const Admin = lazy(() => import('./pages/Admin.jsx'))
-import './styles/animacoes.css'
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -30,7 +32,7 @@ export default function App() {
   useRevelar()
 
   return (
-    <>
+    <ConteudoProviderEdicao>
       <ScrollToTop />
       <Nav />
       <Routes>
@@ -48,6 +50,7 @@ export default function App() {
         />
         <Route path="*" element={<Home />} />
       </Routes>
-    </>
+      <BarraEdicao />
+    </ConteudoProviderEdicao>
   )
 }

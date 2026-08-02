@@ -57,6 +57,12 @@ export function ConteudoProvider({ children }) {
   const [tema, setTema] = useState({ ...temaPadrao, ...(guardado?.tema || {}) })
   const [textos, setTextos] = useState({ ...textosPadrao, ...(guardado?.textos || {}) })
   const [paginas, setPaginas] = useState({ ...paginasPadrao, ...(guardado?.paginas || {}) })
+  // Alterações do modo de edição, ainda por gravar. Sobrepõem-se ao que está
+  // na base de dados para o admin ver o resultado enquanto edita, e
+  // desaparecem se ele descartar.
+  const [rascunhoTextos, setRascunhoTextos] = useState(null)
+  const [rascunhoPaginas, setRascunhoPaginas] = useState(null)
+
   const [presentesCasa, setPresentesCasa] = useState(null)
   // Distingue «ainda não chegou» de «chegou vazio» de «não foi possível ler».
   const [erroPresentes, setErroPresentes] = useState('')
@@ -133,18 +139,28 @@ export function ConteudoProvider({ children }) {
     }
   }, [])
 
-  const valor = useMemo(
-    () => ({
+  const valor = useMemo(() => {
+    const textosEfetivos = rascunhoTextos ? { ...textos, ...rascunhoTextos } : textos
+    const paginasEfetivas = rascunhoPaginas ? { ...paginas, ...rascunhoPaginas } : paginas
+
+    return {
       tema,
-      textos,
-      paginas,
+      textos: textosEfetivos,
+      paginas: paginasEfetivas,
       presentesCasa,
       erroPresentes,
       /** t('hero.nome1') — devolve o texto atual, ou a própria chave se faltar. */
-      t: (chave) => textos[chave] ?? chave,
-    }),
-    [tema, textos, paginas, presentesCasa, erroPresentes]
-  )
+      t: (chave) => textosEfetivos[chave] ?? chave,
+
+      // Usados pelo modo de edição (src/lib/edicao.jsx).
+      textosGravados: textos,
+      paginasGravadas: paginas,
+      rascunhoTextos,
+      setRascunhoTextos,
+      rascunhoPaginas,
+      setRascunhoPaginas,
+    }
+  }, [tema, textos, paginas, rascunhoTextos, rascunhoPaginas, presentesCasa, erroPresentes])
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>
 }

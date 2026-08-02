@@ -1,0 +1,138 @@
+/* Sobreposições do modo de edição.
+   Tudo aqui só existe quando o admin liga a edição — a página que os
+   convidados veem não leva um único elemento a mais. */
+
+.envolve-seccao {
+  position: relative;
+  outline: 1px dashed rgba(146, 111, 27, 0.45);
+  outline-offset: -1px;
+}
+
+.envolve-seccao.is-escondida {
+  opacity: 0.5;
+}
+
+.envolve-seccao__oculta {
+  margin: 0;
+  padding: 40px 20px;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--castanho);
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(141, 112, 80, 0.05) 0,
+    rgba(141, 112, 80, 0.05) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+
+/* Barra de controlo de cada secção. Aparece por cima, sem empurrar nada. */
+.ctrl-seccao {
+  position: absolute;
+  z-index: 30;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 6px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 2px 10px rgba(41, 38, 33, 0.2);
+  font-family: var(--sans);
+  opacity: 0.35;
+  transition: opacity 0.15s ease;
+}
+
+.envolve-seccao:hover .ctrl-seccao,
+.ctrl-seccao:focus-within {
+  opacity: 1;
+}
+
+.ctrl-seccao__nome {
+  font-size: 12px;
+  color: #7a746c;
+  padding: 0 6px 0 2px;
+  white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctrl-seccao button {
+  border: 1px solid rgba(41, 38, 33, 0.18);
+  background: #fff;
+  color: var(--quase-preto);
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.ctrl-seccao button:hover:not(:disabled) {
+  background: var(--botao-creme);
+}
+
+.ctrl-seccao button:disabled {
+  opacity: 0.35;
+}
+
+.ctrl-seccao button.is-perigo {
+  color: #a8392e;
+  border-color: rgba(168, 57, 46, 0.4);
+}
+
+/* ---------------- Texto editável no sítio ---------------- */
+.editavel {
+  outline: 1px dashed rgba(146, 111, 27, 0.5);
+  outline-offset: 3px;
+  border-radius: 2px;
+  cursor: text;
+  transition: background 0.15s ease, outline-color 0.15s ease;
+  /* Herda tudo do sítio onde está: em edição o texto tem de ter exatamente o
+     aspeto que terá depois de gravado. */
+  font: inherit;
+  color: inherit;
+  min-width: 1ch;
+  display: inline-block;
+}
+
+.editavel:hover {
+  background: rgba(190, 168, 128, 0.16);
+}
+
+.editavel:focus {
+  outline: 2px solid var(--dourado);
+  outline-offset: 3px;
+  background: rgba(190, 168, 128, 0.22);
+}
+
+/* Em edição, os links não devem navegar ao serem clicados para editar. */
+.em-edicao a .editavel {
+  pointer-events: auto;
+}
+
+/* Espaço no fundo para a barra fixa não tapar o último conteúdo. */
+.em-edicao body {
+  padding-bottom: 76px;
+}
+
+@media (max-width: 760px) {
+  .ctrl-seccao {
+    top: 4px;
+    right: 4px;
+    opacity: 1;
+    gap: 3px;
+    padding: 4px;
+  }
+  .ctrl-seccao__nome {
+    display: none;
+  }
+  .ctrl-seccao button {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,94 @@
+.barra-edicao {
+  position: fixed;
+  z-index: 100;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: calc(100vw - 24px);
+  padding: 8px 10px;
+  border-radius: 30px;
+  background: rgba(41, 38, 33, 0.94);
+  box-shadow: 0 6px 24px rgba(41, 38, 33, 0.32);
+  font-family: var(--sans);
+  color: #fff;
+}
+
+.barra-edicao__principal {
+  border: none;
+  border-radius: 22px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--dourado-botao);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.barra-edicao.is-ativa .barra-edicao__principal {
+  background: #fff;
+  color: var(--quase-preto);
+}
+
+.barra-edicao__estado {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.barra-edicao__btn {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: #fff;
+  border-radius: 22px;
+  padding: 8px 16px;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.barra-edicao__btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.barra-edicao__btn:disabled {
+  opacity: 0.4;
+}
+
+.barra-edicao__msg {
+  font-size: 13px;
+  padding: 0 6px;
+  max-width: 46ch;
+}
+
+.barra-edicao__msg.is-ok {
+  color: #a8d99a;
+}
+
+.barra-edicao__msg.is-erro {
+  color: #f0a49b;
+}
+
+@media (max-width: 760px) {
+  .barra-edicao {
+    bottom: 10px;
+    gap: 6px;
+    padding: 7px 8px;
+  }
+  .barra-edicao__principal,
+  .barra-edicao__btn {
+    font-size: 13px;
+    padding: 7px 13px;
+  }
+  .barra-edicao__estado {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+  }
+}

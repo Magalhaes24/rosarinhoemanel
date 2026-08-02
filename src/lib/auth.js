@@ -41,9 +41,24 @@ export async function entrar(email, palavraPasse) {
 
   if (!ehAdmin(user)) {
     await signOut(auth)
+    try {
+      localStorage.removeItem('ja-entrou-como-admin')
+    } catch {
+      /* modo privado */
+    }
     // Quem chegou aqui já provou ser dono desta conta, por isso dizer-lhe que
     // ela não é a de administração não lhe revela nada de novo.
     throw new Error('sem-permissao')
+  }
+
+  // Marca que faz as páginas públicas carregarem o modo de edição. É só uma
+  // pista de desempenho — evita descarregar o SDK de autenticação para os
+  // convidados. Quem a forjar vê os botões e mais nada: gravar depende das
+  // regras do Firestore, que correm no servidor.
+  try {
+    localStorage.setItem('ja-entrou-como-admin', '1')
+  } catch {
+    /* modo privado */
   }
 
   return user

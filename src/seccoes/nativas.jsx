@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { Link } from '../lib/router.jsx'
 import { caminho } from '../lib/caminho.js'
 import { useConteudo, useTexto } from '../lib/conteudo.jsx'
+import T from '../components/T.jsx'
 import Carousel from '../components/Carousel.jsx'
 import RsvpForm from '../components/RsvpForm.jsx'
 import PresenteForm from '../components/PresenteForm.jsx'
@@ -19,16 +20,15 @@ import { fotosInfancia, fotosNamoro, fotosLuaDeMel, molduras2022 } from '../data
 // ---------------------------------------------------------------- Início
 
 function Hero() {
-  const t = useTexto()
   return (
     <section className="hero">
       <div className="hero__panel">
         <h1 className="display hero__nomes">
-          {t('hero.nome1')}
+          <T k="hero.nome1" />
           <br />
-          {t('hero.nome2')}
+          <T k="hero.nome2" />
         </h1>
-        <p className="hero__data">{t('hero.data')}</p>
+        <p className="hero__data"><T k="hero.data" /></p>
       </div>
       <div className="hero__foto">
         <img src={caminho('/images/hero-casal.png')} alt="Rosarinho e Manel" />
@@ -38,41 +38,38 @@ function Hero() {
 }
 
 function BandaMissa() {
-  const t = useTexto()
   return (
     <section className="banda banda--missa">
       <img className="banda__bg" src={caminho('/images/igreja.png')} alt="" data-revelar-zoom />
       <div className="banda__caixa" data-revelar>
-        <h2 className="display banda__titulo">{t('missa.titulo')}</h2>
-        <p className="corpo banda__local">{t('missa.local')}</p>
-        <p className="corpo banda__hora">{t('missa.hora')}</p>
+        <h2 className="display banda__titulo"><T k="missa.titulo" /></h2>
+        <p className="corpo banda__local"><T k="missa.local" /></p>
+        <p className="corpo banda__hora"><T k="missa.hora" /></p>
       </div>
     </section>
   )
 }
 
 function BandaCopo() {
-  const t = useTexto()
   return (
     <section className="banda banda--copo">
       <img className="banda__bg" src={caminho('/images/quinta.png')} alt="" data-revelar-zoom />
       <div className="banda__caixa" data-revelar>
-        <h2 className="display banda__titulo">{t('copo.titulo')}</h2>
-        <p className="corpo banda__local">{t('copo.local')}</p>
-        <p className="corpo banda__hora">{t('copo.hora')}</p>
+        <h2 className="display banda__titulo"><T k="copo.titulo" /></h2>
+        <p className="corpo banda__local"><T k="copo.local" /></p>
+        <p className="corpo banda__hora"><T k="copo.hora" /></p>
       </div>
     </section>
   )
 }
 
 function Rsvp() {
-  const t = useTexto()
   return (
     <section className="rsvp" id="rsvp">
       <p className="corpo rsvp__texto" data-revelar>
-        <strong>{t('rsvp.destaque')}</strong>
+        <strong><T k="rsvp.destaque" /></strong>
         <br />
-        {t('rsvp.texto')}
+        <T k="rsvp.texto" />
       </p>
       <div className="rsvp__cartao" data-revelar style={{ '--atraso': '0.14s' }}>
         <RsvpForm />
@@ -82,15 +79,14 @@ function Rsvp() {
 }
 
 function Historia() {
-  const t = useTexto()
   return (
     <section className="historia">
       <div className="historia__texto" data-revelar>
         <p className="corpo">
-          {t('historia.texto')} <strong>{t('historia.destaque')}</strong>
+          <T k="historia.texto" /> <strong><T k="historia.destaque" /></strong>
         </p>
         <Link className="botao-aqui" to="/noivos">
-          {t('historia.botao')}
+          <T k="historia.botao" />
         </Link>
       </div>
       <div className="historia__arco" data-revelar style={{ '--atraso': '0.16s' }}>
@@ -101,18 +97,17 @@ function Historia() {
 }
 
 function PresentesCta() {
-  const t = useTexto()
   return (
     <section className="presentes-cta">
       <h2 className="display presentes-cta__titulo" data-revelar>
-        {t('presentes.titulo')}
+        <T k="presentes.titulo" />
       </h2>
       <div className="presentes-cta__botoes" data-revelar style={{ '--atraso': '0.16s' }}>
         <Link className="botao-contorno" to="/presentes#casa">
-          {t('presentes.botaoCasa')}
+          <T k="presentes.botaoCasa" />
         </Link>
         <Link className="botao-contorno" to="/presentes#lua">
-          {t('presentes.botaoLua')}
+          <T k="presentes.botaoLua" />
         </Link>
       </div>
     </section>
@@ -124,13 +119,13 @@ function Drivers() {
   return (
     <section className="drivers">
       <p className="corpo drivers__texto" data-revelar>
-        {t('drivers.texto')}
+        <T k="drivers.texto" />
         <br />
-        {t('drivers.contactoTexto')}{' '}
+        <T k="drivers.contactoTexto" />{' '}
         <strong>
-          {t('drivers.contactoNome')} -{' '}
+          <T k="drivers.contactoNome" /> -{' '}
           <a href={`tel:+351${t('drivers.telefone').replace(/\s/g, '')}`} className="drivers__tel">
-            {t('drivers.telefone')}
+            <T k="drivers.telefone" />
           </a>
         </strong>
       </p>
@@ -146,18 +141,12 @@ function Drivers() {
 }
 
 function Hoteis() {
-  const t = useTexto()
+  // As quebras de linha vêm do próprio texto (`white-space: pre-line` no CSS),
+  // para o título continuar editável no sítio como um bloco só.
   return (
     <section className="hoteis">
       <h2 className="display hoteis__titulo" data-revelar>
-        {t('hoteis.titulo')
-          .split('\n')
-          .map((linha, i) => (
-            <span key={i}>
-              {linha}
-              <br />
-            </span>
-          ))}
+        <T k="hoteis.titulo" multilinha />
       </h2>
     </section>
   )
@@ -166,11 +155,10 @@ function Hoteis() {
 // ---------------------------------------------------------------- Noivos
 
 function NoivosIntro() {
-  const t = useTexto()
   return (
     <section className="noivos__intro">
       <h1 className="display noivos__titulo" data-revelar>
-        {t('noivos.titulo')}
+        <T k="noivos.titulo" />
       </h1>
       <Carousel slides={fotosInfancia} fit="natural" height={260} auto label="Fotografias de infância" />
     </section>
@@ -178,12 +166,11 @@ function NoivosIntro() {
 }
 
 function Ano2018() {
-  const t = useTexto()
   return (
     <section className="ano ano--creme">
       <div className="ano__texto" data-revelar>
-        <h2 className="display ano__numero">{t('ano2018.numero')}</h2>
-        <p className="corpo-sm">{t('ano2018.texto')}</p>
+        <h2 className="display ano__numero"><T k="ano2018.numero" /></h2>
+        <p className="corpo-sm"><T k="ano2018.texto" /></p>
       </div>
       <div className="ano__foto" data-revelar style={{ '--atraso': '0.16s' }}>
         <img src={caminho('/images/mapa-2018.jpeg')} alt="Campo do MAPA, agosto de 2018" />
@@ -193,12 +180,11 @@ function Ano2018() {
 }
 
 function Ano2022() {
-  const t = useTexto()
   return (
     <section className="ano ano--azul ano--centrado">
       <div className="ano__texto" data-revelar>
-        <h2 className="display ano__numero">{t('ano2022.numero')}</h2>
-        <p className="corpo-sm">{t('ano2022.texto')}</p>
+        <h2 className="display ano__numero"><T k="ano2022.numero" /></h2>
+        <p className="corpo-sm"><T k="ano2022.texto" /></p>
       </div>
       <div className="ano__carrossel">
         <Carousel
@@ -214,12 +200,11 @@ function Ano2022() {
 }
 
 function Ano2026() {
-  const t = useTexto()
   return (
     <section className="ano ano--creme">
       <div className="ano__texto" data-revelar>
-        <h2 className="display ano__numero">{t('ano2026.numero')}</h2>
-        <p className="corpo-sm">{t('ano2026.texto')}</p>
+        <h2 className="display ano__numero"><T k="ano2026.numero" /></h2>
+        <p className="corpo-sm"><T k="ano2026.texto" /></p>
       </div>
       <div className="ano__foto ano__foto--alta" data-revelar style={{ '--atraso': '0.16s' }}>
         <img src={caminho('/images/noivado-2026.jpeg')} alt="O pedido, no santuário da Peninha" />
@@ -273,11 +258,11 @@ function ParaACasa() {
   return (
     <section className="presentes__bloco" id="casa">
       <h1 className="display presentes__titulo" data-revelar>
-        {t('casa.titulo')}
+        <T k="casa.titulo" />
       </h1>
 
       {presentesCasa === null ? null : presentesCasa.length === 0 ? (
-        <p className="loja__vazio">{t('casa.vazio')}</p>
+        <p className="loja__vazio"><T k="casa.vazio" /></p>
       ) : (
         <ul className="loja" data-revelar>
           {presentesCasa.map((item) => (
@@ -305,7 +290,7 @@ function LuaDeMel() {
   return (
     <section className="presentes__bloco" id="lua">
       <h2 className="display presentes__titulo" data-revelar>
-        {t('lua.titulo')}
+        <T k="lua.titulo" />
       </h2>
 
       {/* Achatado de propósito: separadores e nomes são todos filhos diretos
@@ -329,13 +314,12 @@ function LuaDeMel() {
 }
 
 function Contribuicao() {
-  const t = useTexto()
   return (
     <section className="contribuicao">
       <div className="contribuicao__texto" data-revelar>
-        <p>{t('contribuicao.texto1')}</p>
-        <p>{t('contribuicao.texto2')}</p>
-        <p className="contribuicao__iban">{t('contribuicao.iban')}</p>
+        <p><T k="contribuicao.texto1" /></p>
+        <p><T k="contribuicao.texto2" /></p>
+        <p className="contribuicao__iban"><T k="contribuicao.iban" /></p>
       </div>
       <div className="contribuicao__cartao">
         <PresenteForm />
