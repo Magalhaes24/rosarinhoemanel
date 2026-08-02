@@ -1,11 +1,22 @@
 import { useRef, useState } from 'react'
 import { enviarFotografia } from '../../lib/armazenamento.js'
 
-/** Campo de imagem: envia para o Storage e devolve o endereço. */
+/**
+ * Campo de imagem, por duas vias:
+ *
+ *  - enviar um ficheiro para o Firebase Storage;
+ *  - colar o endereço de uma imagem que já esteja algures na internet.
+ *
+ * A segunda existe porque o Storage exige o plano Blaze do Firebase. Sem ele,
+ * o envio falha e só resta o endereço — que funciona bem, com a ressalva de
+ * que a imagem deixa de aparecer se quem a aloja a mudar de sítio.
+ */
 export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
   const input = useRef(null)
   const [estado, setEstado] = useState('idle')
   const [erro, setErro] = useState('')
+  const [aColar, setAColar] = useState(false)
+  const [endereco, setEndereco] = useState('')
 
   async function aoEscolher(e) {
     const ficheiro = e.target.files?.[0]
@@ -16,11 +27,29 @@ export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
       aoMudar(await enviarFotografia(ficheiro))
       setEstado('idle')
     } catch (err) {
-      setErro(err.message || 'Não foi possível enviar a imagem.')
+      const codigo = err?.code || ''
+      setErro(
+        codigo.includes('unauthorized') || codigo.includes('unknown')
+          ? 'Não foi possível enviar. Se o Firebase Storage ainda não está ativo, usa antes «Colar endereço».'
+          : err.message || 'Não foi possível enviar a imagem.'
+      )
       setEstado('idle')
     } finally {
       if (input.current) input.current.value = ''
     }
+  }
+
+  function confirmarEndereco() {
+    const limpo = endereco.trim()
+    if (!limpo) return
+    if (!/^https:\/\//i.test(limpo)) {
+      setErro('O endereço tem de começar por https://')
+      return
+    }
+    setErro('')
+    aoMudar(limpo)
+    setEndereco('')
+    setAColar(false)
   }
 
   return (
@@ -29,7 +58,7 @@ export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
 
       {valor && (
         <div className="admin__foto-previa">
-          <img src={valor} alt="" />
+          <img src={valor} alt="" onError={() => setErro('Esse endereço não devolveu uma imagem.')} />
         </div>
       )}
 
@@ -40,14 +69,47 @@ export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
           onClick={() => input.current?.click()}
           disabled={estado === 'a-enviar'}
         >
-          {estado === 'a-enviar' ? 'A enviar…' : valor ? 'Substituir' : 'Escolher imagem'}
+          {estado === 'a-enviar' ? 'A enviar…' : valor ? 'Substituir ficheiro' : 'Enviar ficheiro'}
         </button>
+
+        <button
+          type="button"
+          className="admin__btn admin__btn--claro"
+          onClick={() => setAColar((v) => !v)}
+        >
+          Colar endereço
+        </button>
+
         {valor && (
-          <button type="button" className="admin__btn admin__btn--claro" onClick={() => aoMudar('')}>
+          <button
+            type="button"
+            className="admin__btn admin__btn--claro"
+            onClick={() => aoMudar('')}
+          >
             Remover
           </button>
         )}
       </div>
+
+      {aColar && (
+        <div className="admin__foto-endereco">
+          <input
+            type="url"
+            value={endereco}
+            onChange={(e) => setEndereco(e.target.value)}
+            placeholder="https://…"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                confirmarEndereco()
+              }
+            }}
+          />
+          <button type="button" className="admin__btn" onClick={confirmarEndereco}>
+            Usar
+          </button>
+        </div>
+      )}
 
       <input
         ref={input}

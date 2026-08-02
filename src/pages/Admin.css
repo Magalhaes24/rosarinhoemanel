@@ -526,6 +526,25 @@
   flex-wrap: wrap;
 }
 
+.admin__foto-endereco {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.admin__foto-endereco input {
+  flex: 1;
+  min-width: 220px;
+  font: inherit;
+  font-size: 15px;
+  padding: 9px 12px;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 8px;
+  background: #fff;
+  outline: none;
+}
+
 .admin__grupo {
   margin-bottom: 10px;
 }

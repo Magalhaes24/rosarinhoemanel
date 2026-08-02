@@ -112,6 +112,17 @@ domínios de que o site precisa), HSTS de um ano com `preload`,
 > Se acrescentares um serviço externo (mapas, música, vídeo), a CSP bloqueia-o
 > até o adicionares à lista. É o comportamento pretendido.
 
+**Uma directiva está propositadamente aberta: `img-src` aceita qualquer origem
+HTTPS.** A administração permite colar o endereço de uma imagem alojada noutro
+sítio — a loja do presente, por exemplo — e manter uma lista de domínios
+obrigaria a mexer na configuração a cada presente novo. O que se perde: o
+servidor que aloja a imagem fica a saber o IP de quem visita a página. O que
+não se perde: uma imagem não corre código, e `script-src` continua fechada —
+é essa que impede um XSS.
+
+Para fechar também esta, é preciso o Firebase Storage (plano Blaze) e voltar a
+`img-src 'self' data: blob: https://firebasestorage.googleapis.com`.
+
 Não há `dangerouslySetInnerHTML`, `innerHTML`, `eval` nem `new Function` em
 lado nenhum do código — verificado por varrimento.
 
