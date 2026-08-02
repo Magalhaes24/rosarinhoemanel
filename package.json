@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:regras": "firebase emulators:exec --only firestore --project regras-teste \"node --test tests/regras.test.js\"",
+    "deploy": "node scripts/deploy.mjs",
     "regras": "firebase deploy --only firestore:rules",
     "regras:storage": "firebase deploy --only firestore:rules,storage"
   },
