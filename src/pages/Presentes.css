@@ -234,12 +234,17 @@ a.loja__item:hover {
     margin-bottom: calc(76 * var(--esp));
   }
 
+  /* Sem `flex-wrap`: com ele o browser parte a linha ANTES de deixar os
+     separadores encolher, e os três destinos ficavam em duas linhas mesmo
+     havendo espaço. Sem ele, os separadores cedem o que for preciso. */
   .destinos {
-    font-size: calc(26 * var(--pt));
-    flex-wrap: wrap;
+    font-size: calc(24 * var(--pt));
+    gap: calc(8 * var(--pt));
   }
   .destinos__sep {
-    min-width: calc(24 * var(--pt));
+    flex-basis: calc(40 * var(--pt));
+    /* Não menos do que isto, senão os losangos das pontas sobrepõem-se. */
+    min-width: calc(20 * var(--pt));
   }
 
   .contribuicao {
@@ -248,5 +253,17 @@ a.loja__item:hover {
   }
   .contribuicao__texto {
     font-size: calc(24 * var(--pt));
+  }
+}
+
+/* Nos telemóveis mais estreitos os três destinos precisam de mais folga. */
+@media (max-width: 480px) {
+  .destinos {
+    font-size: calc(21 * var(--pt));
+    gap: calc(6 * var(--pt));
+  }
+  .destinos__sep {
+    flex-basis: calc(24 * var(--pt));
+    min-width: calc(16 * var(--pt));
   }
 }
