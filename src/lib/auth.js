@@ -29,13 +29,51 @@ export function ehAdmin(utilizador) {
  * aberta indefinidamente.
  */
 export async function entrar(email, palavraPasse) {
+  if (!ADMIN_UID) {
+    // Não é uma falha de credenciais — o site é que não sabe quem é o admin.
+    // Dizer isto não revela nada sobre contas nenhumas, e poupa horas a
+    // desconfiar da palavra-passe.
+    throw new Error('sem-configuracao')
+  }
+
   await setPersistence(auth, browserSessionPersistence)
   const { user } = await signInWithEmailAndPassword(auth, email, palavraPasse)
+
   if (!ehAdmin(user)) {
     await signOut(auth)
+    // Quem chegou aqui já provou ser dono desta conta, por isso dizer-lhe que
+    // ela não é a de administração não lhe revela nada de novo.
     throw new Error('sem-permissao')
   }
+
   return user
+}
+
+/**
+ * Mensagem para o utilizador a partir do erro.
+ *
+ * Todas as falhas de credenciais dão a MESMA frase, de propósito: distinguir
+ * "email não existe" de "palavra-passe errada" deixaria enumerar contas. Já os
+ * problemas de configuração e de rede são ditos como são — não têm nada a ver
+ * com credenciais e calar-se sobre eles só faz perder tempo.
+ */
+export function mensagemDeErro(erro) {
+  switch (erro?.message || erro?.code) {
+    case 'sem-configuracao':
+      return 'A administração ainda não está configurada neste site (falta VITE_ADMIN_UID).'
+    case 'sem-permissao':
+      return 'Esta conta não tem acesso à administração.'
+    case 'auth/too-many-requests':
+      return 'Demasiadas tentativas. Espera uns minutos antes de tentar de novo.'
+    case 'auth/network-request-failed':
+      return 'Não foi possível contactar o Firebase. Verifica a ligação.'
+    case 'auth/operation-not-allowed':
+      return 'O acesso por email e palavra-passe está desligado na consola do Firebase.'
+    case 'auth/unauthorized-domain':
+      return 'Este domínio não está autorizado no Firebase (Authentication > Settings > Authorized domains).'
+    default:
+      return 'Credenciais inválidas.'
+  }
 }
 
 export function sair() {

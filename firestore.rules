@@ -13,12 +13,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ⚠️ SUBSTITUIR pelo UID da conta de administração.
-    //    Firebase Console > Authentication > Users > copiar o "User UID".
-    //    Enquanto for este valor ninguém administra nada — que é o
-    //    comportamento seguro por omissão.
+    // UID da única conta de administração.
+    // Tem de ser igual ao de storage.rules e ao da variável VITE_ADMIN_UID.
+    // Não é um segredo: identifica uma conta, não dá acesso a ela.
     function adminUid() {
-      return 'SUBSTITUIR_PELO_UID_DO_ADMIN';
+      return '8oAgew7bwjaifTOW0dN4WYfOsZB3';
     }
 
     function ehAdmin() {

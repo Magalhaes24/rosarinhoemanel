@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { entrar, sair, observarSessao, ehAdmin } from '../lib/auth.js'
+import { entrar, sair, observarSessao, ehAdmin, mensagemDeErro } from '../lib/auth.js'
 import Respostas from './admin/Respostas.jsx'
 import Loja from './admin/Loja.jsx'
 import Aparencia from './admin/Aparencia.jsx'
@@ -18,8 +18,7 @@ function Login() {
     try {
       await entrar(email, palavraPasse)
     } catch (err) {
-      // Mensagem sempre igual: não revela se o email existe.
-      setErro('Credenciais inválidas.')
+      setErro(mensagemDeErro(err))
       setEstado('idle')
       console.error(err.code || err.message)
     }
