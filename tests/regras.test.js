@@ -125,12 +125,14 @@ describe('rsvps — quem pode ler', () => {
   })
 })
 
-describe('rsvps — ninguém altera nem apaga', () => {
+describe('rsvps — só o admin altera e apaga', () => {
   before(async () => {
     await env.withSecurityRulesDisabled(async (c) => {
-      await setDoc(doc(c.firestore(), 'rsvps/fixo'), {
-        nome: 'Ana',
-        presenca: 'sim',
+      const f = c.firestore()
+      await setDoc(doc(f, 'rsvps/fixo'), { nome: 'Ana', presenca: 'sim', criadoEm: new Date() })
+      await setDoc(doc(f, 'rsvps/paraApagar'), {
+        nome: 'Rui',
+        presenca: 'nao',
         criadoEm: new Date(),
       })
     })
@@ -144,12 +146,94 @@ describe('rsvps — ninguém altera nem apaga', () => {
     await assertFails(deleteDoc(doc(convidado(), 'rsvps/fixo')))
   })
 
-  it('nem o admin altera pelo site', async () => {
-    await assertFails(updateDoc(doc(admin(), 'rsvps/fixo'), { presenca: 'nao' }))
+  it('autenticado que não é o admin não altera', async () => {
+    await assertFails(updateDoc(doc(intruso(), 'rsvps/fixo'), { presenca: 'nao' }))
   })
 
-  it('nem o admin apaga pelo site', async () => {
-    await assertFails(deleteDoc(doc(admin(), 'rsvps/fixo')))
+  it('autenticado que não é o admin não apaga', async () => {
+    await assertFails(deleteDoc(doc(intruso(), 'rsvps/fixo')))
+  })
+
+  it('o admin altera', async () => {
+    await assertSucceeds(updateDoc(doc(admin(), 'rsvps/fixo'), { presenca: 'nao' }))
+  })
+
+  it('o admin apaga', async () => {
+    await assertSucceeds(deleteDoc(doc(admin(), 'rsvps/paraApagar')))
+  })
+})
+
+describe('conteudo do site', () => {
+  before(async () => {
+    await env.withSecurityRulesDisabled(async (c) => {
+      await setDoc(doc(c.firestore(), 'conteudo/site'), { textos: { 'hero.data': 'x' } })
+    })
+  })
+
+  it('qualquer pessoa lê (é o que o site mostra)', async () => {
+    await assertSucceeds(getDoc(doc(convidado(), 'conteudo/site')))
+  })
+
+  it('convidado NÃO escreve', async () => {
+    await assertFails(setDoc(doc(convidado(), 'conteudo/site'), { textos: { a: 'b' } }))
+  })
+
+  it('autenticado que não é o admin NÃO escreve', async () => {
+    await assertFails(setDoc(doc(intruso(), 'conteudo/site'), { textos: { a: 'b' } }))
+  })
+
+  it('o admin escreve', async () => {
+    await assertSucceeds(
+      setDoc(doc(admin(), 'conteudo/site'), { textos: { 'hero.data': '6 | 12 | 2026' } })
+    )
+  })
+})
+
+describe('lista de presentes «Para a casa»', () => {
+  const item = { nome: 'Torradeira', descricao: 'Para as manhãs', preco: 40, ordem: 10 }
+
+  before(async () => {
+    await env.withSecurityRulesDisabled(async (c) => {
+      await setDoc(doc(c.firestore(), 'presentes-casa/exemplo'), item)
+    })
+  })
+
+  it('qualquer pessoa lê a lista', async () => {
+    await assertSucceeds(getDocs(collection(convidado(), 'presentes-casa')))
+  })
+
+  it('convidado NÃO acrescenta', async () => {
+    await assertFails(addDoc(collection(convidado(), 'presentes-casa'), item))
+  })
+
+  it('convidado NÃO altera', async () => {
+    await assertFails(updateDoc(doc(convidado(), 'presentes-casa/exemplo'), { reservado: true }))
+  })
+
+  it('convidado NÃO apaga', async () => {
+    await assertFails(deleteDoc(doc(convidado(), 'presentes-casa/exemplo')))
+  })
+
+  it('autenticado que não é o admin NÃO acrescenta', async () => {
+    await assertFails(addDoc(collection(intruso(), 'presentes-casa'), item))
+  })
+
+  it('o admin acrescenta', async () => {
+    await assertSucceeds(addDoc(collection(admin(), 'presentes-casa'), item))
+  })
+
+  it('o admin altera', async () => {
+    await assertSucceeds(updateDoc(doc(admin(), 'presentes-casa/exemplo'), { reservado: true }))
+  })
+
+  it('rejeita item sem nome', async () => {
+    await assertFails(addDoc(collection(admin(), 'presentes-casa'), { ...item, nome: '' }))
+  })
+
+  it('rejeita descrição acima de 1000 caracteres', async () => {
+    await assertFails(
+      addDoc(collection(admin(), 'presentes-casa'), { ...item, descricao: 'x'.repeat(1001) })
+    )
   })
 })
 

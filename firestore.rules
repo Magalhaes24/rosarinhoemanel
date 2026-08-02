@@ -2,12 +2,11 @@ rules_version = '2';
 
 // Modelo de segurança.
 //
-// Convidados (sem sessão): podem CRIAR uma resposta e mais nada. Não leem,
-// não alteram, não apagam, não listam.
+// Convidados (sem sessão): criam uma resposta e leem o conteúdo público do
+// site (textos, tema, lista de presentes). Nada mais.
 //
 // Administração: exatamente UMA conta, identificada pelo UID abaixo. É a única
-// que lê. Nem essa pode alterar ou apagar respostas a partir do site — para
-// isso usa-se a consola do Firebase, que corre com privilégios de admin.
+// que lê as respostas e a única que escreve conteúdo.
 //
 // O volume de escrita abusiva é travado pelo App Check (src/lib/firebase.js).
 
@@ -16,7 +15,7 @@ service cloud.firestore {
 
     // ⚠️ SUBSTITUIR pelo UID da conta de administração.
     //    Firebase Console > Authentication > Users > copiar o "User UID".
-    //    Enquanto for este valor, ninguém consegue ler nada — o que é o
+    //    Enquanto for este valor ninguém administra nada — que é o
     //    comportamento seguro por omissão.
     function adminUid() {
       return 'SUBSTITUIR_PELO_UID_DO_ADMIN';
@@ -43,9 +42,12 @@ service cloud.firestore {
       return request.resource.data.criadoEm == request.time;
     }
 
+    // ---------------------------------------------------------------------
+    // Respostas dos convidados
+    // ---------------------------------------------------------------------
+
     match /rsvps/{doc} {
-      allow read: if ehAdmin();
-      allow update, delete: if false;
+      allow read, update, delete: if ehAdmin();
       allow create: if
         request.resource.data.keys().hasOnly(['nome', 'presenca', 'criadoEm']) &&
         request.resource.data.keys().hasAll(['nome', 'presenca', 'criadoEm']) &&
@@ -55,8 +57,7 @@ service cloud.firestore {
     }
 
     match /presentes/{doc} {
-      allow read: if ehAdmin();
-      allow update, delete: if false;
+      allow read, update, delete: if ehAdmin();
       allow create: if
         request.resource.data.keys().hasOnly(['nome', 'presente', 'mensagem', 'criadoEm']) &&
         request.resource.data.keys().hasAll(['nome', 'presente', 'mensagem', 'criadoEm']) &&
@@ -64,6 +65,34 @@ service cloud.firestore {
         textoValido(request.resource.data.presente, 200) &&
         textoOpcional(request.resource.data.mensagem, 1000) &&
         dataDoServidor();
+    }
+
+    // ---------------------------------------------------------------------
+    // Conteúdo do site — textos, tema, secções.
+    //
+    // Leitura pública: é o que o site mostra a toda a gente. Escrita só do
+    // admin. O limite de 400 kB evita que um erro ou um abuso encha o
+    // documento; o conteúdo real anda pelos poucos kB.
+    // ---------------------------------------------------------------------
+
+    match /conteudo/{doc} {
+      allow read: if true;
+      allow write: if ehAdmin()
+        && request.resource.data.size() < 400000;
+    }
+
+    // ---------------------------------------------------------------------
+    // Lista de presentes "Para a casa" — gerida pelo admin, vista por todos.
+    // ---------------------------------------------------------------------
+
+    match /presentes-casa/{doc} {
+      allow read: if true;
+      allow create, update: if ehAdmin()
+        && textoValido(request.resource.data.nome, 160)
+        && textoOpcional(request.resource.data.get('descricao', ''), 1000)
+        && textoOpcional(request.resource.data.get('imagem', ''), 600)
+        && textoOpcional(request.resource.data.get('link', ''), 600);
+      allow delete: if ehAdmin();
     }
 
     // Tudo o resto fechado, para toda a gente.

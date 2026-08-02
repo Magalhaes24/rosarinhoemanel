@@ -206,3 +206,326 @@
 .admin__tabela tbody tr:hover {
   background: rgba(148, 177, 122, 0.07);
 }
+
+.admin__tabela input[type='text'],
+.admin__tabela select {
+  width: 100%;
+  min-width: 120px;
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 8px;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.admin__tabela tr.is-a-editar {
+  background: rgba(190, 168, 128, 0.12);
+}
+
+/* ---------------- Separadores ---------------- */
+.admin__separadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 26px 0 4px;
+  border-bottom: 1px solid rgba(41, 38, 33, 0.12);
+}
+
+.admin__separador {
+  border: none;
+  background: transparent;
+  padding: 10px 16px;
+  font-size: 15px;
+  color: #7a746c;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.admin__separador:hover {
+  color: var(--quase-preto);
+}
+
+.admin__separador.is-ativo {
+  color: var(--quase-preto);
+  border-bottom-color: var(--dourado-botao);
+  font-weight: 600;
+}
+
+/* ---------------- Botões ---------------- */
+.admin__btn {
+  border: 1px solid var(--dourado-botao);
+  background: var(--dourado-botao);
+  color: #fff;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: filter 0.15s ease, background 0.15s ease;
+}
+
+.admin__btn:hover:not(:disabled) {
+  filter: brightness(1.07);
+}
+
+.admin__btn:disabled {
+  opacity: 0.5;
+}
+
+.admin__btn--claro {
+  background: transparent;
+  color: var(--castanho);
+  border-color: var(--castanho);
+}
+
+.admin__btn--claro:hover:not(:disabled) {
+  background: var(--botao-creme);
+}
+
+.admin__btn--perigo {
+  background: transparent;
+  color: #a8392e;
+  border-color: #a8392e;
+}
+
+.admin__btn--perigo:hover:not(:disabled) {
+  background: rgba(168, 57, 46, 0.08);
+}
+
+.admin__acoes {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.admin__barra-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 22px 0 0;
+}
+
+.admin__ok {
+  color: #4d7a3a;
+  font-size: 14px;
+}
+
+.admin__seccao-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.admin__ajuda {
+  color: #7a746c;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 6px 0 18px;
+  max-width: 62ch;
+}
+
+.admin__sub {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: #7a746c;
+  margin: 26px 0 10px;
+}
+
+/* ---------------- Formulários da administração ---------------- */
+.admin__form {
+  background: #fff;
+  border: 1px solid rgba(41, 38, 33, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+}
+
+.admin__form-linha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 16px;
+}
+
+.admin__form-acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.admin__campo textarea,
+.admin__campo select {
+  width: 100%;
+  font: inherit;
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--quase-preto);
+  outline: none;
+}
+
+.admin__campo textarea {
+  resize: vertical;
+}
+
+.admin__campo--range input[type='range'] {
+  width: 100%;
+  max-width: 320px;
+}
+
+.admin__campo-etiqueta {
+  display: block;
+  font-size: 13px;
+  color: var(--castanho);
+  margin-bottom: 6px;
+}
+
+.admin__caixa-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 15px;
+}
+
+/* ---------------- Cores ---------------- */
+.admin__cores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.admin__cor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid rgba(41, 38, 33, 0.1);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.admin__cor input[type='color'] {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 6px;
+}
+
+.admin__cor code {
+  margin-left: auto;
+  font-size: 12px;
+  color: #7a746c;
+}
+
+.admin__campo code {
+  font-size: 12px;
+  color: #9a938a;
+}
+
+/* ---------------- Lista de presentes ---------------- */
+.admin__lista {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.admin__lista-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid rgba(41, 38, 33, 0.1);
+  border-radius: 12px;
+  padding: 14px;
+  flex-wrap: wrap;
+}
+
+.admin__lista-item > .admin__form {
+  flex: 1;
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.admin__lista-texto {
+  flex: 1;
+  min-width: 180px;
+}
+
+.admin__lista-texto p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #7a746c;
+}
+
+.admin__etiqueta {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 12px;
+  font-style: normal;
+  color: var(--castanho);
+  background: var(--botao-creme);
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.admin__mini-foto {
+  width: 68px;
+  height: 68px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--creme);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  color: #9a938a;
+  flex: none;
+}
+
+.admin__mini-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------------- Campo de fotografia ---------------- */
+.admin__foto {
+  margin-top: 18px;
+}
+
+.admin__foto-previa {
+  width: 140px;
+  height: 140px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--creme);
+  margin-bottom: 10px;
+}
+
+.admin__foto-previa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin__foto-acoes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin__grupo {
+  margin-bottom: 10px;
+}

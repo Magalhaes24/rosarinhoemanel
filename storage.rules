@@ -1,0 +1,33 @@
+rules_version = '2';
+
+// Fotografias carregadas pela administração.
+//
+// Leitura pública (é o que o site mostra), escrita só do admin, e só imagens
+// até 8 MB — sem isto, uma conta comprometida poderia usar o bucket como
+// alojamento de ficheiros arbitrários.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function ehAdmin() {
+      // ⚠️ Tem de ser o MESMO UID que está em firestore.rules.
+      return request.auth != null
+        && request.auth.uid == 'SUBSTITUIR_PELO_UID_DO_ADMIN';
+    }
+
+    function eImagem() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp|avif|gif)')
+        && request.resource.size < 8 * 1024 * 1024;
+    }
+
+    match /fotografias/{ficheiro} {
+      allow read: if true;
+      allow write: if ehAdmin() && eImagem();
+      allow delete: if ehAdmin();
+    }
+
+    match /{tudoOResto=**} {
+      allow read, write: if false;
+    }
+  }
+}

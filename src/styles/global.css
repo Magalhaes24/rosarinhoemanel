@@ -95,6 +95,10 @@ body {
      Quando as fontes reais estiverem em /public/fonts, voltar a 1. */
   --respiro: 1.25;
 
+  /* Multiplicadores dos tamanhos de letra, editáveis na administração. */
+  --escala-titulos: 1;
+  --escala-corpo: 1;
+
   /* Unidade de espaçamento vertical: usar em paddings, margens, alturas de
      secção e espaços entre elementos. As larguras continuam em `--pt`. */
   --esp: calc(var(--pt) * var(--respiro));
@@ -136,7 +140,7 @@ button {
 .display {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: calc(92 * var(--pt));
+  font-size: calc(92 * var(--pt) * var(--escala-titulos));
   line-height: 1;
   margin: 0;
   letter-spacing: -0.005em;
@@ -144,14 +148,14 @@ button {
 
 .corpo {
   font-family: var(--sans);
-  font-size: calc(30 * var(--pt));
+  font-size: calc(30 * var(--pt) * var(--escala-corpo));
   line-height: 1.5;
   margin: 0;
 }
 
 .corpo-sm {
   font-family: var(--sans);
-  font-size: calc(22 * var(--pt));
+  font-size: calc(22 * var(--pt) * var(--escala-corpo));
   line-height: 1.5;
   margin: 0;
 }

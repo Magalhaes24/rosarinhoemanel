@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { collection, getFirestore, onSnapshot, orderBy, query } from 'firebase/firestore'
-import { app } from '../lib/firebase.js'
 import { entrar, sair, observarSessao, ehAdmin } from '../lib/auth.js'
+import Respostas from './admin/Respostas.jsx'
+import Loja from './admin/Loja.jsx'
+import Aparencia from './admin/Aparencia.jsx'
 import './Admin.css'
 
 function Login() {
@@ -61,35 +62,15 @@ function Login() {
   )
 }
 
-const db = getFirestore(app)
-
-function useColecao(nome) {
-  const [itens, setItens] = useState(null)
-  const [erro, setErro] = useState('')
-
-  useEffect(() => {
-    const q = query(collection(db, nome), orderBy('criadoEm', 'desc'))
-    return onSnapshot(
-      q,
-      (snap) => setItens(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
-      (e) => setErro(e.message)
-    )
-  }, [nome])
-
-  return { itens, erro }
-}
-
-function dataPt(ts) {
-  if (!ts?.toDate) return '—'
-  return ts.toDate().toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })
-}
+const SEPARADORES = [
+  { id: 'respostas', nome: 'Respostas' },
+  { id: 'loja', nome: 'Lista de presentes' },
+  { id: 'textos', nome: 'Textos' },
+  { id: 'tema', nome: 'Aparência' },
+]
 
 function Painel({ utilizador }) {
-  const rsvps = useColecao('rsvps')
-  const presentes = useColecao('presentes')
-
-  const vem = rsvps.itens?.filter((r) => r.presenca === 'sim').length ?? 0
-  const naoVem = rsvps.itens?.filter((r) => r.presenca === 'nao').length ?? 0
+  const [separador, setSeparador] = useState('respostas')
 
   return (
     <div className="admin__painel">
@@ -103,84 +84,24 @@ function Painel({ utilizador }) {
         </div>
       </header>
 
-      <section className="admin__resumo">
-        <div className="admin__cartao">
-          <strong>{rsvps.itens?.length ?? '—'}</strong>
-          <span>respostas</span>
-        </div>
-        <div className="admin__cartao">
-          <strong>{vem}</strong>
-          <span>vêm</span>
-        </div>
-        <div className="admin__cartao">
-          <strong>{naoVem}</strong>
-          <span>não podem</span>
-        </div>
-        <div className="admin__cartao">
-          <strong>{presentes.itens?.length ?? '—'}</strong>
-          <span>presentes</span>
-        </div>
-      </section>
+      <nav className="admin__separadores" aria-label="Secções da administração">
+        {SEPARADORES.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            className={'admin__separador' + (separador === s.id ? ' is-ativo' : '')}
+            onClick={() => setSeparador(s.id)}
+            aria-current={separador === s.id ? 'page' : undefined}
+          >
+            {s.nome}
+          </button>
+        ))}
+      </nav>
 
-      <section className="admin__seccao">
-        <h2>Confirmações de presença</h2>
-        {rsvps.erro && <p className="admin__erro">{rsvps.erro}</p>}
-        {!rsvps.itens && !rsvps.erro && <p className="admin__vazio">A carregar…</p>}
-        {rsvps.itens?.length === 0 && <p className="admin__vazio">Ainda sem respostas.</p>}
-        {rsvps.itens?.length > 0 && (
-          <div className="admin__tabela-scroll">
-            <table className="admin__tabela">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Presença</th>
-                  <th>Quando</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rsvps.itens.map((r) => (
-                  <tr key={r.id}>
-                    <td>{r.nome}</td>
-                    <td>{r.presenca === 'sim' ? 'Vem' : 'Não pode'}</td>
-                    <td>{dataPt(r.criadoEm)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-
-      <section className="admin__seccao">
-        <h2>Presentes</h2>
-        {presentes.erro && <p className="admin__erro">{presentes.erro}</p>}
-        {!presentes.itens && !presentes.erro && <p className="admin__vazio">A carregar…</p>}
-        {presentes.itens?.length === 0 && <p className="admin__vazio">Ainda sem presentes.</p>}
-        {presentes.itens?.length > 0 && (
-          <div className="admin__tabela-scroll">
-            <table className="admin__tabela">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Presente</th>
-                  <th>Mensagem</th>
-                  <th>Quando</th>
-                </tr>
-              </thead>
-              <tbody>
-                {presentes.itens.map((p) => (
-                  <tr key={p.id}>
-                    <td>{p.nome}</td>
-                    <td>{p.presente}</td>
-                    <td>{p.mensagem}</td>
-                    <td>{dataPt(p.criadoEm)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+      {separador === 'respostas' && <Respostas />}
+      {separador === 'loja' && <Loja />}
+      {separador === 'textos' && <Aparencia separador="textos" />}
+      {separador === 'tema' && <Aparencia separador="tema" />}
     </div>
   )
 }
@@ -199,6 +120,8 @@ export default function Admin() {
   }
 
   return (
-    <main className="admin">{ehAdmin(utilizador) ? <Painel utilizador={utilizador} /> : <Login />}</main>
+    <main className="admin">
+      {ehAdmin(utilizador) ? <Painel utilizador={utilizador} /> : <Login />}
+    </main>
   )
 }

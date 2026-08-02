@@ -13,7 +13,7 @@
    contrário as margens colapsam e as secções encolhem. */
 #casa {
   padding-top: calc(66 * var(--esp));
-  padding-bottom: calc(400 * var(--esp));
+  padding-bottom: calc(130 * var(--esp));
 }
 
 #lua {
@@ -28,6 +28,102 @@
 
 #lua .presentes__titulo {
   margin-bottom: calc(130 * var(--esp));
+}
+
+/* ---------------- Lista de presentes "Para a casa" ---------------- */
+.loja {
+  list-style: none;
+  margin: calc(70 * var(--esp)) auto 0;
+  padding: 0;
+  max-width: calc(940 * var(--pt));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(210 * var(--pt)), 1fr));
+  gap: calc(34 * var(--esp)) calc(30 * var(--pt));
+}
+
+.loja__vazio {
+  margin: calc(70 * var(--esp)) 0 0;
+  text-align: center;
+  font-family: var(--form-serif);
+  font-size: calc(22 * var(--pt) * var(--escala-corpo));
+  color: var(--castanho);
+}
+
+.loja__item {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+a.loja__item:hover {
+  transform: translateY(calc(-4 * var(--pt)));
+}
+
+.loja__item.is-reservado {
+  opacity: 0.55;
+}
+
+.loja__imagem {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: calc(6 * var(--pt));
+  background: #fff;
+}
+
+.loja__imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.loja__sem-imagem {
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(141, 112, 80, 0.06) 0,
+    rgba(141, 112, 80, 0.06) calc(8 * var(--pt)),
+    transparent calc(8 * var(--pt)),
+    transparent calc(16 * var(--pt))
+  );
+}
+
+.loja__selo {
+  position: absolute;
+  top: calc(10 * var(--pt));
+  left: calc(10 * var(--pt));
+  background: var(--castanho-escuro);
+  color: var(--creme);
+  font-family: var(--sans);
+  font-size: calc(13 * var(--pt));
+  padding: calc(4 * var(--esp)) calc(10 * var(--pt));
+  border-radius: calc(20 * var(--pt));
+}
+
+.loja__nome {
+  font-family: var(--form-serif);
+  font-weight: 700;
+  font-size: calc(20 * var(--pt) * var(--escala-corpo));
+  color: var(--castanho-escuro);
+  margin: calc(14 * var(--esp)) 0 0;
+}
+
+.loja__descricao {
+  font-family: var(--sans);
+  font-size: calc(16 * var(--pt) * var(--escala-corpo));
+  line-height: 1.45;
+  color: var(--castanho);
+  margin: calc(6 * var(--esp)) 0 0;
+}
+
+.loja__preco {
+  font-family: var(--form-serif);
+  font-size: calc(18 * var(--pt) * var(--escala-corpo));
+  color: var(--dourado);
+  margin: calc(8 * var(--esp)) 0 0;
 }
 
 /* ---------------- Fita de destinos ---------------- */

@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from '../lib/router.jsx'
 import { caminho } from '../lib/caminho.js'
+import { useTexto } from '../lib/conteudo.jsx'
 import './Nav.css'
 
 const links = [
-  { to: '/', label: 'Por onde começar?' },
-  { to: '/noivos', label: 'Quem são os noivos?' },
-  { to: '/presentes', label: 'O que dar?' },
+  { to: '/', chave: 'nav.inicio' },
+  { to: '/noivos', chave: 'nav.noivos' },
+  { to: '/presentes', chave: 'nav.presentes' },
 ]
 
 export default function Nav() {
+  const t = useTexto()
   const [deslocada, setDeslocada] = useState(false)
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function Nav() {
             end={l.to === '/'}
             className={({ isActive }) => 'nav__link' + (isActive ? ' is-active' : '')}
           >
-            {l.label}
+            {t(l.chave)}
           </NavLink>
         ))}
       </nav>

@@ -1,19 +1,23 @@
 import { Link } from '../lib/router.jsx'
 import { caminho } from '../lib/caminho.js'
+import { useTexto } from '../lib/conteudo.jsx'
 import RsvpForm from '../components/RsvpForm.jsx'
 import './Home.css'
 
 export default function Home() {
+  const t = useTexto()
+
   return (
     <main className="home">
       {/* ---------- Hero ---------- */}
       <section className="hero">
         <div className="hero__panel">
           <h1 className="display hero__nomes">
-            Rosarinho
-            <br />e Manel
+            {t('hero.nome1')}
+            <br />
+            {t('hero.nome2')}
           </h1>
-          <p className="hero__data">5 | 12 | 2026</p>
+          <p className="hero__data">{t('hero.data')}</p>
         </div>
         <div className="hero__foto">
           <img src={caminho('/images/hero-casal.png')} alt="Rosarinho e Manel" />
@@ -24,9 +28,9 @@ export default function Home() {
       <section className="banda banda--missa">
         <img className="banda__bg" src={caminho('/images/igreja.png')} alt="" data-revelar-zoom />
         <div className="banda__caixa" data-revelar>
-          <h2 className="display banda__titulo">Missa</h2>
-          <p className="corpo banda__local">Igreja de Santa Isabel, Lisboa</p>
-          <p className="corpo banda__hora">12:30</p>
+          <h2 className="display banda__titulo">{t('missa.titulo')}</h2>
+          <p className="corpo banda__local">{t('missa.local')}</p>
+          <p className="corpo banda__hora">{t('missa.hora')}</p>
         </div>
       </section>
 
@@ -34,18 +38,18 @@ export default function Home() {
       <section className="banda banda--copo">
         <img className="banda__bg" src={caminho('/images/quinta.png')} alt="" data-revelar-zoom />
         <div className="banda__caixa" data-revelar>
-          <h2 className="display banda__titulo">Copo d’água</h2>
-          <p className="corpo banda__local">Quinta de D. Carlos, Alenquer</p>
-          <p className="corpo banda__hora">14:30</p>
+          <h2 className="display banda__titulo">{t('copo.titulo')}</h2>
+          <p className="corpo banda__local">{t('copo.local')}</p>
+          <p className="corpo banda__hora">{t('copo.hora')}</p>
         </div>
       </section>
 
       {/* ---------- Confirmação de presença ---------- */}
       <section className="rsvp" id="rsvp">
         <p className="corpo rsvp__texto" data-revelar>
-          <strong>Gostávamos muito que fizessem parte deste dia!</strong>
+          <strong>{t('rsvp.destaque')}</strong>
           <br />
-          Se ainda não o fizeram, pedimos que confirmem aqui a vossa presença.
+          {t('rsvp.texto')}
         </p>
         <div className="rsvp__cartao" data-revelar style={{ '--atraso': '0.14s' }}>
           <RsvpForm />
@@ -56,11 +60,10 @@ export default function Home() {
       <section className="historia">
         <div className="historia__texto" data-revelar>
           <p className="corpo">
-            Deixamos aqui uma parte da nossa história,{' '}
-            <strong>para que nos possam conhecer melhor.</strong>
+            {t('historia.texto')} <strong>{t('historia.destaque')}</strong>
           </p>
           <Link className="botao-aqui" to="/noivos">
-            Aqui!
+            {t('historia.botao')}
           </Link>
         </div>
         <div className="historia__arco" data-revelar style={{ '--atraso': '0.16s' }}>
@@ -71,14 +74,14 @@ export default function Home() {
       {/* ---------- Lista de presentes ---------- */}
       <section className="presentes-cta">
         <h2 className="display presentes-cta__titulo" data-revelar>
-          Lista de presentes
+          {t('presentes.titulo')}
         </h2>
         <div className="presentes-cta__botoes" data-revelar style={{ '--atraso': '0.16s' }}>
           <Link className="botao-contorno" to="/presentes#casa">
-            Para a casa
+            {t('presentes.botaoCasa')}
           </Link>
           <Link className="botao-contorno" to="/presentes#lua">
-            Lua de mel
+            {t('presentes.botaoLua')}
           </Link>
         </div>
       </section>
@@ -86,14 +89,16 @@ export default function Home() {
       {/* ---------- Drivers ---------- */}
       <section className="drivers">
         <p className="corpo drivers__texto" data-revelar>
-          Para que todos se possam divertir sem preocupações, deixamos aqui um serviço de
-          drivers.
+          {t('drivers.texto')}
           <br />
-          Para organizarem tudo atempadamente falem com o{' '}
+          {t('drivers.contactoTexto')}{' '}
           <strong>
-            Manel Sousa Guedes -{' '}
-            <a href="tel:+351967590817" className="drivers__tel">
-              967 590 817
+            {t('drivers.contactoNome')} -{' '}
+            <a
+              href={`tel:+351${t('drivers.telefone').replace(/\s/g, '')}`}
+              className="drivers__tel"
+            >
+              {t('drivers.telefone')}
             </a>
           </strong>
         </p>
@@ -109,11 +114,14 @@ export default function Home() {
       {/* ---------- Onde ficar ---------- */}
       <section className="hoteis">
         <h2 className="display hoteis__titulo" data-revelar>
-          Onde
-          <br />
-          ficar?
-          <br />
-          Hoteis
+          {t('hoteis.titulo')
+            .split('\n')
+            .map((linha, i) => (
+              <span key={i}>
+                {linha}
+                <br />
+              </span>
+            ))}
         </h2>
       </section>
     </main>

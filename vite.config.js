@@ -12,8 +12,9 @@ const CSP = [
   "script-src 'self' https://www.googletagmanager.com https://www.google.com https://www.gstatic.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com",
-  "connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseinstallations.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+  // As fotografias carregadas pela administração vivem no Firebase Storage.
+  "img-src 'self' data: blob: https://firebasestorage.googleapis.com https://*.firebasestorage.app https://www.google-analytics.com https://www.googletagmanager.com",
+  "connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseinstallations.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebasestorage.googleapis.com https://*.firebasestorage.app https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
   "frame-src https://www.google.com",
   "worker-src 'self' blob:",
   "base-uri 'self'",
