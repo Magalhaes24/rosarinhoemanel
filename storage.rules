@@ -12,7 +12,7 @@ service firebase.storage {
     function ehAdmin() {
       // Tem de ser o MESMO UID que está em firestore.rules.
       return request.auth != null
-        && request.auth.uid == '8oAgew7bwjaifTOW0dN4WYfOsZB3';
+        && request.auth.uid == 'bzMecKwuhHNovXKZme0OFmqQ1UF3';
     }
 
     function eImagem() {

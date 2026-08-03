@@ -8,13 +8,16 @@ import './Img.css'
 /**
  * Uma fotografia do site.
  *
- * Fora do modo de edição é um `<img>` e nada mais — a marcação fica igual à
- * que se mediu contra o rascunho. Em edição ganha um botão por cima para a
- * trocar, por ficheiro ou por endereço.
+ * Fora do modo de edição é um `<img>` e nada mais. Em edição ganha um botão
+ * para a trocar — mas o embrulho usa `display: contents`, por isso não cria
+ * caixa nenhuma e o `<img>` mantém exatamente o lugar que tinha no layout.
+ * Sem isso, uma fotografia de fundo (que é absoluta) passava a ocupar espaço
+ * e empurrava o resto da secção para baixo.
  *
- * As props extra (className, alt, loading…) passam para o `<img>`.
+ * `ancora` diz onde fica o botão dentro do contentor: 'topo' (por omissão),
+ * 'centro' ou 'fundo'.
  */
-export default function Img({ k, alt = '', ...resto }) {
+export default function Img({ k, alt = '', ancora = 'topo', ...resto }) {
   const { img, imagens } = useConteudo()
   const { emEdicao, alterarImagem } = useEdicao()
   const [aberto, setAberto] = useState(false)
@@ -31,7 +34,7 @@ export default function Img({ k, alt = '', ...resto }) {
       {imagem}
       <button
         type="button"
-        className="img-edit__botao"
+        className={`img-edit__botao img-edit__botao--${ancora}`}
         onClick={() => setAberto((v) => !v)}
         title={k}
       >

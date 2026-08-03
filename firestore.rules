@@ -17,7 +17,7 @@ service cloud.firestore {
     // Tem de ser igual ao de storage.rules e ao da variável VITE_ADMIN_UID.
     // Não é um segredo: identifica uma conta, não dá acesso a ela.
     function adminUid() {
-      return '8oAgew7bwjaifTOW0dN4WYfOsZB3';
+      return 'bzMecKwuhHNovXKZme0OFmqQ1UF3';
     }
 
     function ehAdmin() {
