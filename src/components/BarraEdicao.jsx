@@ -9,7 +9,8 @@ const MENSAGENS = {
 }
 
 export default function BarraEdicao() {
-  const { podeEditar, emEdicao, alternar, porGravar, gravar, descartar, estado } = useEdicao()
+  const { podeEditar, emEdicao, alternar, porGravar, resumo, gravar, descartar, estado } =
+    useEdicao()
 
   // Invisível para quem não é o admin — que é toda a gente.
   if (!podeEditar) return null
@@ -22,11 +23,7 @@ export default function BarraEdicao() {
 
       {emEdicao && (
         <>
-          <span className="barra-edicao__estado">
-            {porGravar
-              ? `${porGravar} alteração${porGravar > 1 ? 'ões' : ''} por gravar`
-              : 'Sem alterações'}
-          </span>
+          <span className="barra-edicao__estado">{resumo}</span>
 
           <button
             type="button"

@@ -70,8 +70,19 @@ export function ConteudoProviderEdicao({ children }) {
     [setRascunhoPaginas]
   )
 
-  const porGravar =
-    Object.keys(rascunhoTextos || {}).length + Object.keys(rascunhoPaginas || {}).length
+  const nTextos = Object.keys(rascunhoTextos || {}).length
+  const nPaginas = Object.keys(rascunhoPaginas || {}).length
+  const porGravar = nTextos + nPaginas
+
+  /** «2 textos e 1 página por gravar» — conta as duas coisas em separado,
+      porque uma alteração de ordem afeta a página toda e não um texto. */
+  const resumo = (() => {
+    if (!porGravar) return 'Sem alterações'
+    const partes = []
+    if (nTextos) partes.push(`${nTextos} ${nTextos === 1 ? 'texto' : 'textos'}`)
+    if (nPaginas) partes.push(`${nPaginas} ${nPaginas === 1 ? 'página' : 'páginas'}`)
+    return `${partes.join(' e ')} por gravar`
+  })()
 
   const descartar = useCallback(() => {
     setRascunhoTextos(null)
@@ -140,11 +151,23 @@ export function ConteudoProviderEdicao({ children }) {
       alterarTexto,
       alterarPagina,
       porGravar,
+      resumo,
       gravar,
       descartar,
       estado,
     }),
-    [utilizador, podeEditar, emEdicao, alterarTexto, alterarPagina, porGravar, gravar, descartar, estado]
+    [
+      utilizador,
+      podeEditar,
+      emEdicao,
+      alterarTexto,
+      alterarPagina,
+      porGravar,
+      resumo,
+      gravar,
+      descartar,
+      estado,
+    ]
   )
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>
