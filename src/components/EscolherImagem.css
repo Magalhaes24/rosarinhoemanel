@@ -73,6 +73,19 @@
   flex-wrap: wrap;
 }
 
+.escolher-img__barra {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(41, 38, 33, 0.12);
+  overflow: hidden;
+}
+
+.escolher-img__barra div {
+  height: 100%;
+  background: var(--dourado-botao);
+  transition: width 0.2s ease;
+}
+
 .escolher-img__erro {
   margin: 0;
   font-size: 13px;

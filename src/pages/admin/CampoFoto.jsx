@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { enviarFotografia } from '../../lib/armazenamento.js'
+import { enviarFotografia, mensagemDeEnvio } from '../../lib/armazenamento.js'
 
 /**
  * Campo de imagem, por duas vias:
@@ -27,12 +27,7 @@ export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
       aoMudar(await enviarFotografia(ficheiro))
       setEstado('idle')
     } catch (err) {
-      const codigo = err?.code || ''
-      setErro(
-        codigo.includes('unauthorized') || codigo.includes('unknown')
-          ? 'Não foi possível enviar. Se o Firebase Storage ainda não está ativo, usa antes «Colar endereço».'
-          : err.message || 'Não foi possível enviar a imagem.'
-      )
+      setErro(mensagemDeEnvio(err))
       setEstado('idle')
     } finally {
       if (input.current) input.current.value = ''

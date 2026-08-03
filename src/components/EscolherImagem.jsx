@@ -15,6 +15,7 @@ export default function EscolherImagem({ aoEscolher, aoRepor, aoFechar, temOrigi
   const [estado, setEstado] = useState('idle')
   const [erro, setErro] = useState('')
   const [endereco, setEndereco] = useState('')
+  const [progresso, setProgresso] = useState(0)
 
   // Fecha ao clicar fora ou com Esc.
   useEffect(() => {
@@ -35,19 +36,17 @@ export default function EscolherImagem({ aoEscolher, aoRepor, aoFechar, temOrigi
     if (!ficheiro) return
     setEstado('a-enviar')
     setErro('')
+    setProgresso(0)
     try {
       const { enviarFotografia } = await import('../lib/armazenamento.js')
-      aoEscolher(await enviarFotografia(ficheiro))
+      aoEscolher(await enviarFotografia(ficheiro, setProgresso))
       aoFechar()
     } catch (err) {
-      const codigo = err?.code || ''
-      setErro(
-        codigo.includes('unauthorized') || codigo.includes('unknown')
-          ? 'O Firebase Storage não está ativo neste projeto. Usa antes um endereço.'
-          : err.message || 'Não foi possível enviar a imagem.'
-      )
+      const { mensagemDeEnvio } = await import('../lib/armazenamento.js')
+      setErro(mensagemDeEnvio(err))
       setEstado('idle')
     } finally {
+      setProgresso(0)
       if (input.current) input.current.value = ''
     }
   }
@@ -71,8 +70,16 @@ export default function EscolherImagem({ aoEscolher, aoRepor, aoFechar, temOrigi
         onClick={() => input.current?.click()}
         disabled={estado === 'a-enviar'}
       >
-        {estado === 'a-enviar' ? 'A enviar…' : 'Enviar ficheiro'}
+        {estado === 'a-enviar'
+          ? `A enviar… ${Math.round(progresso * 100)}%`
+          : 'Enviar ficheiro'}
       </button>
+
+      {estado === 'a-enviar' && (
+        <div className="escolher-img__barra">
+          <div style={{ width: `${Math.max(3, progresso * 100)}%` }} />
+        </div>
+      )}
 
       <div className="escolher-img__linha">
         <input
