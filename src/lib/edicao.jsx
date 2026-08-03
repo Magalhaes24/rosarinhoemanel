@@ -78,7 +78,9 @@ export function ConteudoProviderEdicao({ children }) {
     }
   }, [])
 
-  const podeEditar = Boolean(utilizador)
+  const podeEditar =
+    Boolean(utilizador) ||
+    (import.meta.env.DEV && localStorage.getItem('FORCAR_EDICAO_TESTE') === '1')
   const emEdicao = podeEditar && ligado
 
   // Sair do modo de edição quando a sessão acaba.
