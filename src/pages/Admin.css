@@ -328,6 +328,20 @@
   max-width: 62ch;
 }
 
+.admin__ajuda--destaque {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  max-width: none;
+  margin-top: 22px;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 12px;
+  color: var(--quase-preto);
+}
+
 .admin__sub {
   font-family: var(--sans);
   font-size: 15px;

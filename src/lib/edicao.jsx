@@ -33,19 +33,43 @@ export function ConteudoProviderEdicao({ children }) {
   const [ligado, setLigado] = useState(false)
   const [estado, setEstado] = useState('idle')
 
-  // Sessão — só para quem já entrou alguma vez na administração.
+  /**
+   * Sessão — só se carrega o SDK de autenticação para quem já entrou alguma
+   * vez na administração.
+   *
+   * Fica à escuta do evento de entrada porque a decisão de carregar é tomada
+   * uma vez, ao montar: sem isto, quem entrasse em /admin e navegasse para o
+   * site pela barra de menu não veria a barra de edição até recarregar a
+   * página inteira.
+   */
   useEffect(() => {
-    let cancelar = () => {}
-    if (typeof localStorage === 'undefined') return
-    if (!localStorage.getItem(MARCA_ADMIN)) return
+    let cancelarSessao = () => {}
+    let montado = true
 
-    Promise.all([import('./auth.js')])
-      .then(([auth]) => {
-        cancelar = auth.observarSessao((u) => setUtilizador(auth.ehAdmin(u) ? u : null))
-      })
-      .catch(() => {})
+    function subscrever() {
+      if (typeof localStorage === 'undefined') return
+      if (!localStorage.getItem(MARCA_ADMIN)) return
 
-    return () => cancelar()
+      import('./auth.js')
+        .then((auth) => {
+          if (!montado) return
+          cancelarSessao()
+          cancelarSessao = auth.observarSessao((u) => setUtilizador(auth.ehAdmin(u) ? u : null))
+        })
+        .catch(() => {})
+    }
+
+    subscrever()
+    window.addEventListener('admin-entrou', subscrever)
+    // Login noutro separador do mesmo browser.
+    window.addEventListener('storage', subscrever)
+
+    return () => {
+      montado = false
+      cancelarSessao()
+      window.removeEventListener('admin-entrou', subscrever)
+      window.removeEventListener('storage', subscrever)
+    }
   }, [])
 
   const podeEditar = Boolean(utilizador)

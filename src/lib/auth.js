@@ -41,11 +41,7 @@ export async function entrar(email, palavraPasse) {
 
   if (!ehAdmin(user)) {
     await signOut(auth)
-    try {
-      localStorage.removeItem('ja-entrou-como-admin')
-    } catch {
-      /* modo privado */
-    }
+    marcarAdmin(false)
     // Quem chegou aqui já provou ser dono desta conta, por isso dizer-lhe que
     // ela não é a de administração não lhe revela nada de novo.
     throw new Error('sem-permissao')
@@ -55,11 +51,8 @@ export async function entrar(email, palavraPasse) {
   // pista de desempenho — evita descarregar o SDK de autenticação para os
   // convidados. Quem a forjar vê os botões e mais nada: gravar depende das
   // regras do Firestore, que correm no servidor.
-  try {
-    localStorage.setItem('ja-entrou-como-admin', '1')
-  } catch {
-    /* modo privado */
-  }
+  marcarAdmin(true)
+  window.dispatchEvent(new Event(EVENTO_ENTROU))
 
   return user
 }
@@ -91,10 +84,33 @@ export function mensagemDeErro(erro) {
   }
 }
 
-export function sair() {
-  return signOut(auth)
+export const EVENTO_ENTROU = 'admin-entrou'
+
+export function marcarAdmin(sim) {
+  try {
+    if (sim) localStorage.setItem('ja-entrou-como-admin', '1')
+    else localStorage.removeItem('ja-entrou-como-admin')
+  } catch {
+    /* modo privado */
+  }
 }
 
+export async function sair() {
+  marcarAdmin(false)
+  await signOut(auth)
+}
+
+/**
+ * A marca é reposta aqui e não só no `entrar()`: quem já tinha sessão antes
+ * desta funcionalidade existir nunca chegaria a tê-la, e a barra de edição
+ * ficava invisível sem razão aparente.
+ */
 export function observarSessao(callback) {
-  return onAuthStateChanged(auth, callback)
+  return onAuthStateChanged(auth, (utilizador) => {
+    if (ehAdmin(utilizador)) {
+      marcarAdmin(true)
+      window.dispatchEvent(new Event(EVENTO_ENTROU))
+    }
+    callback(utilizador)
+  })
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from '../lib/router.jsx'
 import { entrar, sair, observarSessao, ehAdmin, mensagemDeErro } from '../lib/auth.js'
 import Respostas from './admin/Respostas.jsx'
 import Loja from './admin/Loja.jsx'
@@ -84,6 +85,14 @@ function Painel({ utilizador }) {
           </button>
         </div>
       </header>
+
+      <p className="admin__ajuda admin__ajuda--destaque">
+        Podes editar os textos e a ordem das secções diretamente nas páginas:
+        abre o site e usa a barra que aparece em baixo.{' '}
+        <Link to="/" className="admin__btn admin__btn--claro">
+          Ir para o site e editar
+        </Link>
+      </p>
 
       <nav className="admin__separadores" aria-label="Secções da administração">
         {SEPARADORES.map((s) => (
