@@ -1,7 +1,19 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { app } from './firebase.js'
-import { temaPadrao, textosPadrao, variavelCss } from '../data/conteudoPadrao.js'
+import { temaPadrao, textosPadrao, imagensPadrao, variavelCss } from '../data/conteudoPadrao.js'
 import { paginasPadrao } from '../data/paginasPadrao.js'
+import { galeriasPadrao } from '../data/galeriasPadrao.js'
+import { caminho } from './caminho.js'
+
+/**
+ * Endereços que começam por `/` são ficheiros do próprio site e precisam do
+ * prefixo de instalação; os que vêm do Storage ou de outro sítio já são
+ * absolutos e passam intactos.
+ */
+export function resolverImagem(src) {
+  if (!src) return ''
+  return /^(https?:|data:|blob:)/i.test(src) ? src : caminho(src)
+}
 
 /**
  * Conteúdo do site: tema, textos e lista de presentes.
@@ -57,11 +69,15 @@ export function ConteudoProvider({ children }) {
   const [tema, setTema] = useState({ ...temaPadrao, ...(guardado?.tema || {}) })
   const [textos, setTextos] = useState({ ...textosPadrao, ...(guardado?.textos || {}) })
   const [paginas, setPaginas] = useState({ ...paginasPadrao, ...(guardado?.paginas || {}) })
+  const [imagens, setImagens] = useState({ ...imagensPadrao, ...(guardado?.imagens || {}) })
+  const [galerias, setGalerias] = useState({ ...galeriasPadrao, ...(guardado?.galerias || {}) })
   // Alterações do modo de edição, ainda por gravar. Sobrepõem-se ao que está
   // na base de dados para o admin ver o resultado enquanto edita, e
   // desaparecem se ele descartar.
   const [rascunhoTextos, setRascunhoTextos] = useState(null)
   const [rascunhoPaginas, setRascunhoPaginas] = useState(null)
+  const [rascunhoImagens, setRascunhoImagens] = useState(null)
+  const [rascunhoGalerias, setRascunhoGalerias] = useState(null)
 
   const [presentesCasa, setPresentesCasa] = useState(null)
   // Distingue «ainda não chegou» de «chegou vazio» de «não foi possível ler».
@@ -101,10 +117,14 @@ export function ConteudoProvider({ children }) {
             // As páginas substituem-se inteiras, não se fundem: uma lista de
             // secções fundida com a original daria uma ordem sem sentido.
             setPaginas({ ...paginasPadrao, ...(d.paginas || {}) })
+            setImagens({ ...imagensPadrao, ...(d.imagens || {}) })
+            setGalerias({ ...galeriasPadrao, ...(d.galerias || {}) })
             guardarCache({
               tema: d.tema || {},
               textos: d.textos || {},
               paginas: d.paginas || {},
+              imagens: d.imagens || {},
+              galerias: d.galerias || {},
             })
           },
           () => {} // sem conteúdo gravado ainda, ou sem rede: fica o padrão
@@ -142,25 +162,52 @@ export function ConteudoProvider({ children }) {
   const valor = useMemo(() => {
     const textosEfetivos = rascunhoTextos ? { ...textos, ...rascunhoTextos } : textos
     const paginasEfetivas = rascunhoPaginas ? { ...paginas, ...rascunhoPaginas } : paginas
+    const imagensEfetivas = rascunhoImagens ? { ...imagens, ...rascunhoImagens } : imagens
+    const galeriasEfetivas = rascunhoGalerias ? { ...galerias, ...rascunhoGalerias } : galerias
 
     return {
       tema,
       textos: textosEfetivos,
       paginas: paginasEfetivas,
+      imagens: imagensEfetivas,
+      galerias: galeriasEfetivas,
       presentesCasa,
       erroPresentes,
+
       /** t('hero.nome1') — devolve o texto atual, ou a própria chave se faltar. */
       t: (chave) => textosEfetivos[chave] ?? chave,
+      /** img('hero.casal') — endereço já com o prefixo de instalação. */
+      img: (chave) => resolverImagem(imagensEfetivas[chave] ?? imagensPadrao[chave]),
+      /** galeria('infancia') — lista de endereços já resolvidos. */
+      galeria: (nome) => (galeriasEfetivas[nome] || []).map(resolverImagem),
 
       // Usados pelo modo de edição (src/lib/edicao.jsx).
       textosGravados: textos,
       paginasGravadas: paginas,
+      imagensGravadas: imagens,
+      galeriasGravadas: galerias,
       rascunhoTextos,
       setRascunhoTextos,
       rascunhoPaginas,
       setRascunhoPaginas,
+      rascunhoImagens,
+      setRascunhoImagens,
+      rascunhoGalerias,
+      setRascunhoGalerias,
     }
-  }, [tema, textos, paginas, rascunhoTextos, rascunhoPaginas, presentesCasa, erroPresentes])
+  }, [
+    tema,
+    textos,
+    paginas,
+    imagens,
+    galerias,
+    rascunhoTextos,
+    rascunhoPaginas,
+    rascunhoImagens,
+    rascunhoGalerias,
+    presentesCasa,
+    erroPresentes,
+  ])
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>
 }

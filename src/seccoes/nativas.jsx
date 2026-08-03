@@ -1,12 +1,12 @@
 import { Fragment } from 'react'
 import { Link } from '../lib/router.jsx'
-import { caminho } from '../lib/caminho.js'
 import { useConteudo, useTexto } from '../lib/conteudo.jsx'
 import T from '../components/T.jsx'
-import Carousel from '../components/Carousel.jsx'
+import Img from '../components/Img.jsx'
+import Galeria from '../components/Galeria.jsx'
 import RsvpForm from '../components/RsvpForm.jsx'
 import PresenteForm from '../components/PresenteForm.jsx'
-import { fotosInfancia, fotosNamoro, fotosLuaDeMel, molduras2022 } from '../data/fotos.js'
+import { molduras2022 } from '../data/fotos.js'
 
 /**
  * As secções desenhadas a partir do rascunho.
@@ -31,7 +31,7 @@ function Hero() {
         <p className="hero__data"><T k="hero.data" /></p>
       </div>
       <div className="hero__foto">
-        <img src={caminho('/images/hero-casal.png')} alt="Rosarinho e Manel" />
+        <Img k="hero.casal" alt="Rosarinho e Manel" />
       </div>
     </section>
   )
@@ -40,7 +40,7 @@ function Hero() {
 function BandaMissa() {
   return (
     <section className="banda banda--missa">
-      <img className="banda__bg" src={caminho('/images/igreja.png')} alt="" data-revelar-zoom />
+      <Img k="missa.fundo" className="banda__bg" alt="" data-revelar-zoom />
       <div className="banda__caixa" data-revelar>
         <h2 className="display banda__titulo"><T k="missa.titulo" /></h2>
         <p className="corpo banda__local"><T k="missa.local" /></p>
@@ -53,7 +53,7 @@ function BandaMissa() {
 function BandaCopo() {
   return (
     <section className="banda banda--copo">
-      <img className="banda__bg" src={caminho('/images/quinta.png')} alt="" data-revelar-zoom />
+      <Img k="copo.fundo" className="banda__bg" alt="" data-revelar-zoom />
       <div className="banda__caixa" data-revelar>
         <h2 className="display banda__titulo"><T k="copo.titulo" /></h2>
         <p className="corpo banda__local"><T k="copo.local" /></p>
@@ -90,7 +90,7 @@ function Historia() {
         </Link>
       </div>
       <div className="historia__arco" data-revelar style={{ '--atraso': '0.16s' }}>
-        <img src={caminho('/images/casal-arco.jpeg')} alt="Rosarinho e Manel" />
+        <Img k="historia.arco" alt="Rosarinho e Manel" />
       </div>
     </section>
   )
@@ -129,13 +129,13 @@ function Drivers() {
           </a>
         </strong>
       </p>
-      <img
-        className="drivers__carros"
-        src={caminho('/images/carros.png')}
-        alt=""
-        data-revelar
-        style={{ '--atraso': '0.12s' }}
-      />
+      <Img
+          k="drivers.carros"
+          className="drivers__carros"
+          alt=""
+          data-revelar
+          style={{ '--atraso': '0.12s' }}
+        />
     </section>
   )
 }
@@ -160,7 +160,7 @@ function NoivosIntro() {
       <h1 className="display noivos__titulo" data-revelar>
         <T k="noivos.titulo" />
       </h1>
-      <Carousel slides={fotosInfancia} fit="natural" height={260} auto label="Fotografias de infância" />
+      <Galeria nome="infancia" fit="natural" height={260} auto label="Fotografias de infância" />
     </section>
   )
 }
@@ -173,7 +173,7 @@ function Ano2018() {
         <p className="corpo-sm"><T k="ano2018.texto" /></p>
       </div>
       <div className="ano__foto" data-revelar style={{ '--atraso': '0.16s' }}>
-        <img src={caminho('/images/mapa-2018.jpeg')} alt="Campo do MAPA, agosto de 2018" />
+        <Img k="ano2018.foto" alt="Campo do MAPA, agosto de 2018" />
       </div>
     </section>
   )
@@ -187,11 +187,12 @@ function Ano2022() {
         <p className="corpo-sm"><T k="ano2022.texto" /></p>
       </div>
       <div className="ano__carrossel">
-        <Carousel
-          slides={fotosNamoro.length ? fotosNamoro : molduras2022}
+        <Galeria
+          nome="namoro"
+          molduras={molduras2022}
           fit="natural"
           height={260}
-          auto={fotosNamoro.length > 0}
+          auto
           label="Fotografias do namoro"
         />
       </div>
@@ -207,7 +208,7 @@ function Ano2026() {
         <p className="corpo-sm"><T k="ano2026.texto" /></p>
       </div>
       <div className="ano__foto ano__foto--alta" data-revelar style={{ '--atraso': '0.16s' }}>
-        <img src={caminho('/images/noivado-2026.jpeg')} alt="O pedido, no santuário da Peninha" />
+        <Img k="ano2026.foto" alt="O pedido, no santuário da Peninha" />
       </div>
     </section>
   )
@@ -307,7 +308,7 @@ function LuaDeMel() {
       </div>
 
       <div className="presentes__carrossel" data-revelar style={{ '--atraso': '0.14s' }}>
-        <Carousel slides={fotosLuaDeMel} perView={5} aspect="3 / 4" label="Destinos da lua de mel" />
+        <Galeria nome="luaDeMel" perView={5} aspect="3 / 4" label="Destinos da lua de mel" />
       </div>
     </section>
   )

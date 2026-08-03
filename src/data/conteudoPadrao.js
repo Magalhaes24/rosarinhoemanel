@@ -99,6 +99,35 @@ export const textosPadrao = {
   'form.nota': 'Os teus dados servem apenas para a organização do casamento e não são partilhados.',
 }
 
+/**
+ * Fotografias fixas do site. As chaves são estáveis: mudar o ficheiro por
+ * baixo não obriga a mexer em nada, e o admin pode substituir cada uma por
+ * outra sem tocar no código.
+ *
+ * Os caminhos levam o prefixo de instalação em tempo de execução (ver
+ * `resolverImagem` em src/lib/conteudo.jsx), para continuarem a funcionar
+ * quando o site vive num subdiretório.
+ */
+export const imagensPadrao = {
+  'hero.casal': '/images/hero-casal.png',
+  'missa.fundo': '/images/igreja.png',
+  'copo.fundo': '/images/quinta.png',
+  'historia.arco': '/images/casal-arco.jpeg',
+  'drivers.carros': '/images/carros.png',
+  'ano2018.foto': '/images/mapa-2018.jpeg',
+  'ano2026.foto': '/images/noivado-2026.jpeg',
+}
+
+export const imagensEditaveis = [
+  ['hero.casal', 'Início — fotografia do casal'],
+  ['missa.fundo', 'Missa — fundo'],
+  ['copo.fundo', 'Copo d’água — fundo'],
+  ['historia.arco', 'História — fotografia em arco'],
+  ['drivers.carros', 'Drivers — carros'],
+  ['ano2018.foto', '2018 — fotografia'],
+  ['ano2026.foto', '2026 — fotografia'],
+]
+
 /** Etiquetas legíveis para o editor de textos da administração. */
 export const gruposDeTexto = [
   { titulo: 'Menu', chaves: ['nav.inicio', 'nav.noivos', 'nav.presentes'] },

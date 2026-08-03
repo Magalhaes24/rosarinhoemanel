@@ -23,10 +23,16 @@ export function ConteudoProviderEdicao({ children }) {
   const {
     textosGravados,
     paginasGravadas,
+    imagensGravadas,
+    galeriasGravadas,
     rascunhoTextos,
     setRascunhoTextos,
     rascunhoPaginas,
     setRascunhoPaginas,
+    rascunhoImagens,
+    setRascunhoImagens,
+    rascunhoGalerias,
+    setRascunhoGalerias,
   } = conteudo
 
   const [utilizador, setUtilizador] = useState(null)
@@ -80,39 +86,68 @@ export function ConteudoProviderEdicao({ children }) {
     if (!podeEditar && ligado) setLigado(false)
   }, [podeEditar, ligado])
 
+  /**
+   * Põe uma alteração no rascunho — ou retira-a, se o valor tiver voltado ao
+   * que está gravado. Sem isto, repor a fotografia original continuava a
+   * contar como «1 por gravar», e o aviso de sair da página aparecia sem haver
+   * nada para perder.
+   */
+  const registar = useCallback((setRascunho, gravados, chave, valor) => {
+    const igual = JSON.stringify(gravados[chave]) === JSON.stringify(valor)
+    setRascunho((r) => {
+      const novo = { ...(r || {}) }
+      if (igual) delete novo[chave]
+      else novo[chave] = valor
+      return Object.keys(novo).length ? novo : null
+    })
+  }, [])
+
   const alterarTexto = useCallback(
-    (chave, valor) => {
-      setRascunhoTextos((r) => ({ ...(r || {}), [chave]: valor }))
-    },
-    [setRascunhoTextos]
+    (chave, valor) => registar(setRascunhoTextos, textosGravados, chave, valor),
+    [registar, setRascunhoTextos, textosGravados]
   )
 
   const alterarPagina = useCallback(
-    (pagina, seccoes) => {
-      setRascunhoPaginas((r) => ({ ...(r || {}), [pagina]: seccoes }))
-    },
-    [setRascunhoPaginas]
+    (pagina, seccoes) => registar(setRascunhoPaginas, paginasGravadas, pagina, seccoes),
+    [registar, setRascunhoPaginas, paginasGravadas]
   )
 
-  const nTextos = Object.keys(rascunhoTextos || {}).length
-  const nPaginas = Object.keys(rascunhoPaginas || {}).length
-  const porGravar = nTextos + nPaginas
+  const alterarImagem = useCallback(
+    (chave, valor) => registar(setRascunhoImagens, imagensGravadas, chave, valor),
+    [registar, setRascunhoImagens, imagensGravadas]
+  )
 
-  /** «2 textos e 1 página por gravar» — conta as duas coisas em separado,
-      porque uma alteração de ordem afeta a página toda e não um texto. */
+  const alterarGaleria = useCallback(
+    (nome, lista) => registar(setRascunhoGalerias, galeriasGravadas, nome, lista),
+    [registar, setRascunhoGalerias, galeriasGravadas]
+  )
+
+  const contagens = [
+    [Object.keys(rascunhoTextos || {}).length, 'texto', 'textos'],
+    [Object.keys(rascunhoImagens || {}).length, 'fotografia', 'fotografias'],
+    [Object.keys(rascunhoGalerias || {}).length, 'galeria', 'galerias'],
+    [Object.keys(rascunhoPaginas || {}).length, 'página', 'páginas'],
+  ]
+  const porGravar = contagens.reduce((a, [n]) => a + n, 0)
+
+  /** «2 textos e 1 página por gravar» — conta cada coisa em separado, porque
+      uma alteração de ordem afeta a página toda e não um texto. */
   const resumo = (() => {
     if (!porGravar) return 'Sem alterações'
-    const partes = []
-    if (nTextos) partes.push(`${nTextos} ${nTextos === 1 ? 'texto' : 'textos'}`)
-    if (nPaginas) partes.push(`${nPaginas} ${nPaginas === 1 ? 'página' : 'páginas'}`)
-    return `${partes.join(' e ')} por gravar`
+    const partes = contagens
+      .filter(([n]) => n)
+      .map(([n, um, muitos]) => `${n} ${n === 1 ? um : muitos}`)
+    const ultimo = partes.pop()
+    return `${partes.length ? partes.join(', ') + ' e ' : ''}${ultimo} por gravar`
   })()
 
   const descartar = useCallback(() => {
     setRascunhoTextos(null)
     setRascunhoPaginas(null)
+    setRascunhoImagens(null)
+    setRascunhoGalerias(null)
     setEstado('idle')
-  }, [setRascunhoTextos, setRascunhoPaginas])
+  }, [setRascunhoTextos, setRascunhoPaginas, setRascunhoImagens, setRascunhoGalerias])
 
   const gravar = useCallback(async () => {
     if (!porGravar) return
@@ -125,12 +160,16 @@ export function ConteudoProviderEdicao({ children }) {
       const dados = {}
       if (rascunhoTextos) dados.textos = { ...textosGravados, ...rascunhoTextos }
       if (rascunhoPaginas) dados.paginas = { ...paginasGravadas, ...rascunhoPaginas }
+      if (rascunhoImagens) dados.imagens = { ...imagensGravadas, ...rascunhoImagens }
+      if (rascunhoGalerias) dados.galerias = { ...galeriasGravadas, ...rascunhoGalerias }
 
       await fs.setDoc(fs.doc(db, 'conteudo', 'site'), dados, { merge: true })
 
       // O que vier do Firestore passa a ser a verdade; o rascunho sai de cena.
       setRascunhoTextos(null)
       setRascunhoPaginas(null)
+      setRascunhoImagens(null)
+      setRascunhoGalerias(null)
       setEstado('ok')
       window.setTimeout(() => setEstado('idle'), 2500)
     } catch (e) {
@@ -141,10 +180,16 @@ export function ConteudoProviderEdicao({ children }) {
     porGravar,
     rascunhoTextos,
     rascunhoPaginas,
+    rascunhoImagens,
+    rascunhoGalerias,
     textosGravados,
     paginasGravadas,
+    imagensGravadas,
+    galeriasGravadas,
     setRascunhoTextos,
     setRascunhoPaginas,
+    setRascunhoImagens,
+    setRascunhoGalerias,
   ])
 
   // Avisa antes de fechar o separador com alterações por gravar.
@@ -174,6 +219,8 @@ export function ConteudoProviderEdicao({ children }) {
       alternar: () => setLigado((v) => !v),
       alterarTexto,
       alterarPagina,
+      alterarImagem,
+      alterarGaleria,
       porGravar,
       resumo,
       gravar,
@@ -186,6 +233,8 @@ export function ConteudoProviderEdicao({ children }) {
       emEdicao,
       alterarTexto,
       alterarPagina,
+      alterarImagem,
+      alterarGaleria,
       porGravar,
       resumo,
       gravar,
