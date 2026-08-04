@@ -13,16 +13,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // UID da única conta de administração.
-    // Tem de ser igual ao de storage.rules e ao da variável VITE_ADMIN_UID.
-    // Não é um segredo: identifica uma conta, não dá acesso a ela.
-    function adminUid() {
-      return 'bzMecKwuhHNovXKZme0OFmqQ1UF3';
+    // UIDs das contas de administração.
+    // Têm de ser os mesmos de storage.rules e da variável VITE_ADMIN_UIDS.
+    // Não são segredos: identificam contas, não dão acesso a elas.
+    function adminUids() {
+      return ['bzMecKwuhHNovXKZme0OFmqQ1UF3', '8oAgew7bwjaifTOW0dN4WYfOsZB3'];
     }
 
     function ehAdmin() {
       return request.auth != null
-        && request.auth.uid == adminUid();
+        && request.auth.uid in adminUids();
     }
 
     // Texto não vazio, dentro de um limite, e que não seja só espaços.

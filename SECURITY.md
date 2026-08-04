@@ -41,12 +41,17 @@ forjadas, tamanhos excessivos, alterações e remoções, coleções arbitrária
 uma tentativa de escalar privilégios criando uma coleção `config`. Corre em
 cada pull request.
 
-## 2. Administração — uma conta e só uma
+## 2. Administração — uma lista fechada de contas
 
 A área vive em `/admin`, não está ligada no menu e está fora dos motores de
-busca. Mas a proteção não é essa — é o UID único em `firestore.rules`. Mesmo
-que alguém chegue ao ecrã de login, ou até crie uma conta, sem esse UID não lê
-um único documento.
+busca. Mas a proteção não é essa — é a lista de UIDs em `firestore.rules`.
+Mesmo que alguém chegue ao ecrã de login, ou até crie uma conta, sem estar
+nessa lista não lê um único documento.
+
+Acrescentar ou remover um administrador é editar a lista em três sítios —
+`firestore.rules`, `storage.rules` e a variável `VITE_ADMIN_UIDS` — e voltar a
+publicar as regras. Não há registo público, nem convites: o acesso não se
+concede a partir do site.
 
 A verificação existe em dois sítios de propósito: no cliente
 ([`src/lib/auth.js`](src/lib/auth.js)) para a interface se comportar bem, e nas

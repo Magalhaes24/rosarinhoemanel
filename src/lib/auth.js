@@ -11,16 +11,26 @@ import { app } from './firebase.js'
 export const auth = getAuth(app)
 
 /**
- * UID da única conta com acesso à área de administração.
+ * UIDs das contas com acesso à área de administração, separados por vírgula.
  *
  * Isto é uma verificação de conveniência para a interface. A que conta a sério
- * é a mesma condição em `firestore.rules`, aplicada no servidor: mesmo que
- * alguém contorne o ecrã de login, sem este UID não lê um único documento.
+ * é a mesma lista em `firestore.rules`, aplicada no servidor: mesmo que alguém
+ * contorne o ecrã de login, sem estar nela não lê um único documento.
+ *
+ * `VITE_ADMIN_UID` (singular) continua a ser lido para não partir instalações
+ * anteriores a haver mais do que um administrador.
  */
-export const ADMIN_UID = import.meta.env.VITE_ADMIN_UID || ''
+export const ADMIN_UIDS = (
+  import.meta.env.VITE_ADMIN_UIDS ||
+  import.meta.env.VITE_ADMIN_UID ||
+  ''
+)
+  .split(',')
+  .map((u) => u.trim())
+  .filter(Boolean)
 
 export function ehAdmin(utilizador) {
-  return Boolean(utilizador && ADMIN_UID && utilizador.uid === ADMIN_UID)
+  return Boolean(utilizador && ADMIN_UIDS.includes(utilizador.uid))
 }
 
 /**
@@ -29,7 +39,7 @@ export function ehAdmin(utilizador) {
  * aberta indefinidamente.
  */
 export async function entrar(email, palavraPasse) {
-  if (!ADMIN_UID) {
+  if (!ADMIN_UIDS.length) {
     // Não é uma falha de credenciais — o site é que não sabe quem é o admin.
     // Dizer isto não revela nada sobre contas nenhumas, e poupa horas a
     // desconfiar da palavra-passe.
@@ -68,7 +78,7 @@ export async function entrar(email, palavraPasse) {
 export function mensagemDeErro(erro) {
   switch (erro?.message || erro?.code) {
     case 'sem-configuracao':
-      return 'A administração ainda não está configurada neste site (falta VITE_ADMIN_UID).'
+      return 'A administração ainda não está configurada neste site (falta VITE_ADMIN_UIDS).'
     case 'sem-permissao':
       return 'Esta conta não tem acesso à administração.'
     case 'auth/too-many-requests':

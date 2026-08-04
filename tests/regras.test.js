@@ -9,13 +9,15 @@ import {
 import { addDoc, collection, doc, getDoc, getDocs, deleteDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
 
 const ADMIN_UID = 'admin-de-teste'
+const SEGUNDO_ADMIN_UID = 'segundo-admin-de-teste'
 const OUTRO_UID = 'intruso'
 
-// As regras reais têm o UID do admin embutido. Para os testes, troca-se o
-// marcador pelo UID de teste — o resto do ficheiro é exercitado tal e qual.
+// As regras reais têm os UIDs dos administradores embutidos. Para os testes
+// troca-se a lista inteira pelas de teste — o resto do ficheiro é exercitado
+// tal e qual, incluindo a verificação de pertença à lista.
 const regras = readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8').replace(
-  /'SUBSTITUIR_PELO_UID_DO_ADMIN'|'[0-9A-Za-z]{20,}'/,
-  `'${ADMIN_UID}'`
+  /return \[[^\]]*\];/,
+  `return ['${ADMIN_UID}', '${SEGUNDO_ADMIN_UID}'];`
 )
 
 let env
@@ -33,6 +35,7 @@ after(async () => {
 
 const convidado = () => env.unauthenticatedContext().firestore()
 const admin = () => env.authenticatedContext(ADMIN_UID).firestore()
+const segundoAdmin = () => env.authenticatedContext(SEGUNDO_ADMIN_UID).firestore()
 const intruso = () => env.authenticatedContext(OUTRO_UID).firestore()
 
 const rsvpValido = { nome: 'Maria Silva', presenca: 'sim', criadoEm: serverTimestamp() }
@@ -366,9 +369,40 @@ describe('resto da base de dados fechado', () => {
   })
 })
 
+describe('mais do que um administrador', () => {
+  before(async () => {
+    await env.withSecurityRulesDisabled(async (c) => {
+      await setDoc(doc(c.firestore(), 'rsvps/paraOsDois'), {
+        nome: 'Ana',
+        presenca: 'sim',
+        criadoEm: new Date(),
+      })
+    })
+  })
+
+  it('o segundo admin lê as respostas', async () => {
+    await assertSucceeds(getDocs(collection(segundoAdmin(), 'rsvps')))
+  })
+
+  it('o segundo admin escreve conteúdo', async () => {
+    await assertSucceeds(
+      setDoc(doc(segundoAdmin(), 'conteudo/site'), { textos: { 'hero.data': 'x' } })
+    )
+  })
+
+  it('o segundo admin apaga uma resposta', async () => {
+    await assertSucceeds(deleteDoc(doc(segundoAdmin(), 'rsvps/paraOsDois')))
+  })
+
+  it('quem não está na lista continua de fora', async () => {
+    await assertFails(getDocs(collection(intruso(), 'rsvps')))
+  })
+})
+
 describe('sanidade', () => {
   it('o ficheiro de regras usado nos testes é o do repositório', () => {
     assert.ok(regras.includes('service cloud.firestore'))
-    assert.ok(regras.includes(ADMIN_UID), 'o marcador do UID do admin foi substituído')
+    assert.ok(regras.includes(ADMIN_UID), 'a lista de UIDs foi substituída')
+    assert.ok(regras.includes(SEGUNDO_ADMIN_UID), 'a lista tem os dois UIDs')
   })
 })

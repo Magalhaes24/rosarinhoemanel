@@ -10,9 +10,9 @@ service firebase.storage {
   match /b/{bucket}/o {
 
     function ehAdmin() {
-      // Tem de ser o MESMO UID que está em firestore.rules.
+      // Têm de ser os MESMOS UIDs que estão em firestore.rules.
       return request.auth != null
-        && request.auth.uid == 'bzMecKwuhHNovXKZme0OFmqQ1UF3';
+        && request.auth.uid in ['bzMecKwuhHNovXKZme0OFmqQ1UF3', '8oAgew7bwjaifTOW0dN4WYfOsZB3'];
     }
 
     function eImagem() {

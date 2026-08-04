@@ -102,7 +102,7 @@ Terraform, de propósito.
 
 1. Criar a base de dados Firestore (consola > Firestore > Criar base de dados).
 2. Criar a conta de administração em *Authentication > Users*, copiar o UID para
-   `VITE_ADMIN_UID` (no `.env` e nas variáveis do GitHub) **e** para
+   `VITE_ADMIN_UIDS` (no `.env` e nas variáveis do GitHub) **e** para
    `firestore.rules`.
 3. Desligar **"Enable create (sign-up)"** em *Authentication > Settings*.
 4. Registar a app em *App Check* e pôr a chave em `VITE_RECAPTCHA_SITE_KEY`.
