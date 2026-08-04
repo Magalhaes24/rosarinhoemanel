@@ -94,6 +94,31 @@ service cloud.firestore {
       allow delete: if ehAdmin();
     }
 
+    // ---------------------------------------------------------------------
+    // Fotografias em base64.
+    //
+    // O Firebase Storage exige o plano Blaze, por isso as fotografias que a
+    // administração carrega ficam aqui, uma por documento. São públicas
+    // porque é o que o site mostra; só o admin as cria e apaga.
+    //
+    // O limite de 750 kB é a rede de segurança do lado do servidor: o browser
+    // já reduz e recomprime antes de enviar (src/lib/fotografias.js), mas sem
+    // isto uma imagem grande passaria e rebentaria o limite de 1 MiB por
+    // documento do próprio Firestore.
+    // ---------------------------------------------------------------------
+
+    match /fotografias/{doc} {
+      allow read: if true;
+      allow create: if ehAdmin()
+        && request.resource.data.keys().hasOnly(['dados', 'largura', 'altura', 'criadoEm'])
+        && request.resource.data.dados is string
+        && request.resource.data.dados.size() < 750000
+        && request.resource.data.dados.matches('data:image/.*')
+        && dataDoServidor();
+      allow update: if false;
+      allow delete: if ehAdmin();
+    }
+
     // Tudo o resto fechado, para toda a gente.
     match /{document=**} {
       allow read, write: if false;

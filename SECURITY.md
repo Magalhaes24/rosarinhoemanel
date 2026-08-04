@@ -71,6 +71,20 @@ tratam disso), mas não há razão para deixar.
 a API key a referrers HTTP em *Google Cloud Console > APIs e Serviços >
 Credenciais*.
 
+## 3b. Fotografias em base64
+
+O Firebase Storage exige o plano Blaze, que este projeto não tem. As
+fotografias que a administração carrega ficam em base64 no Firestore, na
+coleção `fotografias`, uma por documento — e não dentro de `conteudo/site`,
+que todos os visitantes leem para ver um título.
+
+O browser reduz e recomprime antes de enviar
+([`src/lib/fotografias.js`](src/lib/fotografias.js)): uma fotografia de
+4000×3000 fica em cerca de 67 kB. As regras impõem o limite outra vez, do lado
+do servidor — imagem até 750 kB, `data:image/…`, campos exatos, e sem
+alterações depois de criada. Sem esse teto, um documento passaria o limite de
+1 MiB do próprio Firestore.
+
 ## 4. Onde o site está alojado muda a proteção
 
 O projeto pode ser publicado em dois sítios, e **não são equivalentes em

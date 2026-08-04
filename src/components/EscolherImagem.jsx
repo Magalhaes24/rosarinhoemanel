@@ -4,10 +4,9 @@ import './EscolherImagem.css'
 /**
  * Painel para trocar uma fotografia, por ficheiro ou por endereço.
  *
- * O envio de ficheiro precisa do Firebase Storage, que exige o plano Blaze.
- * Enquanto não estiver ativo, o erro diz o que fazer e o endereço continua a
- * funcionar — por isso as duas vias existem lado a lado e nenhuma é «a
- * alternativa».
+ * O ficheiro é reduzido e recomprimido no browser e guardado em base64 no
+ * Firestore — o Firebase Storage exigiria o plano Blaze. Ver
+ * src/lib/fotografias.js para os limites que isso impõe.
  */
 export default function EscolherImagem({ aoEscolher, aoRepor, aoFechar, temOriginal }) {
   const input = useRef(null)
@@ -38,11 +37,11 @@ export default function EscolherImagem({ aoEscolher, aoRepor, aoFechar, temOrigi
     setErro('')
     setProgresso(0)
     try {
-      const { enviarFotografia } = await import('../lib/armazenamento.js')
-      aoEscolher(await enviarFotografia(ficheiro, setProgresso))
+      const { guardarFotografia } = await import('../lib/fotografias.js')
+      aoEscolher(await guardarFotografia(ficheiro, setProgresso))
       aoFechar()
     } catch (err) {
-      const { mensagemDeEnvio } = await import('../lib/armazenamento.js')
+      const { mensagemDeEnvio } = await import('../lib/fotografias.js')
       setErro(mensagemDeEnvio(err))
       setEstado('idle')
     } finally {

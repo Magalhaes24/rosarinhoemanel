@@ -281,6 +281,69 @@ describe('presentes', () => {
   })
 })
 
+describe('fotografias em base64', () => {
+  const valida = {
+    dados: 'data:image/webp;base64,AAAA',
+    largura: 800,
+    altura: 600,
+    criadoEm: serverTimestamp(),
+  }
+
+  before(async () => {
+    await env.withSecurityRulesDisabled(async (c) => {
+      await setDoc(doc(c.firestore(), 'fotografias/exemplo'), {
+        dados: 'data:image/webp;base64,BBBB',
+        largura: 1,
+        altura: 1,
+        criadoEm: new Date(),
+      })
+    })
+  })
+
+  it('qualquer pessoa lê (é o que o site mostra)', async () => {
+    await assertSucceeds(getDocs(collection(convidado(), 'fotografias')))
+  })
+
+  it('convidado NÃO cria', async () => {
+    await assertFails(addDoc(collection(convidado(), 'fotografias'), valida))
+  })
+
+  it('autenticado que não é o admin NÃO cria', async () => {
+    await assertFails(addDoc(collection(intruso(), 'fotografias'), valida))
+  })
+
+  it('o admin cria', async () => {
+    await assertSucceeds(addDoc(collection(admin(), 'fotografias'), valida))
+  })
+
+  it('rejeita o que não seja uma imagem', async () => {
+    await assertFails(
+      addDoc(collection(admin(), 'fotografias'), { ...valida, dados: 'javascript:alert(1)' })
+    )
+  })
+
+  it('rejeita acima de 750 kB', async () => {
+    await assertFails(
+      addDoc(collection(admin(), 'fotografias'), {
+        ...valida,
+        dados: 'data:image/webp;base64,' + 'A'.repeat(750000),
+      })
+    )
+  })
+
+  it('rejeita campos a mais', async () => {
+    await assertFails(addDoc(collection(admin(), 'fotografias'), { ...valida, dono: 'x' }))
+  })
+
+  it('ninguém altera uma fotografia', async () => {
+    await assertFails(updateDoc(doc(admin(), 'fotografias/exemplo'), { largura: 2 }))
+  })
+
+  it('o admin apaga', async () => {
+    await assertSucceeds(deleteDoc(doc(admin(), 'fotografias/exemplo')))
+  })
+})
+
 describe('resto da base de dados fechado', () => {
   it('não se escreve numa coleção arbitrária', async () => {
     await assertFails(addDoc(collection(convidado(), 'qualquer'), { a: 1 }))

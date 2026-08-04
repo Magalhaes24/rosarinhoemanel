@@ -5,13 +5,22 @@ import { paginasPadrao } from '../data/paginasPadrao.js'
 import { galeriasPadrao } from '../data/galeriasPadrao.js'
 import { caminho } from './caminho.js'
 
+const PREFIXO_FIRESTORE = 'firestore:'
+
 /**
- * Endereços que começam por `/` são ficheiros do próprio site e precisam do
- * prefixo de instalação; os que vêm do Storage ou de outro sítio já são
- * absolutos e passam intactos.
+ * Traduz o que está guardado para um endereço que o browser entenda.
+ *
+ *  - `firestore:abc123` — fotografia gravada em base64 no Firestore; o
+ *    conteúdo real vem do mapa `fotografias`, carregado à parte.
+ *  - `/images/…` — ficheiro do próprio site; leva o prefixo de instalação,
+ *    senão parte quando o site vive num subdiretório.
+ *  - `https://…`, `data:…` — já absolutos, passam intactos.
  */
-export function resolverImagem(src) {
+export function resolverImagem(src, fotografias = {}) {
   if (!src) return ''
+  if (src.startsWith(PREFIXO_FIRESTORE)) {
+    return fotografias[src.slice(PREFIXO_FIRESTORE.length)] || ''
+  }
   return /^(https?:|data:|blob:)/i.test(src) ? src : caminho(src)
 }
 
@@ -83,6 +92,9 @@ export function ConteudoProvider({ children }) {
   // Distingue «ainda não chegou» de «chegou vazio» de «não foi possível ler».
   const [erroPresentes, setErroPresentes] = useState('')
 
+  // id -> data URL das fotografias guardadas em base64 no Firestore.
+  const [fotografias, setFotografias] = useState({})
+
   // Tema -> variáveis CSS, sempre que muda.
   useEffect(() => {
     aplicarTema(tema)
@@ -93,6 +105,7 @@ export function ConteudoProvider({ children }) {
     let cancelado = false
     let cancelarConteudo = () => {}
     let cancelarPresentes = () => {}
+    let cancelarFotografias = () => {}
 
     // Se o Firestore não responder (base de dados ainda por criar, sem rede),
     // assume-se lista vazia em vez de deixar a secção em «a carregar» para
@@ -130,6 +143,21 @@ export function ConteudoProvider({ children }) {
           () => {} // sem conteúdo gravado ainda, ou sem rede: fica o padrão
         )
 
+        // Fotografias em base64. Coleção à parte para não inchar o documento
+        // de conteúdo, que toda a gente lê para ver um título.
+        cancelarFotografias = fs.onSnapshot(
+          fs.collection(db, 'fotografias'),
+          (snap) => {
+            const mapa = {}
+            snap.docs.forEach((d) => {
+              const dados = d.data()?.dados
+              if (dados) mapa[d.id] = dados
+            })
+            setFotografias(mapa)
+          },
+          () => {}
+        )
+
         // Sem `orderBy` de propósito: o Firestore exclui da consulta qualquer
         // documento a que falte o campo ordenado. Um presente criado à mão na
         // consola, sem `ordem`, desapareceria do site sem dar erro nenhum.
@@ -156,6 +184,7 @@ export function ConteudoProvider({ children }) {
       window.clearTimeout(desistir)
       cancelarConteudo()
       cancelarPresentes()
+      cancelarFotografias()
     }
   }, [])
 
@@ -176,10 +205,12 @@ export function ConteudoProvider({ children }) {
 
       /** t('hero.nome1') — devolve o texto atual, ou a própria chave se faltar. */
       t: (chave) => textosEfetivos[chave] ?? chave,
-      /** img('hero.casal') — endereço já com o prefixo de instalação. */
-      img: (chave) => resolverImagem(imagensEfetivas[chave] ?? imagensPadrao[chave]),
+      /** img('hero.casal') — endereço pronto a usar num `<img src>`. */
+      img: (chave) =>
+        resolverImagem(imagensEfetivas[chave] ?? imagensPadrao[chave], fotografias),
       /** galeria('infancia') — lista de endereços já resolvidos. */
-      galeria: (nome) => (galeriasEfetivas[nome] || []).map(resolverImagem),
+      galeria: (nome) => (galeriasEfetivas[nome] || []).map((s) => resolverImagem(s, fotografias)),
+      fotografias,
 
       // Usados pelo modo de edição (src/lib/edicao.jsx).
       textosGravados: textos,
@@ -205,6 +236,7 @@ export function ConteudoProvider({ children }) {
     rascunhoPaginas,
     rascunhoImagens,
     rascunhoGalerias,
+    fotografias,
     presentesCasa,
     erroPresentes,
   ])

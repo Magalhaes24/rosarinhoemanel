@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { enviarFotografia, mensagemDeEnvio } from '../../lib/armazenamento.js'
+import { guardarFotografia, mensagemDeEnvio } from '../../lib/fotografias.js'
 
 /**
  * Campo de imagem, por duas vias:
@@ -24,7 +24,7 @@ export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
     setEstado('a-enviar')
     setErro('')
     try {
-      aoMudar(await enviarFotografia(ficheiro))
+      aoMudar(await guardarFotografia(ficheiro))
       setEstado('idle')
     } catch (err) {
       setErro(mensagemDeEnvio(err))

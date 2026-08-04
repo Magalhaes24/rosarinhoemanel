@@ -10,7 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { app } from '../../lib/firebase.js'
-import { apagarFotografia } from '../../lib/armazenamento.js'
+import { apagarFotografia } from '../../lib/fotografias.js'
 import CampoFoto from './CampoFoto.jsx'
 
 const db = getFirestore(app)
