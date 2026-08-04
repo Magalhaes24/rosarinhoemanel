@@ -21,6 +21,9 @@ export const MARCA_ADMIN = 'ja-entrou-como-admin'
 export function ConteudoProviderEdicao({ children }) {
   const conteudo = useConteudo()
   const {
+    temaGravado,
+    rascunhoTema,
+    setRascunhoTema,
     textosGravados,
     paginasGravadas,
     imagensGravadas,
@@ -102,6 +105,11 @@ export function ConteudoProviderEdicao({ children }) {
     })
   }, [])
 
+  const alterarTema = useCallback(
+    (chave, valor) => registar(setRascunhoTema, temaGravado, chave, valor),
+    [registar, setRascunhoTema, temaGravado]
+  )
+
   const alterarTexto = useCallback(
     (chave, valor) => registar(setRascunhoTextos, textosGravados, chave, valor),
     [registar, setRascunhoTextos, textosGravados]
@@ -123,6 +131,7 @@ export function ConteudoProviderEdicao({ children }) {
   )
 
   const contagens = [
+    [Object.keys(rascunhoTema || {}).length, 'ajuste de aparência', 'ajustes de aparência'],
     [Object.keys(rascunhoTextos || {}).length, 'texto', 'textos'],
     [Object.keys(rascunhoImagens || {}).length, 'fotografia', 'fotografias'],
     [Object.keys(rascunhoGalerias || {}).length, 'galeria', 'galerias'],
@@ -142,12 +151,13 @@ export function ConteudoProviderEdicao({ children }) {
   })()
 
   const descartar = useCallback(() => {
+    setRascunhoTema(null)
     setRascunhoTextos(null)
     setRascunhoPaginas(null)
     setRascunhoImagens(null)
     setRascunhoGalerias(null)
     setEstado('idle')
-  }, [setRascunhoTextos, setRascunhoPaginas, setRascunhoImagens, setRascunhoGalerias])
+  }, [setRascunhoTema, setRascunhoTextos, setRascunhoPaginas, setRascunhoImagens, setRascunhoGalerias])
 
   const gravar = useCallback(async () => {
     if (!porGravar) return
@@ -158,6 +168,7 @@ export function ConteudoProviderEdicao({ children }) {
       const db = fs.getFirestore(app)
 
       const dados = {}
+      if (rascunhoTema) dados.tema = { ...temaGravado, ...rascunhoTema }
       if (rascunhoTextos) dados.textos = { ...textosGravados, ...rascunhoTextos }
       if (rascunhoPaginas) dados.paginas = { ...paginasGravadas, ...rascunhoPaginas }
       if (rascunhoImagens) dados.imagens = { ...imagensGravadas, ...rascunhoImagens }
@@ -166,6 +177,7 @@ export function ConteudoProviderEdicao({ children }) {
       await fs.setDoc(fs.doc(db, 'conteudo', 'site'), dados, { merge: true })
 
       // O que vier do Firestore passa a ser a verdade; o rascunho sai de cena.
+      setRascunhoTema(null)
       setRascunhoTextos(null)
       setRascunhoPaginas(null)
       setRascunhoImagens(null)
@@ -178,6 +190,9 @@ export function ConteudoProviderEdicao({ children }) {
     }
   }, [
     porGravar,
+    rascunhoTema,
+    temaGravado,
+    setRascunhoTema,
     rascunhoTextos,
     rascunhoPaginas,
     rascunhoImagens,
@@ -217,6 +232,7 @@ export function ConteudoProviderEdicao({ children }) {
       ligar: () => setLigado(true),
       desligar: () => setLigado(false),
       alternar: () => setLigado((v) => !v),
+      alterarTema,
       alterarTexto,
       alterarPagina,
       alterarImagem,
@@ -231,6 +247,7 @@ export function ConteudoProviderEdicao({ children }) {
       utilizador,
       podeEditar,
       emEdicao,
+      alterarTema,
       alterarTexto,
       alterarPagina,
       alterarImagem,

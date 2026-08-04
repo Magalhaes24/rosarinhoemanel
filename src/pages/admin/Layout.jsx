@@ -5,6 +5,7 @@ import { useConteudo } from '../../lib/conteudo.jsx'
 import { paginas as listaDePaginas, paginasPadrao } from '../../data/paginasPadrao.js'
 import { registo, tiposAcrescentaveis } from '../../seccoes/registo.jsx'
 import CampoFotografia from './CampoFotografia.jsx'
+import { useConfirmar } from '../../components/Confirmacao.jsx'
 
 const db = getFirestore(app)
 
@@ -92,6 +93,7 @@ function EscolherTipo({ aoEscolher, aoCancelar }) {
 }
 
 export default function Layout() {
+  const confirmar = useConfirmar()
   const { paginas } = useConteudo()
   const [pagina, setPagina] = useState('inicio')
   const [rascunho, setRascunho] = useState(null) // null = a mostrar o que está gravado
@@ -127,8 +129,15 @@ export default function Layout() {
     setAEscolher(false)
   }
 
-  function remover(i) {
-    if (!confirm('Remover esta secção da página?')) return
+  async function remover(i) {
+    const def = registo[seccoes[i]?.tipo]
+    const ok = await confirmar({
+      titulo: 'Remover esta secção?',
+      mensagem: 'Só sai do site quando gravares. Até lá podes descartar as alterações.',
+      detalhe: def?.nome || seccoes[i]?.tipo,
+      textoConfirmar: 'Remover secção',
+    })
+    if (!ok) return
     actualizar(seccoes.filter((_, k) => k !== i))
   }
 

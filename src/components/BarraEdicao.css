@@ -57,6 +57,12 @@
   background: rgba(255, 255, 255, 0.14);
 }
 
+.barra-edicao__btn.is-ativo {
+  background: #fff;
+  color: var(--quase-preto);
+  border-color: #fff;
+}
+
 .barra-edicao__btn:disabled {
   opacity: 0.4;
 }

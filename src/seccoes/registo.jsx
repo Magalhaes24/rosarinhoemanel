@@ -1,5 +1,6 @@
 import { useConteudo } from '../lib/conteudo.jsx'
 import { useEdicao } from '../lib/edicao.jsx'
+import { useConfirmar } from '../components/Confirmacao.jsx'
 import { tiposNativos } from './nativas.jsx'
 import { tiposPersonalizados } from './personalizadas.jsx'
 import './edicao.css'
@@ -34,6 +35,7 @@ export function Seccao({ seccao }) {
 
 /** Controlos que aparecem por cima de cada secção, em modo de edição. */
 function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar }) {
+  const confirmar = useConfirmar()
   const s = seccoes[indice]
   const def = registo[s.tipo]
 
@@ -51,8 +53,14 @@ function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar }) {
     aoMudar(pagina, nova)
   }
 
-  const remover = () => {
-    if (!confirm(`Remover a secção «${def?.nome || s.tipo}» desta página?`)) return
+  const remover = async () => {
+    const ok = await confirmar({
+      titulo: 'Remover esta secção?',
+      mensagem: 'Só sai do site quando gravares. Até lá podes descartar as alterações.',
+      detalhe: def?.nome || s.tipo,
+      textoConfirmar: 'Remover secção',
+    })
+    if (!ok) return
     aoMudar(
       pagina,
       seccoes.filter((_, i) => i !== indice)

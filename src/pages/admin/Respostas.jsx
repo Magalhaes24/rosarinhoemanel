@@ -10,6 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { app } from '../../lib/firebase.js'
+import { useConfirmar } from '../../components/Confirmacao.jsx'
 
 const db = getFirestore(app)
 
@@ -36,6 +37,7 @@ function useColecao(nome) {
 
 /** Uma linha que alterna entre leitura e edição. */
 function Linha({ colecao, item, campos }) {
+  const confirmar = useConfirmar()
   const [aEditar, setAEditar] = useState(false)
   const [rascunho, setRascunho] = useState(item)
   const [aGravar, setAGravar] = useState(false)
@@ -55,7 +57,14 @@ function Linha({ colecao, item, campos }) {
   }
 
   async function apagar() {
-    if (!confirm(`Apagar a resposta de "${item.nome}"? Não há forma de a recuperar.`)) return
+    const ok = await confirmar({
+      titulo: 'Apagar esta resposta?',
+      mensagem:
+        'A resposta é removida definitivamente. Não há forma de a recuperar a partir do site.',
+      detalhe: item.nome,
+      textoConfirmar: 'Apagar resposta',
+    })
+    if (!ok) return
     try {
       await deleteDoc(doc(db, colecao, item.id))
     } catch (e) {

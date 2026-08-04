@@ -12,6 +12,7 @@ import {
 import { app } from '../../lib/firebase.js'
 import { apagarFotografia } from '../../lib/fotografias.js'
 import CampoFotografia from './CampoFotografia.jsx'
+import { useConfirmar } from '../../components/Confirmacao.jsx'
 
 const db = getFirestore(app)
 const COLECAO = 'presentes-casa'
@@ -108,6 +109,7 @@ function Formulario({ inicial, aoGravar, aoCancelar }) {
 }
 
 export default function Loja() {
+  const confirmar = useConfirmar()
   const [itens, setItens] = useState(null)
   const [erro, setErro] = useState('')
   const [aEditar, setAEditar] = useState(null) // null | 'novo' | id
@@ -153,7 +155,13 @@ export default function Loja() {
   }
 
   async function apagar(item) {
-    if (!confirm(`Apagar "${item.nome}" da lista?`)) return
+    const ok = await confirmar({
+      titulo: 'Apagar este presente?',
+      mensagem: 'Deixa de aparecer na lista que os convidados veem.',
+      detalhe: item.nome,
+      textoConfirmar: 'Apagar presente',
+    })
+    if (!ok) return
     if (item.imagem) await apagarFotografia(item.imagem)
     await deleteDoc(doc(db, COLECAO, item.id))
   }

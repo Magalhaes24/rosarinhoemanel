@@ -61,9 +61,15 @@ function guardarCache(dados) {
   }
 }
 
-/** Aplica o tema às variáveis CSS que o site já usa. */
+/**
+ * Aplica o tema às variáveis CSS que o site já usa.
+ *
+ * Escreve no `body` e não no `html`: as escalas e o `--respiro` estão
+ * declarados no `body` em global.css, e uma declaração aí ganha sempre a um
+ * valor herdado do `html` — as cores mudavam, os tamanhos não.
+ */
 function aplicarTema(tema) {
-  const raiz = document.documentElement
+  const raiz = document.body
   for (const [chave, valor] of Object.entries(tema)) {
     const css = variavelCss[chave]
     if (css && valor !== undefined && valor !== null && valor !== '') {
@@ -83,6 +89,7 @@ export function ConteudoProvider({ children }) {
   // Alterações do modo de edição, ainda por gravar. Sobrepõem-se ao que está
   // na base de dados para o admin ver o resultado enquanto edita, e
   // desaparecem se ele descartar.
+  const [rascunhoTema, setRascunhoTema] = useState(null)
   const [rascunhoTextos, setRascunhoTextos] = useState(null)
   const [rascunhoPaginas, setRascunhoPaginas] = useState(null)
   const [rascunhoImagens, setRascunhoImagens] = useState(null)
@@ -103,10 +110,16 @@ export function ConteudoProvider({ children }) {
     setFotografiasLocais((r) => ({ ...r, [id]: dados }))
   }, [])
 
-  // Tema -> variáveis CSS, sempre que muda.
+  // Tema -> variáveis CSS, sempre que muda. Com o rascunho por cima, para o
+  // admin ver as cores a mudar enquanto mexe nelas.
+  const temaEfetivo = useMemo(
+    () => (rascunhoTema ? { ...tema, ...rascunhoTema } : tema),
+    [tema, rascunhoTema]
+  )
+
   useEffect(() => {
-    aplicarTema(tema)
-  }, [tema])
+    aplicarTema(temaEfetivo)
+  }, [temaEfetivo])
 
   // Escuta o conteúdo e a lista de presentes.
   useEffect(() => {
@@ -212,7 +225,7 @@ export function ConteudoProvider({ children }) {
     const fotografias = { ...fotografiasRemotas, ...fotografiasLocais }
 
     return {
-      tema,
+      tema: temaEfetivo,
       textos: textosEfetivos,
       paginas: paginasEfetivas,
       imagens: imagensEfetivas,
@@ -232,6 +245,9 @@ export function ConteudoProvider({ children }) {
       erroFotografias,
 
       // Usados pelo modo de edição (src/lib/edicao.jsx).
+      temaGravado: tema,
+      rascunhoTema,
+      setRascunhoTema,
       textosGravados: textos,
       paginasGravadas: paginas,
       imagensGravadas: imagens,
@@ -247,6 +263,8 @@ export function ConteudoProvider({ children }) {
     }
   }, [
     tema,
+    temaEfetivo,
+    rascunhoTema,
     textos,
     paginas,
     imagens,
