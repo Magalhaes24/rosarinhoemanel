@@ -61,12 +61,12 @@ function Banda({ dados }) {
 }
 
 /** Texto de um lado, fotografia do outro — como os anos na página dos noivos. */
-function TextoEFoto({ dados }) {
-  const fotoADireita = dados.lado !== 'esquerda'
+function TextoEFotografia({ dados }) {
+  const fotografiaADireita = dados.lado !== 'esquerda'
   return (
     <section
       className={`seccao seccao--duas ${classesFundo(dados.fundo)} ${
-        fotoADireita ? '' : 'seccao--invertida'
+        fotografiaADireita ? '' : 'seccao--invertida'
       }`}
     >
       <div className="seccao__texto" data-revelar>
@@ -82,7 +82,7 @@ function TextoEFoto({ dados }) {
 
 /** Carrossel de fotografias. */
 function Galeria({ dados }) {
-  const fotografias = (dados.fotografiagrafias || '')
+  const fotografias = (dados.fotografias || '')
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean)
@@ -186,10 +186,10 @@ export const tiposPersonalizados = {
     ],
   },
 
-  textoEFoto: {
+  textoEFotografia: {
     nome: 'Texto e fotografia',
     descricao: 'Texto de um lado, fotografia do outro.',
-    Componente: TextoEFoto,
+    Componente: TextoEFotografia,
     omissao: { titulo: '', corpo: '', fotografia: '', lado: 'direita', fundo: 'creme' },
     campos: [
       { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
