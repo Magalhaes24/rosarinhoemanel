@@ -99,8 +99,15 @@ export async function comprimir(ficheiro, aoProgresso) {
   )
 }
 
-/** Grava a fotografia e devolve a referência a guardar no conteúdo. */
-export async function guardarFotografia(ficheiro, aoProgresso) {
+/**
+ * Guarda a fotografia e devolve a referência a pôr no conteúdo.
+ *
+ * `aoGuardar` recebe o par (id, dados) mal o documento existe. Serve para o
+ * site mostrar a fotografia de imediato, sem esperar que o `onSnapshot` a
+ * traga de volta do servidor — sem isso havia uma janela em que a referência
+ * já estava no conteúdo mas a imagem ainda não, e aparecia em branco.
+ */
+export async function guardarFotografia(ficheiro, aoProgresso, aoGuardar) {
   const { dados, largura, altura } = await comprimir(ficheiro, aoProgresso)
 
   aoProgresso?.(0.8)
@@ -114,6 +121,7 @@ export async function guardarFotografia(ficheiro, aoProgresso) {
     criadoEm: fs.serverTimestamp(),
   })
 
+  aoGuardar?.(doc.id, dados)
   aoProgresso?.(1)
   return PREFIXO + doc.id
 }

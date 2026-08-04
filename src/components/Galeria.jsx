@@ -16,15 +16,20 @@ import './Galeria.css'
  * `molduras` são os exemplos a mostrar enquanto a galeria estiver vazia.
  */
 export default function Galeria({ nome, molduras = [], ...propsDoCarrossel }) {
-  const { galeria, galerias } = useConteudo()
+  const { galeria, galerias, erroFotografias } = useConteudo()
   const { emEdicao, alterarGaleria } = useEdicao()
   const [aAcrescentar, setAAcrescentar] = useState(false)
 
   const lista = galerias[nome] || []
-  const resolvidas = galeria(nome)
-  const slides = resolvidas.length
-    ? resolvidas.map((src) => ({ src, alt: '' }))
-    : molduras
+
+  // `itens` guarda o índice na lista original: as miniaturas mostram tudo,
+  // inclusive o que não carregou, para se poder remover. Já o carrossel só
+  // recebe o que tem imagem — uma referência por resolver dava `src=""` e o
+  // browser desenhava um retângulo branco sem dizer nada.
+  const itens = galeria(nome).map((src, i) => ({ src, i }))
+  const resolvidas = itens.filter((x) => x.src)
+  const porResolver = itens.length - resolvidas.length
+  const slides = resolvidas.length ? resolvidas.map(({ src }) => ({ src, alt: '' })) : molduras
 
   const guardar = (nova) => alterarGaleria(nome, nova)
 
@@ -83,9 +88,15 @@ export default function Galeria({ nome, molduras = [], ...propsDoCarrossel }) {
           )}
 
           <ul className="galeria__miniaturas">
-            {resolvidas.map((src, i) => (
-              <li key={`${src}-${i}`}>
-                <img src={src} alt="" />
+            {itens.map(({ src, i }) => (
+              <li key={`${lista[i]}-${i}`}>
+                {src ? (
+                  <img src={src} alt="" />
+                ) : (
+                  <span className="galeria__mini-falta" title={lista[i]}>
+                    não carregou
+                  </span>
+                )}
                 <div className="galeria__mini-acoes">
                   <button type="button" onClick={() => mover(i, -1)} disabled={i === 0}>
                     ←
@@ -93,7 +104,7 @@ export default function Galeria({ nome, molduras = [], ...propsDoCarrossel }) {
                   <button
                     type="button"
                     onClick={() => mover(i, 1)}
-                    disabled={i === resolvidas.length - 1}
+                    disabled={i === itens.length - 1}
                   >
                     →
                   </button>
@@ -113,6 +124,22 @@ export default function Galeria({ nome, molduras = [], ...propsDoCarrossel }) {
           {resolvidas.length === 0 && (
             <p className="galeria__vazia">
               Ainda sem fotografias. As molduras que se veem em cima são só um exemplo.
+            </p>
+          )}
+
+          {porResolver > 0 && (
+            <p className="galeria__vazia">
+              {porResolver}{' '}
+              {porResolver === 1
+                ? 'fotografia não carregou'
+                : 'fotografias não carregaram'}
+              {erroFotografias
+                ? ` — ${
+                    erroFotografias === 'permission-denied'
+                      ? 'falta publicar as regras: npm run regras'
+                      : erroFotografias
+                  }`
+                : '.'}
             </p>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { app } from './firebase.js'
 import { temaPadrao, textosPadrao, imagensPadrao, variavelCss } from '../data/conteudoPadrao.js'
 import { paginasPadrao } from '../data/paginasPadrao.js'
@@ -93,7 +93,15 @@ export function ConteudoProvider({ children }) {
   const [erroPresentes, setErroPresentes] = useState('')
 
   // id -> data URL das fotografias guardadas em base64 no Firestore.
-  const [fotografias, setFotografias] = useState({})
+  // As locais são as que acabaram de ser enviadas nesta sessão: entram
+  // primeiro, para a fotografia aparecer sem esperar pela volta ao servidor.
+  const [fotografiasRemotas, setFotografiasRemotas] = useState({})
+  const [fotografiasLocais, setFotografiasLocais] = useState({})
+  const [erroFotografias, setErroFotografias] = useState('')
+
+  const registarFotografia = useCallback((id, dados) => {
+    setFotografiasLocais((r) => ({ ...r, [id]: dados }))
+  }, [])
 
   // Tema -> variáveis CSS, sempre que muda.
   useEffect(() => {
@@ -153,9 +161,15 @@ export function ConteudoProvider({ children }) {
               const dados = d.data()?.dados
               if (dados) mapa[d.id] = dados
             })
-            setFotografias(mapa)
+            setFotografiasRemotas(mapa)
+            setErroFotografias('')
           },
-          () => {}
+          (e) => {
+            // Engolir isto em silêncio fazia as fotografias enviadas aparecerem
+            // em branco, sem uma única pista do que estava mal.
+            setErroFotografias(e.code || e.message)
+            console.error('Fotografias:', e.code, e.message)
+          }
         )
 
         // Sem `orderBy` de propósito: o Firestore exclui da consulta qualquer
@@ -193,6 +207,9 @@ export function ConteudoProvider({ children }) {
     const paginasEfetivas = rascunhoPaginas ? { ...paginas, ...rascunhoPaginas } : paginas
     const imagensEfetivas = rascunhoImagens ? { ...imagens, ...rascunhoImagens } : imagens
     const galeriasEfetivas = rascunhoGalerias ? { ...galerias, ...rascunhoGalerias } : galerias
+    // As locais entram por cima: são as mais recentes e podem ainda não ter
+    // chegado ao servidor.
+    const fotografias = { ...fotografiasRemotas, ...fotografiasLocais }
 
     return {
       tema,
@@ -211,6 +228,8 @@ export function ConteudoProvider({ children }) {
       /** galeria('infancia') — lista de endereços já resolvidos. */
       galeria: (nome) => (galeriasEfetivas[nome] || []).map((s) => resolverImagem(s, fotografias)),
       fotografias,
+      registarFotografia,
+      erroFotografias,
 
       // Usados pelo modo de edição (src/lib/edicao.jsx).
       textosGravados: textos,
@@ -236,7 +255,10 @@ export function ConteudoProvider({ children }) {
     rascunhoPaginas,
     rascunhoImagens,
     rascunhoGalerias,
-    fotografias,
+    fotografiasRemotas,
+    fotografiasLocais,
+    registarFotografia,
+    erroFotografias,
     presentesCasa,
     erroPresentes,
   ])

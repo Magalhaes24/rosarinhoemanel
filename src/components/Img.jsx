@@ -25,7 +25,15 @@ export default function Img({ k, alt = '', ancora = 'topo', ...resto }) {
   const src = img(k)
   const foiTrocada = imagens[k] !== imagensPadrao[k]
 
-  const imagem = <img src={src} alt={alt} {...resto} />
+  // Uma referência que não resolve dava `src=""`, e o browser desenhava um
+  // retângulo branco sem dizer nada. Mais vale um lugar vazio assumido.
+  const imagem = src ? (
+    <img src={src} alt={alt} {...resto} />
+  ) : (
+    <span className="img-em-falta" role="img" aria-label="Fotografia indisponível" {...resto}>
+      <span>Fotografia indisponível</span>
+    </span>
+  )
 
   if (!emEdicao) return imagem
 

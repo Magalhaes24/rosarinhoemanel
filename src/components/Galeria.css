@@ -73,6 +73,20 @@
   display: block;
 }
 
+.galeria__mini-falta {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 8px;
+  background: rgba(168, 57, 46, 0.1);
+  border: 1px dashed rgba(168, 57, 46, 0.5);
+  color: #a8392e;
+  font-size: 11px;
+  text-align: center;
+  padding: 4px;
+}
+
 .galeria__mini-acoes {
   display: flex;
   gap: 2px;

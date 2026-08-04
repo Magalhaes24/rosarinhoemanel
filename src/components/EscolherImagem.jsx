@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useConteudo } from '../lib/conteudo.jsx'
 import './EscolherImagem.css'
 
 /**
@@ -9,6 +10,7 @@ import './EscolherImagem.css'
  * src/lib/fotografias.js para os limites que isso impõe.
  */
 export default function EscolherImagem({ aoEscolher, aoRepor, aoFechar, temOriginal }) {
+  const { registarFotografia } = useConteudo()
   const input = useRef(null)
   const painel = useRef(null)
   const [estado, setEstado] = useState('idle')
@@ -38,7 +40,9 @@ export default function EscolherImagem({ aoEscolher, aoRepor, aoFechar, temOrigi
     setProgresso(0)
     try {
       const { guardarFotografia } = await import('../lib/fotografias.js')
-      aoEscolher(await guardarFotografia(ficheiro, setProgresso))
+      // `registarFotografia` mete a imagem em memória mal o documento existe,
+      // para aparecer já — não à espera da volta pelo `onSnapshot`.
+      aoEscolher(await guardarFotografia(ficheiro, setProgresso, registarFotografia))
       aoFechar()
     } catch (err) {
       const { mensagemDeEnvio } = await import('../lib/fotografias.js')
