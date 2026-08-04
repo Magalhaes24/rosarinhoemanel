@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore'
 import { app } from '../../lib/firebase.js'
 import { apagarFotografia } from '../../lib/fotografias.js'
-import CampoFoto from './CampoFoto.jsx'
+import CampoFotografia from './CampoFotografia.jsx'
 
 const db = getFirestore(app)
 const COLECAO = 'presentes-casa'
@@ -82,7 +82,7 @@ function Formulario({ inicial, aoGravar, aoCancelar }) {
         </label>
       </div>
 
-      <CampoFoto valor={item.imagem} aoMudar={(url) => setItem({ ...item, imagem: url })} />
+      <CampoFotografia valor={item.imagem} aoMudar={(url) => setItem({ ...item, imagem: url })} />
 
       <label className="admin__caixa-check">
         <input
@@ -208,8 +208,8 @@ export default function Loja() {
             </li>
           ) : (
             <li key={item.id} className="admin__lista-item">
-              <div className="admin__mini-foto">
-                {item.imagem ? <img src={item.imagem} alt="" /> : <span>sem foto</span>}
+              <div className="admin__mini-fotografia">
+                {item.imagem ? <img src={item.imagem} alt="" /> : <span>sem fotografia</span>}
               </div>
 
               <div className="admin__lista-texto">

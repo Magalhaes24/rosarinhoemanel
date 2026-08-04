@@ -110,7 +110,7 @@ Terraform, de propósito.
 
 ## Por acabar
 
-- Fotografias dos anos de namoro (2022) — array `fotosNamoro` em `src/data/fotos.js`
+- Fotografias dos anos de namoro (2022) — acrescentam-se na administração, na galeria «Noivos — anos de namoro»
 - Lista de presentes "Para a casa" — a secção existe e está vazia, como no rascunho
 - Número do IBAN
 - Hotéis sugeridos na secção "Onde ficar?"

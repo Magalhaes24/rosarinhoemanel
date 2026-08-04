@@ -4,7 +4,7 @@ import { app } from '../../lib/firebase.js'
 import { useConteudo } from '../../lib/conteudo.jsx'
 import { paginas as listaDePaginas, paginasPadrao } from '../../data/paginasPadrao.js'
 import { registo, tiposAcrescentaveis } from '../../seccoes/registo.jsx'
-import CampoFoto from './CampoFoto.jsx'
+import CampoFotografia from './CampoFotografia.jsx'
 
 const db = getFirestore(app)
 
@@ -19,9 +19,9 @@ function Campos({ definicao, dados, aoMudar }) {
     const valor = dados[campo.chave] ?? ''
     const muda = (v) => aoMudar({ ...dados, [campo.chave]: v })
 
-    if (campo.tipo === 'foto') {
+    if (campo.tipo === 'fotografia') {
       return (
-        <CampoFoto
+        <CampoFotografia
           key={campo.chave}
           etiqueta={campo.etiqueta}
           valor={valor}
@@ -37,12 +37,12 @@ function Campos({ definicao, dados, aoMudar }) {
           {campo.ajuda && <em className="admin__campo-ajuda"> — {campo.ajuda}</em>}
         </span>
 
-        {campo.tipo === 'textoLongo' || campo.tipo === 'listaDeFotos' ? (
+        {campo.tipo === 'textoLongo' || campo.tipo === 'listaDeFotografias' ? (
           <textarea
-            rows={campo.tipo === 'listaDeFotos' ? 5 : 3}
+            rows={campo.tipo === 'listaDeFotografias' ? 5 : 3}
             value={valor}
             onChange={(e) => muda(e.target.value)}
-            placeholder={campo.tipo === 'listaDeFotos' ? 'https://…\nhttps://…' : undefined}
+            placeholder={campo.tipo === 'listaDeFotografias' ? 'https://…\nhttps://…' : undefined}
           />
         ) : campo.tipo === 'escolha' ? (
           <select value={valor} onChange={(e) => muda(e.target.value)}>

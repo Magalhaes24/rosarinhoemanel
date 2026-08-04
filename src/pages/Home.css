@@ -32,7 +32,7 @@
   margin: calc(32 * var(--esp)) 0 0;
 }
 
-.hero__foto {
+.hero__fotografia {
   position: relative;
   overflow: hidden;
 }
@@ -41,7 +41,7 @@
    automática, o 100% resolve para a altura natural da imagem — e era a
    fotografia que esticava o hero para lá do ecrã, não o texto. Assim a coluna
    não tem altura própria e quem manda é o texto e o limite do ecrã. */
-.hero__foto img {
+.hero__fotografia img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -273,7 +273,7 @@
   .hero__panel {
     padding: calc(80 * var(--esp)) calc(40 * var(--pt)) calc(56 * var(--esp));
   }
-  .hero__foto {
+  .hero__fotografia {
     height: 58svh;
     min-height: calc(300 * var(--pt));
   }

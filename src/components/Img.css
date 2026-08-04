@@ -9,9 +9,9 @@
 /* Sem caixa própria, o botão ancora-se ao contentor da fotografia. Estes são
    os que precisam de o ser; a banda e o hero já eram relativos. */
 .em-edicao .historia__arco,
-.em-edicao .ano__foto,
+.em-edicao .ano__fotografia,
 .em-edicao .drivers,
-.em-edicao .seccao__foto,
+.em-edicao .seccao__fotografia,
 .em-edicao .loja__imagem {
   position: relative;
 }

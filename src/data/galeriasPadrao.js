@@ -20,7 +20,8 @@ export const galeriasPadrao = {
     '/images/infancia-09.png',
   ],
 
-  // Os anos de namoro ainda não têm fotografias — ver as molduras em fotos.js.
+  // Os anos de namoro ainda não têm fotografias — as molduras de exemplo estão
+  // em src/data/molduras.js.
   namoro: [],
 
   luaDeMel: [

@@ -495,7 +495,7 @@
   padding: 2px 8px;
 }
 
-.admin__mini-foto {
+.admin__mini-fotografia {
   width: 68px;
   height: 68px;
   border-radius: 8px;
@@ -508,18 +508,18 @@
   flex: none;
 }
 
-.admin__mini-foto img {
+.admin__mini-fotografia img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* ---------------- Campo de fotografia ---------------- */
-.admin__foto {
+.admin__fotografia {
   margin-top: 18px;
 }
 
-.admin__foto-previa {
+.admin__fotografia-previa {
   width: 140px;
   height: 140px;
   border-radius: 10px;
@@ -528,26 +528,26 @@
   margin-bottom: 10px;
 }
 
-.admin__foto-previa img {
+.admin__fotografia-previa img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.admin__foto-acoes {
+.admin__fotografia-acoes {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.admin__foto-endereco {
+.admin__fotografia-endereco {
   display: flex;
   gap: 8px;
   margin-top: 10px;
   flex-wrap: wrap;
 }
 
-.admin__foto-endereco input {
+.admin__fotografia-endereco input {
   flex: 1;
   min-width: 220px;
   font: inherit;

@@ -114,8 +114,8 @@ export const imagensPadrao = {
   'copo.fundo': '/images/quinta.png',
   'historia.arco': '/images/casal-arco.jpeg',
   'drivers.carros': '/images/carros.png',
-  'ano2018.foto': '/images/mapa-2018.jpeg',
-  'ano2026.foto': '/images/noivado-2026.jpeg',
+  'ano2018.fotografia': '/images/mapa-2018.jpeg',
+  'ano2026.fotografia': '/images/noivado-2026.jpeg',
 }
 
 export const imagensEditaveis = [
@@ -124,8 +124,8 @@ export const imagensEditaveis = [
   ['copo.fundo', 'Copo d’água — fundo'],
   ['historia.arco', 'História — fotografia em arco'],
   ['drivers.carros', 'Drivers — carros'],
-  ['ano2018.foto', '2018 — fotografia'],
-  ['ano2026.foto', '2026 — fotografia'],
+  ['ano2018.fotografia', '2018 — fotografia'],
+  ['ano2026.fotografia', '2026 — fotografia'],
 ]
 
 /** Etiquetas legíveis para o editor de textos da administração. */

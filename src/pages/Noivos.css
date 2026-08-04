@@ -52,15 +52,15 @@
   margin: 0 auto;
 }
 
-.ano__foto {
+.ano__fotografia {
   height: calc(282 * var(--esp));
 }
 
-.ano__foto--alta {
+.ano__fotografia--alta {
   height: calc(460 * var(--esp));
 }
 
-.ano__foto img {
+.ano__fotografia img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -86,8 +86,8 @@
     row-gap: calc(46 * var(--esp));
     padding: calc(70 * var(--esp)) calc(30 * var(--pt));
   }
-  .ano__foto,
-  .ano__foto--alta {
+  .ano__fotografia,
+  .ano__fotografia--alta {
     height: calc(420 * var(--esp));
   }
 }

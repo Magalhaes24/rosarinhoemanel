@@ -11,7 +11,7 @@ import { guardarFotografia, mensagemDeEnvio } from '../../lib/fotografias.js'
  * o envio falha e só resta o endereço — que funciona bem, com a ressalva de
  * que a imagem deixa de aparecer se quem a aloja a mudar de sítio.
  */
-export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
+export default function CampoFotografia({ valor, aoMudar, etiqueta = 'Fotografia' }) {
   const input = useRef(null)
   const [estado, setEstado] = useState('idle')
   const [erro, setErro] = useState('')
@@ -48,16 +48,16 @@ export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
   }
 
   return (
-    <div className="admin__foto">
+    <div className="admin__fotografia">
       <span className="admin__campo-etiqueta">{etiqueta}</span>
 
       {valor && (
-        <div className="admin__foto-previa">
+        <div className="admin__fotografia-previa">
           <img src={valor} alt="" onError={() => setErro('Esse endereço não devolveu uma imagem.')} />
         </div>
       )}
 
-      <div className="admin__foto-acoes">
+      <div className="admin__fotografia-acoes">
         <button
           type="button"
           className="admin__btn admin__btn--claro"
@@ -87,7 +87,7 @@ export default function CampoFoto({ valor, aoMudar, etiqueta = 'Fotografia' }) {
       </div>
 
       {aColar && (
-        <div className="admin__foto-endereco">
+        <div className="admin__fotografia-endereco">
           <input
             type="url"
             value={endereco}

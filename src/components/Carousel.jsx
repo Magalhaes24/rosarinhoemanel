@@ -5,10 +5,10 @@ import './Carousel.css'
  * Carrossel horizontal.
  *
  * slides   – [{ src, alt }] ou [{ id, placeholder: true, proporcao }]
- * fit      – 'natural': altura fixa, largura conforme a proporção de cada foto
- *            (não corta nada — bom para fotos de orientações diferentes)
+ * fit      – 'natural': altura fixa, largura conforme a proporção de cada fotografia
+ *            (não corta nada — bom para fotografias de orientações diferentes)
  *            'cover': grelha uniforme recortada (fita corrida, como no rascunho)
- * perView  – só em fit="cover": quantas fotos cabem de cada vez
+ * perView  – só em fit="cover": quantas fotografias cabem de cada vez
  * aspect   – só em fit="cover"
  * height   – só em fit="natural": altura da fita, em pontos do rascunho
  * auto     – anda sozinho, em loop sem fim
@@ -238,7 +238,7 @@ export default function Carousel({
         onPointerUp={aoLargar}
         onPointerCancel={aoLargar}
       >
-        {/* `onLoad={medir}`: em fit="natural" a largura de cada foto só se
+        {/* `onLoad={medir}`: em fit="natural" a largura de cada fotografia só se
             conhece depois de carregar, e sem isso o número de páginas e o
             estado das setas ficavam desatualizados. */}
         {lista.map((s, i) => (

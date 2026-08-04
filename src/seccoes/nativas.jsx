@@ -6,7 +6,7 @@ import Img from '../components/Img.jsx'
 import Galeria from '../components/Galeria.jsx'
 import RsvpForm from '../components/RsvpForm.jsx'
 import PresenteForm from '../components/PresenteForm.jsx'
-import { molduras2022 } from '../data/fotos.js'
+import { molduras2022 } from '../data/molduras.js'
 
 /**
  * As secções desenhadas a partir do rascunho.
@@ -30,7 +30,7 @@ function Hero() {
         </h1>
         <p className="hero__data"><T k="hero.data" /></p>
       </div>
-      <div className="hero__foto">
+      <div className="hero__fotografia">
         <Img k="hero.casal" alt="Rosarinho e Manel" />
       </div>
     </section>
@@ -172,8 +172,8 @@ function Ano2018() {
         <h2 className="display ano__numero"><T k="ano2018.numero" /></h2>
         <p className="corpo-sm"><T k="ano2018.texto" /></p>
       </div>
-      <div className="ano__foto" data-revelar style={{ '--atraso': '0.16s' }}>
-        <Img k="ano2018.foto" alt="Campo do MAPA, agosto de 2018" />
+      <div className="ano__fotografia" data-revelar style={{ '--atraso': '0.16s' }}>
+        <Img k="ano2018.fotografia" alt="Campo do MAPA, agosto de 2018" />
       </div>
     </section>
   )
@@ -207,8 +207,8 @@ function Ano2026() {
         <h2 className="display ano__numero"><T k="ano2026.numero" /></h2>
         <p className="corpo-sm"><T k="ano2026.texto" /></p>
       </div>
-      <div className="ano__foto ano__foto--alta" data-revelar style={{ '--atraso': '0.16s' }}>
-        <Img k="ano2026.foto" alt="O pedido, no santuário da Peninha" />
+      <div className="ano__fotografia ano__fotografia--alta" data-revelar style={{ '--atraso': '0.16s' }}>
+        <Img k="ano2026.fotografia" alt="O pedido, no santuário da Peninha" />
       </div>
     </section>
   )

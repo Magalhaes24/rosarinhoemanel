@@ -50,7 +50,7 @@ function Texto({ dados }) {
 function Banda({ dados }) {
   return (
     <section className="seccao banda banda--personalizada">
-      {dados.foto && <img className="banda__bg" src={dados.foto} alt="" data-revelar-zoom />}
+      {dados.fotografia && <img className="banda__bg" src={dados.fotografia} alt="" data-revelar-zoom />}
       <div className="banda__caixa" data-revelar>
         <Titulo texto={dados.titulo} className="banda__titulo" />
         {dados.linha1 && <p className="corpo banda__local">{dados.linha1}</p>}
@@ -73,8 +73,8 @@ function TextoEFoto({ dados }) {
         <Titulo texto={dados.titulo} />
         {dados.corpo && <p className="corpo-sm seccao__corpo">{dados.corpo}</p>}
       </div>
-      <div className="seccao__foto" data-revelar style={{ '--atraso': '0.16s' }}>
-        {dados.foto && <img src={dados.foto} alt={dados.legenda || ''} />}
+      <div className="seccao__fotografia" data-revelar style={{ '--atraso': '0.16s' }}>
+        {dados.fotografia && <img src={dados.fotografia} alt={dados.legenda || ''} />}
       </div>
     </section>
   )
@@ -82,7 +82,7 @@ function TextoEFoto({ dados }) {
 
 /** Carrossel de fotografias. */
 function Galeria({ dados }) {
-  const fotos = (dados.fotos || '')
+  const fotografias = (dados.fotografiagrafias || '')
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean)
@@ -92,10 +92,10 @@ function Galeria({ dados }) {
     <section className={`seccao seccao--galeria ${classesFundo(dados.fundo)}`}>
       <div className="seccao__interior" data-revelar>
         <Titulo texto={dados.titulo} />
-        {fotos.length > 0 && (
+        {fotografias.length > 0 && (
           <div className="seccao__carrossel">
             <Carousel
-              slides={fotos}
+              slides={fotografias}
               fit="natural"
               height={260}
               auto={dados.automatico !== false}
@@ -177,9 +177,9 @@ export const tiposPersonalizados = {
     nome: 'Fotografia com texto por cima',
     descricao: 'Uma fotografia a toda a largura, com uma caixa de texto ao centro.',
     Componente: Banda,
-    omissao: { titulo: 'Novo título', linha1: '', linha2: '', foto: '' },
+    omissao: { titulo: 'Novo título', linha1: '', linha2: '', fotografia: '' },
     campos: [
-      { chave: 'foto', etiqueta: 'Fotografia', tipo: 'foto' },
+      { chave: 'fotografia', etiqueta: 'Fotografia', tipo: 'fotografia' },
       { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
       { chave: 'linha1', etiqueta: 'Primeira linha', tipo: 'texto' },
       { chave: 'linha2', etiqueta: 'Segunda linha', tipo: 'texto' },
@@ -190,11 +190,11 @@ export const tiposPersonalizados = {
     nome: 'Texto e fotografia',
     descricao: 'Texto de um lado, fotografia do outro.',
     Componente: TextoEFoto,
-    omissao: { titulo: '', corpo: '', foto: '', lado: 'direita', fundo: 'creme' },
+    omissao: { titulo: '', corpo: '', fotografia: '', lado: 'direita', fundo: 'creme' },
     campos: [
       { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
       { chave: 'corpo', etiqueta: 'Texto', tipo: 'textoLongo' },
-      { chave: 'foto', etiqueta: 'Fotografia', tipo: 'foto' },
+      { chave: 'fotografia', etiqueta: 'Fotografia', tipo: 'fotografia' },
       {
         chave: 'lado',
         etiqueta: 'Fotografia',
@@ -212,13 +212,13 @@ export const tiposPersonalizados = {
     nome: 'Galeria',
     descricao: 'Carrossel de fotografias.',
     Componente: Galeria,
-    omissao: { titulo: '', fotos: '', fundo: 'creme', automatico: true },
+    omissao: { titulo: '', fotografias: '', fundo: 'creme', automatico: true },
     campos: [
       { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
       {
-        chave: 'fotos',
+        chave: 'fotografias',
         etiqueta: 'Fotografias',
-        tipo: 'listaDeFotos',
+        tipo: 'listaDeFotografias',
         ajuda: 'Um endereço por linha.',
       },
       { chave: 'automatico', etiqueta: 'Andar sozinho', tipo: 'booleano' },

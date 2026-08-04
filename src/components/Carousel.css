@@ -57,7 +57,7 @@
   aspect-ratio: var(--aspect);
 }
 
-/* --- fit="natural": altura fixa, cada foto mantém a sua proporção --- */
+/* --- fit="natural": altura fixa, cada fotografia mantém a sua proporção --- */
 .carousel--natural .carousel__track {
   align-items: center;
   height: var(--altura);
@@ -183,13 +183,13 @@
 }
 
 @media (max-width: 760px) {
-  /* Menos fotos de cada vez. `--per-view` vem de um style inline, por isso
+  /* Menos fotografias de cada vez. `--per-view` vem de um style inline, por isso
      sobrepõe-se aqui a flex-basis em vez da variável. */
   .carousel--cover .carousel__item {
     flex-basis: calc((100% - var(--gap)) / 2);
   }
 
-  /* Em fit="natural" a fita cresce, senão as fotos ficam minúsculas no telemóvel. */
+  /* Em fit="natural" a fita cresce, senão as fotografias ficam minúsculas no telemóvel. */
   .carousel--natural .carousel__track {
     height: calc(var(--altura) * 1.6);
   }
