@@ -314,12 +314,22 @@
   pointer-events: auto;
 }
 
-/* Espaço no fundo para a barra fixa não tapar o último conteúdo. */
+/* Espaço no fundo para a barra fixa não tapar o último «acrescentar secção».
+   A barra embrulha conforme a largura: duas linhas num ecrã de computador,
+   quatro num telemóvel (medido a 375px: 198px de altura). Os valores cobrem o
+   pior caso de cada gama, mais a distância ao fundo da janela. Só o admin vê
+   este espaço, e só enquanto edita. */
 .em-edicao body {
-  padding-bottom: 76px;
+  padding-bottom: 150px;
 }
 
 @media (max-width: 760px) {
+  /* Num telemóvel a barra parte-se em quatro linhas: precisa de mais espaço
+     por baixo do que num computador. */
+  .em-edicao body {
+    padding-bottom: 240px;
+  }
+
   .ctrl-seccao {
     top: 4px;
     right: 4px;
@@ -334,4 +344,29 @@
     padding: 4px 7px;
     font-size: 11px;
   }
+}
+
+/* ---------------- Reordenar a arrastar ---------------- */
+.admin__pega {
+  cursor: grab;
+  user-select: none;
+}
+
+.painel-seccao__corpo .admin__cartao {
+  background: #fff;
+  transition: opacity 0.12s ease, border-color 0.12s ease;
+}
+
+.painel-seccao__corpo .admin__cartao.is-arrastado {
+  opacity: 0.45;
+}
+
+/* A linha marca onde o bloco vai cair. */
+.painel-seccao__corpo .admin__cartao.is-alvo {
+  border-color: var(--dourado, rgba(146, 111, 27, 0.8));
+  box-shadow: 0 -3px 0 -1px var(--dourado, rgba(146, 111, 27, 0.8));
+}
+
+.admin__acoes--acrescentar {
+  gap: 5px;
 }

@@ -1,6 +1,7 @@
 import Carousel from '../components/Carousel.jsx'
 import RsvpForm from '../components/RsvpForm.jsx'
 import PresenteForm from '../components/PresenteForm.jsx'
+import { Bloco } from './blocos.jsx'
 import './seccoes.css'
 
 /**
@@ -58,6 +59,25 @@ function Texto({ dados }) {
       <div className="seccao__interior" data-revelar style={estiloAlinhado(dados.alinhamento)}>
         <Titulo texto={dados.titulo} />
         {dados.corpo && <p className="corpo seccao__corpo">{dados.corpo}</p>}
+      </div>
+    </section>
+  )
+}
+
+/**
+ * Secção montada bloco a bloco.
+ *
+ * É a que responde a «quero mais um título aqui e uma fotografia a seguir»:
+ * em vez de campos fixos, uma lista de blocos pela ordem que o admin arrastar.
+ */
+function ConteudoLivre({ dados }) {
+  const blocos = Array.isArray(dados.blocos) ? dados.blocos : []
+  return (
+    <section className={`seccao seccao--livre ${classesFundo(dados.fundo)}`}>
+      <div className="seccao__interior" data-revelar style={estiloAlinhado(dados.alinhamento)}>
+        {blocos.map((b, i) => (
+          <Bloco key={i} dados={b} />
+        ))}
       </div>
     </section>
   )
@@ -268,6 +288,25 @@ function Espaco({ dados }) {
 const campoFundo = { chave: 'fundo', etiqueta: 'Fundo', tipo: 'escolha', opcoes: FUNDOS }
 
 export const tiposPersonalizados = {
+  livre: {
+    nome: 'Conteúdo livre',
+    descricao: 'Títulos, textos, fotografias e botões pela ordem que quiseres.',
+    Componente: ConteudoLivre,
+    omissao: {
+      alinhamento: 'center',
+      fundo: 'creme',
+      blocos: [
+        { tipo: 'titulo', texto: 'Novo título' },
+        { tipo: 'texto', texto: '' },
+      ],
+    },
+    campos: [
+      { chave: 'blocos', etiqueta: 'Blocos', tipo: 'blocos' },
+      campoAlinhamento,
+      campoFundo,
+    ],
+  },
+
   texto: {
     nome: 'Texto',
     descricao: 'Um título e um parágrafo.',

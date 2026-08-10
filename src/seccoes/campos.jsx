@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import CampoFotografia from '../components/CampoFotografia.jsx'
+import { TIPOS_DE_BLOCO } from './blocos.jsx'
 
 /**
  * Formulário gerado a partir dos `campos` que cada tipo de secção declara.
@@ -9,6 +11,74 @@ import CampoFotografia from '../components/CampoFotografia.jsx'
  * painel de edição reaproveita a mesma folha de estilo.
  */
 
+/**
+ * Lista que se reordena a arrastar.
+ *
+ * Usa o arrastar do próprio browser em vez de uma biblioteca: são três eventos
+ * e evita juntar mais 30 kB ao site que os convidados descarregam. As setas
+ * ficam na mesma — num telemóvel não há arrastar que se aproveite, e são a
+ * única forma de reordenar com teclado.
+ */
+function ListaArrastavel({ itens, aoMudar, children }) {
+  const [origem, setOrigem] = useState(null)
+  const [alvo, setAlvo] = useState(null)
+
+  const largar = (destino) => {
+    if (origem === null || destino === origem) return limpar()
+    const nova = [...itens]
+    const [movido] = nova.splice(origem, 1)
+    nova.splice(destino, 0, movido)
+    aoMudar(nova)
+    limpar()
+  }
+
+  const limpar = () => {
+    setOrigem(null)
+    setAlvo(null)
+  }
+
+  const mover = (i, dir) => {
+    const destino = i + dir
+    if (destino < 0 || destino >= itens.length) return
+    const nova = [...itens]
+    ;[nova[i], nova[destino]] = [nova[destino], nova[i]]
+    aoMudar(nova)
+  }
+
+  return itens.map((item, i) =>
+    children({
+      item,
+      indice: i,
+      mover,
+      remover: () => aoMudar(itens.filter((_, k) => k !== i)),
+      alterar: (dados) => aoMudar(itens.map((x, k) => (k === i ? dados : x))),
+      // O que se cola no elemento que representa o item.
+      arrastavel: {
+        draggable: true,
+        onDragStart: (e) => {
+          setOrigem(i)
+          e.dataTransfer.effectAllowed = 'move'
+          // Sem isto o Firefox não chega a começar o arrastar.
+          e.dataTransfer.setData('text/plain', String(i))
+        },
+        onDragOver: (e) => {
+          e.preventDefault()
+          if (alvo !== i) setAlvo(i)
+        },
+        onDrop: (e) => {
+          e.preventDefault()
+          largar(i)
+        },
+        onDragEnd: limpar,
+        className:
+          'admin__cartao' +
+          (origem === i ? ' is-arrastado' : '') +
+          (alvo === i && origem !== i ? ' is-alvo' : ''),
+      },
+    })
+  )
+}
+
 /** Um cartão da grelha. Só o que faz sentido dentro de uma célula. */
 const CAMPOS_DO_CARTAO = [
   ['titulo', 'Título'],
@@ -16,6 +86,40 @@ const CAMPOS_DO_CARTAO = [
   ['botao', 'Botão'],
   ['destino', 'Destino do botão'],
 ]
+
+/** Cabeçalho comum a cartões e blocos: pega para arrastar, setas e remover. */
+function TopoDoItem({ nome, indice, total, mover, remover }) {
+  return (
+    <div className="admin__cartao-topo">
+      <strong className="admin__pega" title="Arrastar para reordenar">
+        ⠿ {nome}
+      </strong>
+      <div className="admin__acoes">
+        <button
+          type="button"
+          className="admin__btn admin__btn--claro"
+          onClick={() => mover(indice, -1)}
+          disabled={indice === 0}
+          aria-label="Passar para trás"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          className="admin__btn admin__btn--claro"
+          onClick={() => mover(indice, 1)}
+          disabled={indice === total - 1}
+          aria-label="Passar para a frente"
+        >
+          ↓
+        </button>
+        <button type="button" className="admin__btn admin__btn--perigo" onClick={remover}>
+          Remover
+        </button>
+      </div>
+    </div>
+  )
+}
 
 /**
  * Lista de cartões, para as grelhas: acrescentar, remover e trocar de lugar.
@@ -27,78 +131,47 @@ const CAMPOS_DO_CARTAO = [
 function CampoCartoes({ valor, aoMudar, etiqueta }) {
   const cartoes = Array.isArray(valor) ? valor : []
 
-  const mudarCartao = (i, dados) => aoMudar(cartoes.map((c, k) => (k === i ? dados : c)))
-
-  const mover = (i, dir) => {
-    const destino = i + dir
-    if (destino < 0 || destino >= cartoes.length) return
-    const nova = [...cartoes]
-    ;[nova[i], nova[destino]] = [nova[destino], nova[i]]
-    aoMudar(nova)
-  }
-
   return (
     <div className="admin__cartoes">
       <span className="admin__campo-etiqueta">{etiqueta}</span>
 
-      {cartoes.map((cartao, i) => (
-        <div key={i} className="admin__cartao">
-          <div className="admin__cartao-topo">
-            <strong>Cartão {i + 1}</strong>
-            <div className="admin__acoes">
-              <button
-                type="button"
-                className="admin__btn admin__btn--claro"
-                onClick={() => mover(i, -1)}
-                disabled={i === 0}
-                aria-label="Passar para trás"
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                className="admin__btn admin__btn--claro"
-                onClick={() => mover(i, 1)}
-                disabled={i === cartoes.length - 1}
-                aria-label="Passar para a frente"
-              >
-                ↓
-              </button>
-              <button
-                type="button"
-                className="admin__btn admin__btn--perigo"
-                onClick={() => aoMudar(cartoes.filter((_, k) => k !== i))}
-              >
-                Remover
-              </button>
-            </div>
+      <ListaArrastavel itens={cartoes} aoMudar={aoMudar}>
+        {({ item, indice, mover, remover, alterar, arrastavel }) => (
+          <div key={indice} {...arrastavel}>
+            <TopoDoItem
+              nome={`Cartão ${indice + 1}`}
+              indice={indice}
+              total={cartoes.length}
+              mover={mover}
+              remover={remover}
+            />
+
+            <CampoFotografia
+              valor={item.fotografia || ''}
+              aoMudar={(v) => alterar({ ...item, fotografia: v })}
+            />
+
+            {CAMPOS_DO_CARTAO.map(([chave, nome]) => (
+              <label key={chave} className="admin__campo">
+                <span>{nome}</span>
+                {chave === 'texto' ? (
+                  <textarea
+                    rows={2}
+                    value={item[chave] || ''}
+                    onChange={(e) => alterar({ ...item, [chave]: e.target.value })}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={item[chave] || ''}
+                    onChange={(e) => alterar({ ...item, [chave]: e.target.value })}
+                  />
+                )}
+              </label>
+            ))}
           </div>
-
-          <CampoFotografia
-            valor={cartao.fotografia || ''}
-            aoMudar={(v) => mudarCartao(i, { ...cartao, fotografia: v })}
-          />
-
-          {CAMPOS_DO_CARTAO.map(([chave, nome]) => (
-            <label key={chave} className="admin__campo">
-              <span>{nome}</span>
-              {chave === 'texto' ? (
-                <textarea
-                  rows={2}
-                  value={cartao[chave] || ''}
-                  onChange={(e) => mudarCartao(i, { ...cartao, [chave]: e.target.value })}
-                />
-              ) : (
-                <input
-                  type="text"
-                  value={cartao[chave] || ''}
-                  onChange={(e) => mudarCartao(i, { ...cartao, [chave]: e.target.value })}
-                />
-              )}
-            </label>
-          ))}
-        </div>
-      ))}
+        )}
+      </ListaArrastavel>
 
       <button
         type="button"
@@ -107,6 +180,57 @@ function CampoCartoes({ valor, aoMudar, etiqueta }) {
       >
         Acrescentar cartão
       </button>
+    </div>
+  )
+}
+
+/**
+ * Lista de blocos de uma secção de conteúdo livre.
+ *
+ * Cada bloco traz os seus próprios campos — os mesmos que os tipos de secção
+ * declaram — por isso o formulário de cada um é o `Campos` de baixo, chamado
+ * outra vez com a definição do bloco.
+ */
+function CampoBlocos({ valor, aoMudar, etiqueta }) {
+  const blocos = Array.isArray(valor) ? valor : []
+
+  const acrescentar = (tipo) =>
+    aoMudar([...blocos, { tipo, ...TIPOS_DE_BLOCO[tipo].omissao }])
+
+  return (
+    <div className="admin__cartoes">
+      <span className="admin__campo-etiqueta">{etiqueta}</span>
+
+      <ListaArrastavel itens={blocos} aoMudar={aoMudar}>
+        {({ item, indice, mover, remover, alterar, arrastavel }) => {
+          const def = TIPOS_DE_BLOCO[item.tipo]
+          return (
+            <div key={indice} {...arrastavel}>
+              <TopoDoItem
+                nome={def?.nome || item.tipo}
+                indice={indice}
+                total={blocos.length}
+                mover={mover}
+                remover={remover}
+              />
+              {def && <Campos definicao={def} dados={item} aoMudar={alterar} />}
+            </div>
+          )
+        }}
+      </ListaArrastavel>
+
+      <div className="admin__acoes admin__acoes--acrescentar">
+        {Object.entries(TIPOS_DE_BLOCO).map(([tipo, def]) => (
+          <button
+            key={tipo}
+            type="button"
+            className="admin__btn admin__btn--claro"
+            onClick={() => acrescentar(tipo)}
+          >
+            + {def.nome}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
@@ -122,6 +246,17 @@ export default function Campos({ definicao, dados, aoMudar }) {
           key={campo.chave}
           etiqueta={campo.etiqueta}
           valor={valor}
+          aoMudar={muda}
+        />
+      )
+    }
+
+    if (campo.tipo === 'blocos') {
+      return (
+        <CampoBlocos
+          key={campo.chave}
+          etiqueta={campo.etiqueta}
+          valor={dados[campo.chave]}
           aoMudar={muda}
         />
       )

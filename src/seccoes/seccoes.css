@@ -238,3 +238,52 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------- Conteúdo livre (blocos) ----------------
+   Os blocos empilham-se com um respiro constante; o alinhamento vem da secção
+   e cada bloco pode sobrepor-se a ele. */
+.seccao--livre .seccao__interior {
+  display: flex;
+  flex-direction: column;
+  gap: calc(24 * var(--esp));
+}
+
+.bloco__titulo {
+  font-size: calc(56 * var(--pt) * var(--escala-titulos));
+  line-height: 1.05;
+  margin: 0;
+  color: inherit;
+}
+
+.bloco__subtitulo {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: calc(34 * var(--pt) * var(--escala-titulos));
+  line-height: 1.2;
+  margin: 0;
+  color: inherit;
+}
+
+.bloco__texto {
+  margin: 0;
+  color: inherit;
+}
+
+.bloco__figura {
+  margin: 0;
+}
+
+.bloco__figura img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.bloco__figura figcaption {
+  margin-top: calc(10 * var(--esp));
+  opacity: 0.75;
+}
+
+.bloco__espaco {
+  flex: none;
+}
