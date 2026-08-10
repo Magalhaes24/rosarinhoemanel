@@ -9,10 +9,12 @@ import { useEdicao } from '../lib/edicao.jsx'
  * página. Em modo de edição vira um campo editável no próprio sítio, com o
  * aspeto que terá quando gravado.
  *
- * `multilinha` permite Enter; nos títulos e rótulos curtos o Enter grava e
- * sai, que é o que se espera de um campo de uma linha.
+ * O Enter faz parágrafo — insere uma quebra em vez de fechar o campo, que é o
+ * que se espera de quem está a escrever no próprio site. Para sair sem rato há
+ * o Escape. `multilinha={false}` reserva-se aos campos que só podem ter uma
+ * linha (uma hora, um número), onde o Enter grava e sai.
  */
-export default function T({ k, multilinha = false }) {
+export default function T({ k, multilinha = true }) {
   const t = useTexto()
   const { emEdicao, alterarTexto } = useEdicao()
   const ref = useRef(null)
@@ -40,9 +42,15 @@ export default function T({ k, multilinha = false }) {
       title={k}
       onInput={(e) => alterarTexto(k, e.currentTarget.textContent)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' && !multilinha) {
+        if (e.key === 'Enter') {
+          // Nunca a quebra do próprio contentEditable: essa mete <div>/<br> e
+          // o `textContent` — que é o que se grava — perdia a quebra.
           e.preventDefault()
-          e.currentTarget.blur()
+          if (multilinha) {
+            document.execCommand('insertText', false, '\n')
+          } else {
+            e.currentTarget.blur()
+          }
         }
         if (e.key === 'Escape') e.currentTarget.blur()
       }}

@@ -98,6 +98,8 @@
   color: inherit;
   min-width: 1ch;
   display: inline-block;
+  /* As quebras feitas com Enter têm de aparecer já durante a edição. */
+  white-space: pre-line;
 }
 
 .editavel:hover {

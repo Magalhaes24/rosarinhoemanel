@@ -48,10 +48,14 @@ export const textosPadrao = {
   'missa.titulo': 'Missa',
   'missa.local': 'Igreja de Santa Isabel, Lisboa',
   'missa.hora': '12:30',
+  'missa.morada': 'Igreja de Santa Isabel, Lisboa',
 
   'copo.titulo': 'Copo d’água',
   'copo.local': 'Quinta de D. Carlos, Alenquer',
   'copo.hora': '14:30',
+  'copo.morada': 'Quinta de D. Carlos, Alenquer',
+
+  'mapas.legenda': 'Como chegar',
 
   'rsvp.destaque': 'Gostávamos muito que fizessem parte deste dia!',
   'rsvp.texto': 'Se ainda não o fizeram, pedimos que confirmem aqui a vossa presença.',
@@ -132,8 +136,12 @@ export const imagensEditaveis = [
 export const gruposDeTexto = [
   { titulo: 'Menu', chaves: ['nav.inicio', 'nav.noivos', 'nav.presentes'] },
   { titulo: 'Início', chaves: ['hero.nome1', 'hero.nome2', 'hero.data'] },
-  { titulo: 'Missa', chaves: ['missa.titulo', 'missa.local', 'missa.hora'] },
-  { titulo: 'Copo d’água', chaves: ['copo.titulo', 'copo.local', 'copo.hora'] },
+  { titulo: 'Missa', chaves: ['missa.titulo', 'missa.local', 'missa.hora', 'missa.morada'] },
+  { titulo: 'Copo d’água', chaves: ['copo.titulo', 'copo.local', 'copo.hora', 'copo.morada'] },
+  {
+    titulo: 'Botões de indicações',
+    chaves: ['mapas.legenda'],
+  },
   {
     titulo: 'Confirmação de presença',
     chaves: [

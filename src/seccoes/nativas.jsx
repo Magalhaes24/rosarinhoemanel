@@ -7,6 +7,9 @@ import Galeria from '../components/Galeria.jsx'
 import RsvpForm from '../components/RsvpForm.jsx'
 import PresenteForm from '../components/PresenteForm.jsx'
 import { molduras2022 } from '../data/molduras.js'
+import iconeApple from '../assets/mapas/apple-maps.svg'
+import iconeGoogle from '../assets/mapas/google-maps.svg'
+import iconeWaze from '../assets/mapas/waze.svg'
 
 /**
  * As secções desenhadas a partir do rascunho.
@@ -28,12 +31,52 @@ function Hero() {
           <br />
           <T k="hero.nome2" />
         </h1>
-        <p className="hero__data"><T k="hero.data" /></p>
+        <p className="hero__data"><T k="hero.data" multilinha={false} /></p>
       </div>
       <div className="hero__fotografia">
         <Img k="hero.casal" alt="Rosarinho e Manel" />
       </div>
     </section>
+  )
+}
+
+/**
+ * Atalhos de navegação para a morada da secção.
+ *
+ * Cada aplicação tem o seu esquema de ligação; todas aceitam a morada por
+ * texto, por isso basta o que está escrito no campo «morada» da administração.
+ */
+function ComoChegar({ chaveMorada }) {
+  const t = useTexto()
+  const morada = (t(chaveMorada) || '').trim()
+  if (!morada) return null
+
+  const destino = encodeURIComponent(morada)
+  const ligacoes = [
+    ['Google Maps', iconeGoogle, `https://www.google.com/maps/dir/?api=1&destination=${destino}`],
+    ['Apple Maps', iconeApple, `https://maps.apple.com/?daddr=${destino}&dirflg=d`],
+    ['Waze', iconeWaze, `https://waze.com/ul?q=${destino}&navigate=yes`],
+  ]
+
+  return (
+    <div className="comoChegar">
+      <span className="corpo comoChegar__legenda"><T k="mapas.legenda" /></span>
+      <div className="comoChegar__pills">
+        {ligacoes.map(([nome, icone, href]) => (
+          <a
+            key={nome}
+            className="corpo comoChegar__pill"
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`${nome} — ${morada}`}
+          >
+            <img src={icone} alt="" />
+            <span>{nome}</span>
+          </a>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -44,7 +87,8 @@ function BandaMissa() {
       <div className="banda__caixa" data-revelar>
         <h2 className="display banda__titulo"><T k="missa.titulo" /></h2>
         <p className="corpo banda__local"><T k="missa.local" /></p>
-        <p className="corpo banda__hora"><T k="missa.hora" /></p>
+        <p className="corpo banda__hora"><T k="missa.hora" multilinha={false} /></p>
+        <ComoChegar chaveMorada="missa.morada" />
       </div>
     </section>
   )
@@ -57,7 +101,8 @@ function BandaCopo() {
       <div className="banda__caixa" data-revelar>
         <h2 className="display banda__titulo"><T k="copo.titulo" /></h2>
         <p className="corpo banda__local"><T k="copo.local" /></p>
-        <p className="corpo banda__hora"><T k="copo.hora" /></p>
+        <p className="corpo banda__hora"><T k="copo.hora" multilinha={false} /></p>
+        <ComoChegar chaveMorada="copo.morada" />
       </div>
     </section>
   )
@@ -125,7 +170,7 @@ function Drivers() {
         <strong>
           <T k="drivers.contactoNome" /> -{' '}
           <a href={`tel:+351${t('drivers.telefone').replace(/\s/g, '')}`} className="drivers__tel">
-            <T k="drivers.telefone" />
+            <T k="drivers.telefone" multilinha={false} />
           </a>
         </strong>
       </p>
@@ -169,7 +214,7 @@ function Ano2018() {
   return (
     <section className="ano ano--creme">
       <div className="ano__texto" data-revelar>
-        <h2 className="display ano__numero"><T k="ano2018.numero" /></h2>
+        <h2 className="display ano__numero"><T k="ano2018.numero" multilinha={false} /></h2>
         <p className="corpo-sm"><T k="ano2018.texto" /></p>
       </div>
       <div className="ano__fotografia" data-revelar style={{ '--atraso': '0.16s' }}>
@@ -183,7 +228,7 @@ function Ano2022() {
   return (
     <section className="ano ano--azul ano--centrado">
       <div className="ano__texto" data-revelar>
-        <h2 className="display ano__numero"><T k="ano2022.numero" /></h2>
+        <h2 className="display ano__numero"><T k="ano2022.numero" multilinha={false} /></h2>
         <p className="corpo-sm"><T k="ano2022.texto" /></p>
       </div>
       <div className="ano__carrossel">
@@ -204,7 +249,7 @@ function Ano2026() {
   return (
     <section className="ano ano--creme">
       <div className="ano__texto" data-revelar>
-        <h2 className="display ano__numero"><T k="ano2026.numero" /></h2>
+        <h2 className="display ano__numero"><T k="ano2026.numero" multilinha={false} /></h2>
         <p className="corpo-sm"><T k="ano2026.texto" /></p>
       </div>
       <div className="ano__fotografia ano__fotografia--alta" data-revelar style={{ '--atraso': '0.16s' }}>
@@ -320,7 +365,7 @@ function Contribuicao() {
       <div className="contribuicao__texto" data-revelar>
         <p><T k="contribuicao.texto1" /></p>
         <p><T k="contribuicao.texto2" /></p>
-        <p className="contribuicao__iban"><T k="contribuicao.iban" /></p>
+        <p className="contribuicao__iban"><T k="contribuicao.iban" multilinha={false} /></p>
       </div>
       <div className="contribuicao__cartao">
         <PresenteForm />

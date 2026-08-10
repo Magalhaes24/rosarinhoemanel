@@ -106,6 +106,65 @@
   color: inherit;
 }
 
+/* Atalhos discretos para as aplicações de navegação, na caixa da banda. */
+.comoChegar {
+  margin-top: calc(14 * var(--esp));
+}
+
+.comoChegar .comoChegar__legenda {
+  display: block;
+  color: inherit;
+  opacity: 0.65;
+  font-size: calc(9 * var(--pt) * var(--escala-corpo));
+  letter-spacing: 0.06em;
+  margin-bottom: calc(8 * var(--esp));
+}
+
+/* Sempre numa linha só — também no telemóvel, onde as pílulas encolhem em vez
+   de partir para uma segunda linha com um botão sozinho. */
+.comoChegar__pills {
+  display: inline-grid;
+  grid-auto-flow: column;
+  /* Colunas iguais: todas ficam com a largura da pílula mais larga. */
+  grid-auto-columns: 1fr;
+  align-items: center;
+  gap: calc(8 * var(--pt));
+  max-width: 100%;
+}
+
+/* Pílulas pequenas, à imagem do leonorejoaomaria.pt: fundo branco, contorno
+   ténue e o ícone da aplicação à esquerda do nome. */
+.comoChegar .comoChegar__pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  padding: 0.5em 0.85em;
+  border-radius: 999px;
+  border: 1px solid rgba(41, 38, 33, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  color: inherit;
+  text-decoration: none;
+  font-size: calc(9.5 * var(--pt) * var(--escala-corpo));
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.comoChegar .comoChegar__pill img {
+  width: 1.25em;
+  height: 1.25em;
+  object-fit: contain;
+  display: block;
+}
+
+.comoChegar .comoChegar__pill:hover,
+.comoChegar .comoChegar__pill:focus-visible {
+  background: #fff;
+  border-color: rgba(41, 38, 33, 0.28);
+}
+
 /* ---------------- RSVP ---------------- */
 .rsvp {
   background: var(--azul);
@@ -281,6 +340,15 @@
   .banda--missa,
   .banda--copo {
     min-height: calc(430 * var(--esp));
+  }
+
+  /* No telemóvel a escala é outra: as pílulas precisam de mais corpo para
+     continuarem legíveis, e ainda assim cabem as três numa linha. */
+  .comoChegar .comoChegar__pill {
+    font-size: calc(12 * var(--pt) * var(--escala-corpo));
+  }
+  .comoChegar .comoChegar__legenda {
+    font-size: calc(11 * var(--pt) * var(--escala-corpo));
   }
   .banda--missa .banda__caixa,
   .banda--copo .banda__caixa {
