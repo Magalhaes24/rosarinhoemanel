@@ -3,37 +3,31 @@ title = "rosarinhoemanel"
 [extend]
 useDefault = true
 
-[[allowlists]]
+# Um único bloco `[allowlist]`: é o que esta versão do gitleaks (v8.24) lê. Com
+# vários blocos `[[allowlists]]` a configuração é aceite sem erro mas ignorada
+# por inteiro — e nem as isenções que já cá estavam voltam a ser aplicadas.
+[allowlist]
 description = """
-Isenta um único commit do histórico.
+Duas isenções, ambas estreitas.
 
-O commit 697875c tinha a configuração web do Firebase escrita no .env.example
-com os valores reais. Não é um segredo — essa configuração vai dentro do
-JavaScript que qualquer visitante descarrega, e não há maneira de a esconder;
-quem protege os dados são as regras do Firestore, o App Check e a restrição da
-API key a referrers HTTP (ver SECURITY.md). Mesmo assim, o .env.example passou
-a levar apenas marcadores, que é o que um ficheiro de exemplo deve ter.
+1. O commit 697875c tinha a configuração web do Firebase escrita no
+   .env.example com os valores reais. Não é um segredo — essa configuração vai
+   dentro do JavaScript que qualquer visitante descarrega, e não há maneira de
+   a esconder; quem protege os dados são as regras do Firestore, o App Check e
+   a restrição da API key a referrers HTTP (ver SECURITY.md). Mesmo assim, o
+   .env.example passou a levar apenas marcadores.
 
-A isenção é só deste commit. Qualquer chave nova, em qualquer ficheiro ou
-commit, continua a reprovar o CI.
+2. As linhas com `request.auth.uid` nas regras de segurança. A regra genérica
+   de «api key» apanha o UID do Firebase — 28 caracteres de letras e algarismos
+   — e lê-o como um segredo. Não é: um UID é um identificador de conta, público
+   por natureza, e não autoriza nada por si só. Quem decide o acesso é a regra
+   do lado do servidor, que é precisamente onde ele está escrito.
+
+   Esta isenção é por linha e não por commit, ao contrário da primeira: assim
+   não volta a reprovar o CI de cada vez que se acrescenta ou muda um
+   administrador. Uma chave a sério, em qualquer outra linha, continua a
+   reprovar.
 """
 commits = ["697875c0326fe9fcc1fc2d420f970c98e6c14cf5"]
-
-[[allowlists]]
-description = """
-Isenta os UIDs de administrador dentro das regras de segurança.
-
-A regra genérica de «api key» apanha o UID do Firebase — 28 caracteres de
-letras e algarismos — e lê-o como um segredo. Não é: um UID é um identificador
-de conta, público por natureza (aparece em qualquer pedido autenticado) e não
-autoriza nada por si só. Quem decide o acesso é a regra do lado do servidor,
-que é precisamente onde ele está escrito.
-
-A isenção é estreita de propósito: só linhas com `request.auth.uid`, e só nos
-dois ficheiros de regras. Uma chave a sério, mesmo nestes ficheiros, continua a
-reprovar o CI — e foi por a isenção anterior ser por commit que o CI voltava a
-reprovar a cada alteração destas linhas.
-"""
-paths = ['''(^|/)(firestore|storage)\.rules$''']
 regexTarget = "line"
 regexes = ['''request\.auth\.uid''']
