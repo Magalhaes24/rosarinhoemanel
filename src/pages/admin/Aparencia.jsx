@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { doc, getFirestore, setDoc } from 'firebase/firestore'
+import { useEffect, useRef, useState } from 'react'
+import { deleteField, doc, getFirestore, setDoc } from 'firebase/firestore'
 import { app } from '../../lib/firebase.js'
 import { useConteudo } from '../../lib/conteudo.jsx'
 import {
@@ -25,6 +25,45 @@ async function gravar(parcial) {
   await setDoc(doc(db, 'conteudo', 'site'), parcial, { merge: true })
 }
 
+/**
+ * Rascunho do formulário que continua a acompanhar a base de dados enquanto
+ * ninguém lhe tocou.
+ *
+ * O conteúdo gravado chega depois da primeira pintura — o Firestore é
+ * carregado a pedido. Um `useState(valor)` seco congelava os valores por
+ * omissão, e bastava abrir este separador e gravar para escrever o original
+ * por cima do que o admin já tinha na base de dados. A partir da primeira
+ * alteração deixa de sincronizar, senão uma gravação feita noutro separador
+ * apagava o que se estivesse a escrever aqui.
+ */
+function useRascunhoSincronizado(valor) {
+  const [rascunho, setRascunho] = useState(valor)
+  const tocado = useRef(false)
+
+  useEffect(() => {
+    if (!tocado.current) setRascunho(valor)
+  }, [valor])
+
+  const alterar = (novo) => {
+    tocado.current = true
+    setRascunho(novo)
+  }
+
+  return [rascunho, alterar]
+}
+
+/**
+ * Um campo deixado vazio não se grava vazio: apaga-se da base de dados, para o
+ * texto voltar ao original do site — que é o que a ajuda do formulário promete.
+ */
+function semVazios(textos) {
+  const saida = {}
+  for (const [chave, valor] of Object.entries(textos)) {
+    saida[chave] = typeof valor === 'string' && valor.trim() === '' ? deleteField() : valor
+  }
+  return saida
+}
+
 function BarraGravar({ estado, aoGravar, aoRepor }) {
   return (
     <div className="admin__barra-acoes">
@@ -41,8 +80,8 @@ function BarraGravar({ estado, aoGravar, aoRepor }) {
 }
 
 function Tema() {
-  const { tema } = useConteudo()
-  const [rascunho, setRascunho] = useState(tema)
+  const { temaGravado } = useConteudo()
+  const [rascunho, setRascunho] = useRascunhoSincronizado(temaGravado)
   const [estado, setEstado] = useState('idle')
 
   const muda = (k, v) => setRascunho({ ...rascunho, [k]: v })
@@ -129,14 +168,14 @@ function Tema() {
 }
 
 function Textos() {
-  const { textos } = useConteudo()
-  const [rascunho, setRascunho] = useState(textos)
+  const { textosGravados } = useConteudo()
+  const [rascunho, setRascunho] = useRascunhoSincronizado(textosGravados)
   const [estado, setEstado] = useState('idle')
 
   async function submeter() {
     setEstado('a-gravar')
     try {
-      await gravar({ textos: rascunho })
+      await gravar({ textos: semVazios(rascunho) })
       setEstado('ok')
     } catch {
       setEstado('erro')
