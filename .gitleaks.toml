@@ -3,7 +3,7 @@ title = "rosarinhoemanel"
 [extend]
 useDefault = true
 
-[allowlist]
+[[allowlists]]
 description = """
 Isenta um único commit do histórico.
 
@@ -18,3 +18,22 @@ A isenção é só deste commit. Qualquer chave nova, em qualquer ficheiro ou
 commit, continua a reprovar o CI.
 """
 commits = ["697875c0326fe9fcc1fc2d420f970c98e6c14cf5"]
+
+[[allowlists]]
+description = """
+Isenta os UIDs de administrador dentro das regras de segurança.
+
+A regra genérica de «api key» apanha o UID do Firebase — 28 caracteres de
+letras e algarismos — e lê-o como um segredo. Não é: um UID é um identificador
+de conta, público por natureza (aparece em qualquer pedido autenticado) e não
+autoriza nada por si só. Quem decide o acesso é a regra do lado do servidor,
+que é precisamente onde ele está escrito.
+
+A isenção é estreita de propósito: só linhas com `request.auth.uid`, e só nos
+dois ficheiros de regras. Uma chave a sério, mesmo nestes ficheiros, continua a
+reprovar o CI — e foi por a isenção anterior ser por commit que o CI voltava a
+reprovar a cada alteração destas linhas.
+"""
+paths = ['''(^|/)(firestore|storage)\.rules$''']
+regexTarget = "line"
+regexes = ['''request\.auth\.uid''']
