@@ -1,4 +1,6 @@
 import Carousel from '../components/Carousel.jsx'
+import RsvpForm from '../components/RsvpForm.jsx'
+import PresenteForm from '../components/PresenteForm.jsx'
 import './seccoes.css'
 
 /**
@@ -30,17 +32,120 @@ function Titulo({ texto, className = '' }) {
   return <h2 className={`display seccao__titulo ${className}`}>{texto}</h2>
 }
 
+/** À esquerda, ao centro ou à direita — o mesmo em todos os tipos. */
+export const ALINHAMENTOS = [
+  ['center', 'Ao centro'],
+  ['left', 'À esquerda'],
+  ['right', 'À direita'],
+]
+
+const campoAlinhamento = {
+  chave: 'alinhamento',
+  etiqueta: 'Alinhamento',
+  tipo: 'escolha',
+  opcoes: ALINHAMENTOS,
+}
+
+/** O alinhamento aplica-se ao bloco inteiro: título, texto e botões. */
+function estiloAlinhado(alinhamento) {
+  return { textAlign: alinhamento || 'center' }
+}
+
 /** Texto simples, com título opcional. */
 function Texto({ dados }) {
   return (
     <section className={`seccao seccao--texto ${classesFundo(dados.fundo)}`}>
+      <div className="seccao__interior" data-revelar style={estiloAlinhado(dados.alinhamento)}>
+        <Titulo texto={dados.titulo} />
+        {dados.corpo && <p className="corpo seccao__corpo">{dados.corpo}</p>}
+      </div>
+    </section>
+  )
+}
+
+/** Uma fotografia sozinha, com legenda opcional. */
+function Fotografia({ dados }) {
+  if (!dados.fotografia) return null
+  const larguras = { pequena: '40%', media: '70%', inteira: '100%' }
+  return (
+    <section className={`seccao seccao--fotografia ${classesFundo(dados.fundo)}`}>
+      <div className="seccao__interior" data-revelar style={estiloAlinhado(dados.alinhamento)}>
+        <figure
+          className="seccao__figura"
+          style={{
+            width: larguras[dados.largura] || larguras.media,
+            marginLeft: dados.alinhamento === 'left' ? 0 : 'auto',
+            marginRight: dados.alinhamento === 'right' ? 0 : 'auto',
+          }}
+        >
+          <img src={dados.fotografia} alt={dados.legenda || ''} loading="lazy" />
+          {dados.legenda && <figcaption className="corpo-sm">{dados.legenda}</figcaption>}
+        </figure>
+      </div>
+    </section>
+  )
+}
+
+/**
+ * Grelha de cartões — 2, 3 ou 4 por linha.
+ *
+ * O número de linhas não se escolhe: sai do número de cartões. Seis cartões em
+ * três colunas dão o 3x2; quatro em duas dão o 2x2. Nos telemóveis passa
+ * sempre a uma coluna, que é a única leitura possível num ecrã estreito.
+ */
+function Grelha({ dados }) {
+  const cartoes = Array.isArray(dados.cartoes) ? dados.cartoes : []
+  const colunas = Number(dados.colunas) || 2
+
+  return (
+    <section className={`seccao seccao--grelha ${classesFundo(dados.fundo)}`}>
+      <div className="seccao__interior" data-revelar style={estiloAlinhado(dados.alinhamento)}>
+        <Titulo texto={dados.titulo} />
+        {cartoes.length > 0 && (
+          <div className="grelha" style={{ '--colunas': colunas }}>
+            {cartoes.map((c, i) => (
+              <article
+                key={i}
+                className="grelha__cartao"
+                // Um cartão é uma coluna flex: o alinhamento do bloco só chega
+                // aos filhos em bloco, não ao botão.
+                style={{
+                  alignItems:
+                    dados.alinhamento === 'left'
+                      ? 'flex-start'
+                      : dados.alinhamento === 'right'
+                        ? 'flex-end'
+                        : 'center',
+                }}
+              >
+                {c.fotografia && (
+                  <img className="grelha__imagem" src={c.fotografia} alt="" loading="lazy" />
+                )}
+                {c.titulo && <h3 className="grelha__titulo">{c.titulo}</h3>}
+                {c.texto && <p className="corpo-sm grelha__texto">{c.texto}</p>}
+                {c.botao && (
+                  <a className="botao-contorno grelha__botao" href={c.destino || '#'}>
+                    {c.botao}
+                  </a>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+/** Um dos formulários do site, para o poder pôr onde fizer falta. */
+function Formulario({ dados }) {
+  return (
+    <section className={`seccao seccao--formulario ${classesFundo(dados.fundo)}`}>
       <div className="seccao__interior" data-revelar>
         <Titulo texto={dados.titulo} />
-        {dados.corpo && (
-          <p className="corpo seccao__corpo" style={{ textAlign: dados.alinhamento || 'center' }}>
-            {dados.corpo}
-          </p>
-        )}
+        <div className="seccao__cartao">
+          {dados.qual === 'presente' ? <PresenteForm /> : <RsvpForm />}
+        </div>
       </div>
     </section>
   )
@@ -117,10 +222,21 @@ function Botoes({ dados }) {
 
   return (
     <section className={`seccao seccao--botoes ${classesFundo(dados.fundo)}`}>
-      <div className="seccao__interior" data-revelar>
+      <div className="seccao__interior" data-revelar style={estiloAlinhado(dados.alinhamento)}>
         <Titulo texto={dados.titulo} />
         {botoes.length > 0 && (
-          <div className="seccao__botoes">
+          <div
+            className="seccao__botoes"
+            // Uma linha flex não obedece ao `text-align` herdado.
+            style={{
+              justifyContent:
+                dados.alinhamento === 'left'
+                  ? 'flex-start'
+                  : dados.alinhamento === 'right'
+                    ? 'flex-end'
+                    : 'center',
+            }}
+          >
             {botoes.map((b, i) => (
               <a key={i} className="botao-contorno" href={b.destino || '#'}>
                 {b.texto}
@@ -161,15 +277,82 @@ export const tiposPersonalizados = {
       { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
       { chave: 'corpo', etiqueta: 'Texto', tipo: 'textoLongo' },
       campoFundo,
+      campoAlinhamento,
+    ],
+  },
+
+  fotografia: {
+    nome: 'Fotografia',
+    descricao: 'Uma fotografia sozinha, com legenda opcional.',
+    Componente: Fotografia,
+    omissao: { fotografia: '', legenda: '', largura: 'media', alinhamento: 'center', fundo: 'creme' },
+    campos: [
+      { chave: 'fotografia', etiqueta: 'Fotografia', tipo: 'fotografia' },
+      { chave: 'legenda', etiqueta: 'Legenda', tipo: 'texto' },
       {
-        chave: 'alinhamento',
-        etiqueta: 'Alinhamento',
+        chave: 'largura',
+        etiqueta: 'Largura',
         tipo: 'escolha',
         opcoes: [
-          ['center', 'Centrado'],
-          ['left', 'À esquerda'],
+          ['pequena', 'Pequena'],
+          ['media', 'Média'],
+          ['inteira', 'Toda a largura'],
         ],
       },
+      campoAlinhamento,
+      campoFundo,
+    ],
+  },
+
+  grelha: {
+    nome: 'Grelha de cartões',
+    descricao: 'Cartões em 2, 3 ou 4 colunas — 4 cartões em 2 colunas dão um 2x2.',
+    Componente: Grelha,
+    omissao: {
+      titulo: '',
+      colunas: 2,
+      alinhamento: 'center',
+      fundo: 'creme',
+      cartoes: [
+        { titulo: 'Primeiro', texto: '' },
+        { titulo: 'Segundo', texto: '' },
+      ],
+    },
+    campos: [
+      { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
+      {
+        chave: 'colunas',
+        etiqueta: 'Colunas',
+        tipo: 'escolha',
+        opcoes: [
+          ['2', 'Duas'],
+          ['3', 'Três'],
+          ['4', 'Quatro'],
+        ],
+      },
+      { chave: 'cartoes', etiqueta: 'Cartões', tipo: 'cartoes' },
+      campoAlinhamento,
+      campoFundo,
+    ],
+  },
+
+  formulario: {
+    nome: 'Formulário',
+    descricao: 'A confirmação de presença ou o formulário do presente.',
+    Componente: Formulario,
+    omissao: { titulo: '', qual: 'rsvp', fundo: 'creme' },
+    campos: [
+      { chave: 'titulo', etiqueta: 'Título', tipo: 'texto' },
+      {
+        chave: 'qual',
+        etiqueta: 'Formulário',
+        tipo: 'escolha',
+        opcoes: [
+          ['rsvp', 'Confirmação de presença'],
+          ['presente', 'Presente oferecido'],
+        ],
+      },
+      campoFundo,
     ],
   },
 
@@ -237,6 +420,7 @@ export const tiposPersonalizados = {
       { chave: 'destino1', etiqueta: 'Destino do primeiro', tipo: 'texto', ajuda: '/noivos ou https://…' },
       { chave: 'botao2', etiqueta: 'Segundo botão', tipo: 'texto' },
       { chave: 'destino2', etiqueta: 'Destino do segundo', tipo: 'texto' },
+      campoAlinhamento,
       campoFundo,
     ],
   },

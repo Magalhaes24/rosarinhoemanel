@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore'
 import { app } from '../../lib/firebase.js'
 import { apagarFotografia } from '../../lib/fotografias.js'
-import CampoFotografia from './CampoFotografia.jsx'
+import CampoFotografia from '../../components/CampoFotografia.jsx'
 import { useConfirmar } from '../../components/Confirmacao.jsx'
 
 const db = getFirestore(app)

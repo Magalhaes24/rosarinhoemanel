@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { guardarFotografia, mensagemDeEnvio } from '../../lib/fotografias.js'
+import { guardarFotografia, mensagemDeEnvio } from '../lib/fotografias.js'
 
 /**
  * Campo de imagem, por duas vias:

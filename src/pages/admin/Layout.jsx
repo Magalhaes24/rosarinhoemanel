@@ -4,7 +4,7 @@ import { app } from '../../lib/firebase.js'
 import { useConteudo } from '../../lib/conteudo.jsx'
 import { paginas as listaDePaginas, paginasPadrao } from '../../data/paginasPadrao.js'
 import { registo, tiposAcrescentaveis } from '../../seccoes/registo.jsx'
-import CampoFotografia from './CampoFotografia.jsx'
+import Campos from '../../seccoes/campos.jsx'
 import { useConfirmar } from '../../components/Confirmacao.jsx'
 
 const db = getFirestore(app)
@@ -12,68 +12,6 @@ const db = getFirestore(app)
 /** Identificador estável, para o React e para a reordenação. */
 function novoId(tipo) {
   return `${tipo}-${Math.random().toString(36).slice(2, 8)}`
-}
-
-/** Formulário gerado a partir dos `campos` declarados pelo tipo. */
-function Campos({ definicao, dados, aoMudar }) {
-  return definicao.campos.map((campo) => {
-    const valor = dados[campo.chave] ?? ''
-    const muda = (v) => aoMudar({ ...dados, [campo.chave]: v })
-
-    if (campo.tipo === 'fotografia') {
-      return (
-        <CampoFotografia
-          key={campo.chave}
-          etiqueta={campo.etiqueta}
-          valor={valor}
-          aoMudar={muda}
-        />
-      )
-    }
-
-    return (
-      <label key={campo.chave} className="admin__campo">
-        <span>
-          {campo.etiqueta}
-          {campo.ajuda && <em className="admin__campo-ajuda"> — {campo.ajuda}</em>}
-        </span>
-
-        {campo.tipo === 'textoLongo' || campo.tipo === 'listaDeFotografias' ? (
-          <textarea
-            rows={campo.tipo === 'listaDeFotografias' ? 5 : 3}
-            value={valor}
-            onChange={(e) => muda(e.target.value)}
-            placeholder={campo.tipo === 'listaDeFotografias' ? 'https://…\nhttps://…' : undefined}
-          />
-        ) : campo.tipo === 'escolha' ? (
-          <select value={valor} onChange={(e) => muda(e.target.value)}>
-            {campo.opcoes.map(([v, etiqueta]) => (
-              <option key={v} value={v}>
-                {etiqueta}
-              </option>
-            ))}
-          </select>
-        ) : campo.tipo === 'numero' ? (
-          <input
-            type="number"
-            min={campo.min}
-            max={campo.max}
-            step={campo.passo}
-            value={valor}
-            onChange={(e) => muda(Number(e.target.value))}
-          />
-        ) : campo.tipo === 'booleano' ? (
-          <input
-            type="checkbox"
-            checked={valor !== false}
-            onChange={(e) => muda(e.target.checked)}
-          />
-        ) : (
-          <input type="text" value={valor} onChange={(e) => muda(e.target.value)} />
-        )}
-      </label>
-    )
-  })
 }
 
 function EscolherTipo({ aoEscolher, aoCancelar }) {

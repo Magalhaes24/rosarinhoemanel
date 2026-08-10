@@ -156,3 +156,85 @@
     gap: calc(30 * var(--pt));
   }
 }
+
+/* ---------------- Fotografia sozinha ---------------- */
+.seccao__figura {
+  margin: 0;
+}
+
+.seccao__figura img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.seccao__figura figcaption {
+  margin-top: calc(12 * var(--esp));
+  opacity: 0.75;
+}
+
+/* ---------------- Grelha de cartões ----------------
+   O número de linhas não se declara: sai do número de cartões a dividir pelas
+   colunas. Nos ecrãs estreitos passa a uma coluna — três cartões lado a lado
+   num telemóvel não se leem. */
+.grelha {
+  display: grid;
+  grid-template-columns: repeat(var(--colunas, 2), minmax(0, 1fr));
+  gap: calc(28 * var(--pt));
+  margin-top: calc(40 * var(--esp));
+  text-align: inherit;
+}
+
+.grelha__cartao {
+  display: flex;
+  flex-direction: column;
+  gap: calc(10 * var(--esp));
+  min-width: 0;
+}
+
+/* Imagem e texto ocupam a célula toda; só o botão é que segue o alinhamento
+   escolhido — daí o `align-self` explícito aqui. */
+.grelha__imagem,
+.grelha__titulo,
+.grelha__texto {
+  align-self: stretch;
+}
+
+.grelha__imagem {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.grelha__titulo {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: calc(34 * var(--pt) * var(--escala-titulos));
+  line-height: 1.15;
+  margin: 0;
+  color: inherit;
+}
+
+.grelha__texto {
+  color: inherit;
+  margin: 0;
+}
+
+/* Um botão dentro de um cartão não deve esticar à largura da célula — segue o
+   alinhamento do bloco, que o componente passa em `align-items`. */
+.grelha__botao {
+  margin-top: auto;
+}
+
+/* ---------------- Formulário como secção ---------------- */
+.seccao__cartao {
+  max-width: calc(520 * var(--pt));
+  margin: calc(40 * var(--esp)) auto 0;
+}
+
+@media (max-width: 760px) {
+  .grelha {
+    grid-template-columns: 1fr;
+  }
+}

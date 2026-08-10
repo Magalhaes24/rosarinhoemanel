@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useConteudo } from '../lib/conteudo.jsx'
 import { useEdicao } from '../lib/edicao.jsx'
 import { useConfirmar } from '../components/Confirmacao.jsx'
 import { tiposNativos } from './nativas.jsx'
 import { tiposPersonalizados } from './personalizadas.jsx'
+import Campos from './campos.jsx'
 import './edicao.css'
 
 /**
@@ -33,8 +35,84 @@ export function Seccao({ seccao }) {
   return <Componente dados={seccao} />
 }
 
+/** Identificador estável, para o React e para a reordenação. */
+function novoId(tipo) {
+  return `${tipo}-${Math.random().toString(36).slice(2, 8)}`
+}
+
+/**
+ * Botão de acrescentar que vive entre duas secções.
+ *
+ * Fica quase invisível até se lhe passar por cima: em edição há um destes em
+ * cada intervalo, e a página ficaria ilegível se todos se vissem sempre.
+ */
+function AcrescentarAqui({ indice, aoAcrescentar }) {
+  const [aberto, setAberto] = useState(false)
+
+  if (!aberto) {
+    return (
+      <div className="acrescentar" contentEditable={false}>
+        <button type="button" className="acrescentar__botao" onClick={() => setAberto(true)}>
+          + Acrescentar secção aqui
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="acrescentar is-aberto" contentEditable={false}>
+      <div className="acrescentar__tipos">
+        {tiposAcrescentaveis.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className="acrescentar__tipo"
+            onClick={() => {
+              aoAcrescentar(indice, t.id)
+              setAberto(false)
+            }}
+          >
+            <strong>{t.nome}</strong>
+            <span>{t.descricao}</span>
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        className="acrescentar__botao"
+        onClick={() => setAberto(false)}
+      >
+        Cancelar
+      </button>
+    </div>
+  )
+}
+
+/**
+ * Painel de campos de uma secção acrescentada, aberto por cima do site.
+ *
+ * É o mesmo formulário do separador «Secções» da administração — só muda o
+ * sítio onde aparece. Cada alteração entra logo no rascunho, para se ver o
+ * resultado por baixo enquanto se mexe nos campos.
+ */
+function PainelDaSeccao({ definicao, dados, aoMudar, aoFechar }) {
+  return (
+    <div className="painel-seccao" contentEditable={false}>
+      <div className="painel-seccao__topo">
+        <strong>{definicao.nome}</strong>
+        <button type="button" className="painel-seccao__fechar" onClick={aoFechar}>
+          Fechar
+        </button>
+      </div>
+      <div className="painel-seccao__corpo">
+        <Campos definicao={definicao} dados={dados} aoMudar={aoMudar} />
+      </div>
+    </div>
+  )
+}
+
 /** Controlos que aparecem por cima de cada secção, em modo de edição. */
-function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar }) {
+function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar, aEditar, setAEditar }) {
   const confirmar = useConfirmar()
   const s = seccoes[indice]
   const def = registo[s.tipo]
@@ -85,9 +163,14 @@ function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar }) {
         {s.escondida ? 'Mostrar' : 'Esconder'}
       </button>
       {!def?.nativo && (
-        <button type="button" className="is-perigo" onClick={remover}>
-          Remover
-        </button>
+        <>
+          <button type="button" onClick={() => setAEditar(aEditar === s.id ? null : s.id)}>
+            {aEditar === s.id ? 'Fechar' : 'Editar'}
+          </button>
+          <button type="button" className="is-perigo" onClick={remover}>
+            Remover
+          </button>
+        </>
       )}
     </div>
   )
@@ -101,29 +184,63 @@ function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar }) {
  */
 export function Pagina({ pagina, seccoes }) {
   const { emEdicao, alterarPagina } = useEdicao()
+  const [aEditar, setAEditar] = useState(null)
 
   if (!emEdicao) return seccoes.map((s) => <Seccao key={s.id} seccao={s} />)
 
-  return seccoes.map((s, i) => {
-    const def = registo[s.tipo]
-    return (
-      <div key={s.id} className={'envolve-seccao' + (s.escondida ? ' is-escondida' : '')}>
-        <ControlosDaSeccao
-          pagina={pagina}
-          seccoes={seccoes}
-          indice={i}
-          aoMudar={alterarPagina}
-        />
-        {s.escondida ? (
-          <p className="envolve-seccao__oculta">
-            «{def?.nome || s.tipo}» está escondida dos convidados.
-          </p>
-        ) : (
-          <Seccao seccao={s} />
-        )}
-      </div>
-    )
-  })
+  /** Entra na posição pedida — não só no fim, para se poder pôr no meio. */
+  const acrescentar = (indice, tipo) => {
+    const def = registo[tipo]
+    const nova = [...seccoes]
+    nova.splice(indice, 0, { id: novoId(tipo), tipo, ...def.omissao })
+    alterarPagina(pagina, nova)
+    setAEditar(nova[indice].id)
+  }
+
+  const editar = (indice, dados) => {
+    const nova = [...seccoes]
+    nova[indice] = dados
+    alterarPagina(pagina, nova)
+  }
+
+  return (
+    <>
+      {seccoes.map((s, i) => {
+        const def = registo[s.tipo]
+        return (
+          <div key={s.id}>
+            <AcrescentarAqui indice={i} aoAcrescentar={acrescentar} />
+            <div className={'envolve-seccao' + (s.escondida ? ' is-escondida' : '')}>
+              <ControlosDaSeccao
+                pagina={pagina}
+                seccoes={seccoes}
+                indice={i}
+                aoMudar={alterarPagina}
+                aEditar={aEditar}
+                setAEditar={setAEditar}
+              />
+              {aEditar === s.id && def && !def.nativo && (
+                <PainelDaSeccao
+                  definicao={def}
+                  dados={s}
+                  aoMudar={(d) => editar(i, d)}
+                  aoFechar={() => setAEditar(null)}
+                />
+              )}
+              {s.escondida ? (
+                <p className="envolve-seccao__oculta">
+                  «{def?.nome || s.tipo}» está escondida dos convidados.
+                </p>
+              ) : (
+                <Seccao seccao={s} />
+              )}
+            </div>
+          </div>
+        )
+      })}
+      <AcrescentarAqui indice={seccoes.length} aoAcrescentar={acrescentar} />
+    </>
+  )
 }
 
 /** Atalho usado pelas três páginas. */

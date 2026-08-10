@@ -85,6 +85,192 @@
   border-color: rgba(168, 57, 46, 0.4);
 }
 
+/* ---------------- Acrescentar secção no sítio ---------------- */
+.acrescentar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  font-family: var(--sans);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Discreto entre secções; só ganha presença quando se lhe passa por cima. */
+.acrescentar__botao {
+  border: 1px dashed rgba(146, 111, 27, 0.5);
+  background: #fff;
+  color: var(--castanho);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 12px;
+  opacity: 0.35;
+  transition: opacity 0.15s ease;
+}
+
+.acrescentar:hover .acrescentar__botao,
+.acrescentar.is-aberto .acrescentar__botao,
+.acrescentar__botao:focus-visible {
+  opacity: 1;
+}
+
+.acrescentar.is-aberto {
+  padding: 16px 12px;
+  background: #fff;
+  box-shadow: 0 2px 14px rgba(41, 38, 33, 0.14);
+}
+
+.acrescentar__tipos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+  width: min(100%, 760px);
+}
+
+.acrescentar__tipo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+  border: 1px solid rgba(41, 38, 33, 0.18);
+  border-radius: 10px;
+  background: #fff;
+  padding: 9px 11px;
+  font-size: 12px;
+  color: var(--quase-preto);
+}
+
+.acrescentar__tipo:hover {
+  background: var(--botao-creme);
+}
+
+.acrescentar__tipo span {
+  color: #7a746c;
+}
+
+/* ---------------- Painel de campos de uma secção ---------------- */
+.painel-seccao {
+  position: absolute;
+  z-index: 40;
+  top: 46px;
+  right: 8px;
+  width: min(340px, calc(100% - 16px));
+  max-height: min(70vh, 620px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(41, 38, 33, 0.26);
+  font-family: var(--sans);
+  text-align: left;
+}
+
+.painel-seccao__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(41, 38, 33, 0.12);
+  font-size: 13px;
+}
+
+.painel-seccao__fechar {
+  border: 1px solid rgba(41, 38, 33, 0.18);
+  background: #fff;
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-size: 12px;
+}
+
+.painel-seccao__corpo {
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+}
+
+/* Os campos são os mesmos da administração, mas aqui vivem num painel
+   estreito: as etiquetas ficam por cima e os controlos a toda a largura. */
+.painel-seccao__corpo .admin__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-seccao__corpo input[type='text'],
+.painel-seccao__corpo input[type='url'],
+.painel-seccao__corpo input[type='number'],
+.painel-seccao__corpo select,
+.painel-seccao__corpo textarea {
+  width: 100%;
+  font: inherit;
+  padding: 6px 8px;
+  border: 1px solid rgba(41, 38, 33, 0.22);
+  border-radius: 7px;
+  background: #fff;
+}
+
+.painel-seccao__corpo .admin__btn {
+  border: 1px solid rgba(41, 38, 33, 0.18);
+  background: #fff;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.painel-seccao__corpo .admin__btn--perigo {
+  color: #a8392e;
+  border-color: rgba(168, 57, 46, 0.4);
+}
+
+.painel-seccao__corpo .admin__cartao {
+  border: 1px solid rgba(41, 38, 33, 0.14);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.painel-seccao__corpo .admin__cartao-topo,
+.painel-seccao__corpo .admin__acoes,
+.painel-seccao__corpo .admin__fotografia-acoes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.painel-seccao__corpo .admin__cartao-topo {
+  justify-content: space-between;
+}
+
+.painel-seccao__corpo .admin__cartoes,
+.painel-seccao__corpo .admin__fotografia {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.painel-seccao__corpo .admin__fotografia-previa img {
+  max-width: 100%;
+  max-height: 120px;
+  border-radius: 8px;
+}
+
+@media (max-width: 760px) {
+  .painel-seccao {
+    left: 8px;
+    right: 8px;
+    width: auto;
+  }
+}
+
 /* ---------------- Texto editável no sítio ---------------- */
 .editavel {
   outline: 1px dashed rgba(146, 111, 27, 0.5);
