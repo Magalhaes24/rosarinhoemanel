@@ -36,6 +36,17 @@ export default function BarraEdicao() {
           <>
             <button
               type="button"
+              className="barra-edicao__btn"
+              // Abre o «acrescentar» do fim da página e rola até lá. Entre as
+              // secções há um em cada intervalo, mas é preciso haver uma porta
+              // de entrada visível sem andar à procura.
+              onClick={() => window.dispatchEvent(new Event('acrescentar-seccao'))}
+            >
+              Acrescentar secção
+            </button>
+
+            <button
+              type="button"
               className={'barra-edicao__btn' + (aparencia ? ' is-ativo' : '')}
               onClick={() => setAparencia((v) => !v)}
               aria-pressed={aparencia}

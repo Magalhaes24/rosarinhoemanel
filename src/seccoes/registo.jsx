@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useConteudo } from '../lib/conteudo.jsx'
 import { useEdicao } from '../lib/edicao.jsx'
 import { useConfirmar } from '../components/Confirmacao.jsx'
@@ -46,12 +46,25 @@ function novoId(tipo) {
  * Fica quase invisível até se lhe passar por cima: em edição há um destes em
  * cada intervalo, e a página ficaria ilegível se todos se vissem sempre.
  */
-function AcrescentarAqui({ indice, aoAcrescentar }) {
+function AcrescentarAqui({ indice, aoAcrescentar, ultimo = false }) {
   const [aberto, setAberto] = useState(false)
+  const caixa = useRef(null)
+
+  // O botão «Acrescentar secção» da barra de edição abre o último destes e
+  // rola até ele: sem isto era preciso descobrir a linha entre duas secções.
+  useEffect(() => {
+    if (!ultimo) return
+    const abrir = () => {
+      setAberto(true)
+      caixa.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    window.addEventListener('acrescentar-seccao', abrir)
+    return () => window.removeEventListener('acrescentar-seccao', abrir)
+  }, [ultimo])
 
   if (!aberto) {
     return (
-      <div className="acrescentar" contentEditable={false}>
+      <div className="acrescentar" contentEditable={false} ref={caixa}>
         <button type="button" className="acrescentar__botao" onClick={() => setAberto(true)}>
           + Acrescentar secção aqui
         </button>
@@ -60,7 +73,7 @@ function AcrescentarAqui({ indice, aoAcrescentar }) {
   }
 
   return (
-    <div className="acrescentar is-aberto" contentEditable={false}>
+    <div className="acrescentar is-aberto" contentEditable={false} ref={caixa}>
       <div className="acrescentar__tipos">
         {tiposAcrescentaveis.map((t) => (
           <button
@@ -238,7 +251,7 @@ export function Pagina({ pagina, seccoes }) {
           </div>
         )
       })}
-      <AcrescentarAqui indice={seccoes.length} aoAcrescentar={acrescentar} />
+      <AcrescentarAqui indice={seccoes.length} aoAcrescentar={acrescentar} ultimo />
     </>
   )
 }
