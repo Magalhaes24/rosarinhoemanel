@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { enviar } from '../lib/enviar.js'
+import { useTexto } from '../lib/conteudo.jsx'
 import './Form.css'
 
 export default function PresenteForm() {
+  const t = useTexto()
   const [nome, setNome] = useState('')
   const [presente, setPresente] = useState('')
   const [mensagem, setMensagem] = useState('')
@@ -41,7 +43,7 @@ export default function PresenteForm() {
     <form className="form-card" onSubmit={onSubmit} noValidate>
       <div className="form-field">
         <label className="form-field__label" htmlFor="pr-nome">
-          Nome
+          {t('form.campoNome')}
         </label>
         <input
           id="pr-nome"
@@ -70,7 +72,7 @@ export default function PresenteForm() {
 
       <div className="form-field">
         <label className="form-field__label" htmlFor="pr-presente">
-          Presente
+          {t('presente.campoPresente')}
         </label>
         <input
           id="pr-presente"
@@ -84,7 +86,7 @@ export default function PresenteForm() {
 
       <div className="form-field">
         <label className="form-field__label" htmlFor="pr-mensagem">
-          Mensagem
+          {t('presente.campoMensagem')}
         </label>
         <textarea
           id="pr-mensagem"
@@ -95,19 +97,13 @@ export default function PresenteForm() {
       </div>
 
       <button className="form-submit" type="submit" disabled={estado === 'a-enviar'}>
-        {estado === 'a-enviar' ? 'A enviar…' : 'Enviar'}
+        {estado === 'a-enviar' ? t('form.aEnviar') : t('form.enviar')}
       </button>
 
-      {estado === 'ok' && (
-        <p className="form-feedback is-ok">Obrigado! Vamos poder agradecer-vos como deve ser.</p>
-      )}
-      {estado === 'erro' && (
-        <p className="form-feedback is-error">Preenche pelo menos o nome e o presente.</p>
-      )}
+      {estado === 'ok' && <p className="form-feedback is-ok">{t('presente.ok')}</p>}
+      {estado === 'erro' && <p className="form-feedback is-error">{t('presente.erro')}</p>}
 
-      <p className="form-note">
-        Os teus dados servem apenas para a organização do casamento e não são partilhados.
-      </p>
+      <p className="form-note">{t('form.nota')}</p>
     </form>
   )
 }

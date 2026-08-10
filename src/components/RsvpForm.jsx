@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { enviar } from '../lib/enviar.js'
+import { useTexto } from '../lib/conteudo.jsx'
 import './Form.css'
 
-const OPCOES = [
-  { value: 'sim', label: 'Estarei presente' },
-  { value: 'nao', label: 'Não poderei ir' },
-]
-
 export default function RsvpForm() {
+  const t = useTexto()
+  // Os rótulos vêm do conteúdo; os valores gravados («sim»/«nao») não, senão
+  // mudar o texto do botão mudava o que fica na base de dados.
+  const OPCOES = [
+    { value: 'sim', label: t('rsvp.opcaoSim') },
+    { value: 'nao', label: t('rsvp.opcaoNao') },
+  ]
   const [nome, setNome] = useState('')
   const [presenca, setPresenca] = useState('')
   const [estado, setEstado] = useState('idle') // idle | a-enviar | ok | erro
@@ -41,11 +44,11 @@ export default function RsvpForm() {
 
   return (
     <form className="form-card" onSubmit={onSubmit} noValidate>
-      <h3 className="form-card__title">Confirma aqui a tua presença</h3>
+      <h3 className="form-card__title">{t('rsvp.tituloFormulario')}</h3>
 
       <div className="form-field">
         <label className="form-field__label" htmlFor="rsvp-nome">
-          Nome
+          {t('form.campoNome')}
         </label>
         <input
           id="rsvp-nome"
@@ -73,8 +76,8 @@ export default function RsvpForm() {
       </div>
 
       <div className="form-field">
-        <span className="form-field__label">Presença</span>
-        <div className="form-options" role="radiogroup" aria-label="Presença">
+        <span className="form-field__label">{t('rsvp.campoPresenca')}</span>
+        <div className="form-options" role="radiogroup" aria-label={t('rsvp.campoPresenca')}>
           {OPCOES.map((o) => (
             <label
               key={o.value}
@@ -94,21 +97,13 @@ export default function RsvpForm() {
       </div>
 
       <button className="form-submit" type="submit" disabled={estado === 'a-enviar'}>
-        {estado === 'a-enviar' ? 'A enviar…' : 'Enviar'}
+        {estado === 'a-enviar' ? t('form.aEnviar') : t('form.enviar')}
       </button>
 
-      {estado === 'ok' && (
-        <p className="form-feedback is-ok">Recebido, obrigado! Até 5 de dezembro.</p>
-      )}
-      {estado === 'erro' && (
-        <p className="form-feedback is-error">
-          Preenche o nome e escolhe uma opção — se o erro persistir, avisa-nos.
-        </p>
-      )}
+      {estado === 'ok' && <p className="form-feedback is-ok">{t('rsvp.ok')}</p>}
+      {estado === 'erro' && <p className="form-feedback is-error">{t('rsvp.erro')}</p>}
 
-      <p className="form-note">
-        Os teus dados servem apenas para a organização do casamento e não são partilhados.
-      </p>
+      <p className="form-note">{t('form.nota')}</p>
     </form>
   )
 }

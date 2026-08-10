@@ -101,6 +101,20 @@ export const textosPadrao = {
   'noivos.titulo': 'Rosarinho e Manel',
 
   'form.nota': 'Os teus dados servem apenas para a organização do casamento e não são partilhados.',
+  'form.campoNome': 'Nome',
+  'form.enviar': 'Enviar',
+  'form.aEnviar': 'A enviar…',
+
+  'rsvp.campoPresenca': 'Presença',
+  'rsvp.ok': 'Recebido, obrigado! Até 5 de dezembro.',
+  'rsvp.erro': 'Preenche o nome e escolhe uma opção — se o erro persistir, avisa-nos.',
+
+  'presente.campoPresente': 'Presente',
+  'presente.campoMensagem': 'Mensagem',
+  'presente.ok': 'Obrigado! Vamos poder agradecer-vos como deve ser.',
+  'presente.erro': 'Preenche pelo menos o nome e o presente.',
+
+  'loja.reservado': 'Já oferecido',
 }
 
 /**
@@ -191,7 +205,24 @@ export const gruposDeTexto = [
       'ano2026.texto',
     ],
   },
-  { titulo: 'Formulários', chaves: ['form.nota'] },
+  {
+    titulo: 'Formulários — comuns',
+    chaves: ['form.campoNome', 'form.enviar', 'form.aEnviar', 'form.nota'],
+  },
+  {
+    titulo: 'Formulário da presença',
+    chaves: ['rsvp.campoPresenca', 'rsvp.ok', 'rsvp.erro'],
+  },
+  {
+    titulo: 'Formulário do presente',
+    chaves: [
+      'presente.campoPresente',
+      'presente.campoMensagem',
+      'presente.ok',
+      'presente.erro',
+    ],
+  },
+  { titulo: 'Lista de presentes (loja)', chaves: ['loja.reservado'] },
 ]
 
 /** Nome legível de cada cor, para o editor de tema. */

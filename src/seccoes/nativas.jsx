@@ -269,6 +269,7 @@ function precoPt(valor) {
 }
 
 function CartaoPresente({ item }) {
+  const t = useTexto()
   const preco = precoPt(item.preco)
   const conteudo = (
     <>
@@ -278,7 +279,7 @@ function CartaoPresente({ item }) {
         ) : (
           <div className="loja__sem-imagem" aria-hidden="true" />
         )}
-        {item.reservado && <span className="loja__selo">Já oferecido</span>}
+        {item.reservado && <span className="loja__selo">{t('loja.reservado')}</span>}
       </div>
       <h3 className="loja__nome">{item.nome}</h3>
       {item.descricao && <p className="loja__descricao">{item.descricao}</p>}
@@ -365,7 +366,7 @@ function Contribuicao() {
       <div className="contribuicao__texto" data-revelar>
         <p><T k="contribuicao.texto1" /></p>
         <p><T k="contribuicao.texto2" /></p>
-        <p className="contribuicao__iban"><T k="contribuicao.iban" multilinha={false} /></p>
+        <p className="contribuicao__iban"><T k="contribuicao.iban" /></p>
       </div>
       <div className="contribuicao__cartao">
         <PresenteForm />

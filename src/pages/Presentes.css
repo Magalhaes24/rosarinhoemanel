@@ -47,6 +47,7 @@
   font-family: var(--form-serif);
   font-size: calc(22 * var(--pt) * var(--escala-corpo));
   color: var(--castanho);
+  white-space: pre-line;
 }
 
 .loja__item {
@@ -218,6 +219,9 @@ a.loja__item:hover {
 .contribuicao__texto p {
   margin: 0 auto calc(42 * var(--esp));
   max-width: calc(560 * var(--pt));
+  /* Estes parágrafos não usam `.corpo`: sem isto, o Enter dado na edição não
+     dava quebra nenhuma no texto gravado. */
+  white-space: pre-line;
 }
 
 /* No rascunho o "IBAN:" fica à mesma distância que os restantes parágrafos. */
