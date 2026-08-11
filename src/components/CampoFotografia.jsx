@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { guardarFotografia, mensagemDeEnvio } from '../lib/fotografias.js'
+import { useConteudo, resolverImagem } from '../lib/conteudo.jsx'
 
 /**
  * Campo de imagem, por duas vias:
@@ -12,6 +13,7 @@ import { guardarFotografia, mensagemDeEnvio } from '../lib/fotografias.js'
  * que a imagem deixa de aparecer se quem a aloja a mudar de sítio.
  */
 export default function CampoFotografia({ valor, aoMudar, etiqueta = 'Fotografia' }) {
+  const { fotografias } = useConteudo()
   const input = useRef(null)
   const [estado, setEstado] = useState('idle')
   const [erro, setErro] = useState('')
@@ -53,7 +55,14 @@ export default function CampoFotografia({ valor, aoMudar, etiqueta = 'Fotografia
 
       {valor && (
         <div className="admin__fotografia-previa">
-          <img src={valor} alt="" onError={() => setErro('Esse endereço não devolveu uma imagem.')} />
+          {/* O que fica gravado pode ser `firestore:<id>`, que não serve como
+              `src`: a pré-visualização tem de passar pelo mesmo tradutor que o
+              site usa, senão o admin envia a fotografia e vê um quadrado vazio. */}
+          <img
+            src={resolverImagem(valor, fotografias)}
+            alt=""
+            onError={() => setErro('Esse endereço não devolveu uma imagem.')}
+          />
         </div>
       )}
 

@@ -495,6 +495,10 @@
   padding: 2px 8px;
 }
 
+.admin__contribuido {
+  color: var(--dourado) !important;
+}
+
 .admin__mini-fotografia {
   width: 68px;
   height: 68px;

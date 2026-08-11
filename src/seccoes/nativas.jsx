@@ -1,11 +1,12 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { Link } from '../lib/router.jsx'
-import { useConteudo, useTexto } from '../lib/conteudo.jsx'
+import { useConteudo, useTexto, resolverImagem } from '../lib/conteudo.jsx'
 import T from '../components/T.jsx'
 import Img from '../components/Img.jsx'
 import Galeria from '../components/Galeria.jsx'
 import RsvpForm from '../components/RsvpForm.jsx'
 import PresenteForm from '../components/PresenteForm.jsx'
+import OferecerPresente, { Progresso, euros } from '../components/OferecerPresente.jsx'
 import { molduras2022 } from '../data/molduras.js'
 import iconeApple from '../assets/mapas/apple-maps.svg'
 import iconeGoogle from '../assets/mapas/google-maps.svg'
@@ -268,56 +269,99 @@ function precoPt(valor) {
   return n.toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' })
 }
 
-function CartaoPresente({ item }) {
+/**
+ * Um presente da lista. O cartão inteiro abre a janela de oferta — é o gesto
+ * que as pessoas já fazem por instinto num sítio destes.
+ *
+ * Quando o presente tem preço, mostra quanto já foi reunido: assim um presente
+ * caro deixa de ser um bloco de pedra e passa a ser uma coisa para a qual se
+ * pode dar vinte euros.
+ */
+function CartaoPresente({ item, jaContribuido, aoOferecer }) {
   const t = useTexto()
-  const preco = precoPt(item.preco)
-  const conteudo = (
-    <>
+  const preco = Number(item.preco) || 0
+  const completo = item.reservado || (preco > 0 && jaContribuido >= preco)
+  const falta = Math.max(0, preco - jaContribuido)
+
+  const classe = 'loja__item' + (completo ? ' is-reservado' : '')
+
+  return (
+    <button
+      type="button"
+      className={classe}
+      onClick={() => !completo && aoOferecer(item)}
+      disabled={completo}
+    >
       <div className="loja__imagem">
         {item.imagem ? (
           <img src={item.imagem} alt="" loading="lazy" />
         ) : (
           <div className="loja__sem-imagem" aria-hidden="true" />
         )}
-        {item.reservado && <span className="loja__selo">{t('loja.reservado')}</span>}
+        {completo && <span className="loja__selo">{t('loja.reservado')}</span>}
       </div>
       <h3 className="loja__nome">{item.nome}</h3>
       {item.descricao && <p className="loja__descricao">{item.descricao}</p>}
-      {preco && <p className="loja__preco">{preco}</p>}
-    </>
-  )
 
-  const classe = 'loja__item' + (item.reservado ? ' is-reservado' : '')
+      {preco > 0 && (
+        <div className="loja__estado">
+          <p className="loja__preco">{precoPt(preco)}</p>
+          {!item.reservado && (
+            <>
+              <Progresso contribuido={jaContribuido} preco={preco} />
+              <p className="loja__falta">
+                {falta === 0 ? 'Já foi oferecido' : `Faltam ${euros(falta)}`}
+              </p>
+            </>
+          )}
+        </div>
+      )}
 
-  // Só é ligação se houver para onde ir. `noopener` fecha o acesso ao
-  // `window.opener` a partir do site de destino.
-  return item.link ? (
-    <a className={classe} href={item.link} target="_blank" rel="noopener noreferrer">
-      {conteudo}
-    </a>
-  ) : (
-    <div className={classe}>{conteudo}</div>
+      {!completo && <span className="loja__oferecer">Oferecer</span>}
+    </button>
   )
 }
 
 function ParaACasa() {
-  const { t, presentesCasa } = useConteudo()
+  const { presentesCasa, contribuido, fotografias } = useConteudo()
+  const [aOferecer, setAOferecer] = useState(null)
+
+  // A fotografia é resolvida aqui, uma vez, e não em cada sítio que a mostra:
+  // o que está gravado no presente pode ser `firestore:<id>`, que não serve
+  // como `src` — era assim que as fotografias enviadas apareciam em branco.
+  const itens = (presentesCasa || []).map((item) => ({
+    ...item,
+    imagem: resolverImagem(item.imagem, fotografias),
+  }))
+
   return (
     <section className="presentes__bloco" id="casa">
       <h1 className="display presentes__titulo" data-revelar>
         <T k="casa.titulo" />
       </h1>
 
-      {presentesCasa === null ? null : presentesCasa.length === 0 ? (
+      {presentesCasa === null ? null : itens.length === 0 ? (
         <p className="loja__vazio"><T k="casa.vazio" /></p>
       ) : (
         <ul className="loja" data-revelar>
-          {presentesCasa.map((item) => (
+          {itens.map((item) => (
             <li key={item.id}>
-              <CartaoPresente item={item} />
+              <CartaoPresente
+                item={item}
+                jaContribuido={contribuido[item.id] || 0}
+                aoOferecer={setAOferecer}
+              />
             </li>
           ))}
         </ul>
+      )}
+
+      {aOferecer && (
+        <OferecerPresente
+          item={aOferecer}
+          jaContribuido={contribuido[aOferecer.id] || 0}
+          aoFechar={() => setAOferecer(null)}
+        />
       )}
     </section>
   )

@@ -284,6 +284,76 @@ describe('presentes', () => {
   })
 })
 
+describe('contribuições para os presentes', () => {
+  const valida = { presenteId: 'presente-1', valor: 50, criadoEm: serverTimestamp() }
+
+  before(async () => {
+    await env.withSecurityRulesDisabled(async (c) => {
+      await setDoc(doc(c.firestore(), 'contribuicoes/exemplo'), {
+        presenteId: 'presente-1',
+        valor: 20,
+        criadoEm: new Date(),
+      })
+    })
+  })
+
+  it('convidado contribui', async () => {
+    await assertSucceeds(addDoc(collection(convidado(), 'contribuicoes'), valida))
+  })
+
+  it('qualquer pessoa lê (é o que faz a barra de progresso)', async () => {
+    await assertSucceeds(getDocs(collection(convidado(), 'contribuicoes')))
+  })
+
+  it('rejeita valor zero', async () => {
+    await assertFails(addDoc(collection(convidado(), 'contribuicoes'), { ...valida, valor: 0 }))
+  })
+
+  it('rejeita valor negativo', async () => {
+    await assertFails(addDoc(collection(convidado(), 'contribuicoes'), { ...valida, valor: -10 }))
+  })
+
+  it('rejeita valor que não é número', async () => {
+    await assertFails(addDoc(collection(convidado(), 'contribuicoes'), { ...valida, valor: '50' }))
+  })
+
+  it('rejeita valor absurdo', async () => {
+    await assertFails(
+      addDoc(collection(convidado(), 'contribuicoes'), { ...valida, valor: 100001 })
+    )
+  })
+
+  it('rejeita presente vazio', async () => {
+    await assertFails(addDoc(collection(convidado(), 'contribuicoes'), { ...valida, presenteId: '' }))
+  })
+
+  // O nome de quem oferece vive na coleção `presentes`, que só o admin lê.
+  // Se passasse aqui, a lista de quem deu o quê ficava pública.
+  it('rejeita o nome de quem contribuiu', async () => {
+    await assertFails(
+      addDoc(collection(convidado(), 'contribuicoes'), { ...valida, nome: 'Alguém' })
+    )
+  })
+
+  it('rejeita data forjada pelo cliente', async () => {
+    await assertFails(
+      addDoc(collection(convidado(), 'contribuicoes'), { ...valida, criadoEm: new Date(0) })
+    )
+  })
+
+  it('ninguém altera uma contribuição, nem o admin', async () => {
+    await assertFails(updateDoc(doc(admin(), 'contribuicoes/exemplo'), { valor: 999 }))
+  })
+
+  it('convidado NÃO apaga', async () => {
+    await assertFails(deleteDoc(doc(convidado(), 'contribuicoes/exemplo')))
+  })
+
+  it('o admin apaga', async () => {
+    await assertSucceeds(deleteDoc(doc(admin(), 'contribuicoes/exemplo')))
+  })
+})
+
 describe('fotografias em base64', () => {
   const valida = {
     dados: 'data:image/webp;base64,AAAA',

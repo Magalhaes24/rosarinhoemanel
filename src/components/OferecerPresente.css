@@ -1,0 +1,312 @@
+/* ---------------- Barra de progresso ---------------- */
+.progresso {
+  height: calc(6 * var(--pt));
+  min-height: 5px;
+  border-radius: 999px;
+  background: rgba(141, 112, 80, 0.16);
+  overflow: hidden;
+}
+
+.progresso__barra {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--verde);
+  transition: width 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progresso__barra {
+    transition: none;
+  }
+}
+
+/* ---------------- Janela de oferta ---------------- */
+.oferecer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(41, 38, 33, 0.5);
+  backdrop-filter: blur(3px);
+  overflow-y: auto;
+  animation: oferecer-fundo 0.16s ease both;
+}
+
+.oferecer__caixa {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: 0 18px 56px rgba(41, 38, 33, 0.32);
+  font-family: var(--sans);
+  color: var(--quase-preto);
+  animation: oferecer-caixa 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.oferecer__fechar {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  font-size: 26px;
+  line-height: 1;
+  color: #9a938a;
+  padding: 4px 8px;
+}
+
+.oferecer__fechar:hover {
+  color: var(--quase-preto);
+}
+
+.oferecer__topo {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding-right: 30px;
+}
+
+.oferecer__imagem {
+  width: 76px;
+  height: 76px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.oferecer h2 {
+  font-family: var(--form-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--castanho-escuro);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.oferecer__descricao {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #7a746c;
+}
+
+.oferecer__link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--dourado);
+}
+
+/* Total, já oferecido e o que falta — lado a lado. */
+.oferecer__numeros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 20px 0 4px;
+  padding: 14px 10px;
+  border-radius: 12px;
+  background: var(--creme);
+  text-align: center;
+}
+
+.oferecer__numeros span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: #7a746c;
+  line-height: 1.3;
+}
+
+.oferecer__numeros strong {
+  font-family: var(--form-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--castanho-escuro);
+}
+
+.oferecer__campo {
+  display: block;
+  margin-top: 18px;
+}
+
+.oferecer__campo > span {
+  display: block;
+  font-size: 13px;
+  color: var(--castanho);
+  margin-bottom: 6px;
+}
+
+.oferecer__campo input[type='text'],
+.oferecer__campo textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 15px;
+  padding: 11px 13px;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--quase-preto);
+  outline: none;
+}
+
+.oferecer__campo textarea {
+  resize: vertical;
+}
+
+/* Só os campos que desenham a própria moldura. O campo do valor está dentro
+   do `.oferecer__valor`, que já trata do foco por ele: apanhá-lo aqui punha
+   uma segunda sombra à volta do input, visível como um risco ao lado do «€». */
+.oferecer__campo input[type='text']:focus,
+.oferecer__campo textarea:focus {
+  border-color: var(--dourado);
+  box-shadow: 0 0 0 3px rgba(146, 111, 27, 0.12);
+}
+
+/* O € fica dentro do campo, à esquerda do valor. */
+.oferecer__valor {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--dourado-botao);
+  border-radius: 10px;
+  background: #fff;
+  padding-left: 13px;
+}
+
+.oferecer__valor:focus-within {
+  border-color: var(--dourado);
+  box-shadow: 0 0 0 3px rgba(146, 111, 27, 0.12);
+}
+
+.oferecer__valor span {
+  font-family: var(--form-serif);
+  font-size: 18px;
+  color: var(--dourado);
+}
+
+.oferecer__valor input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 18px;
+  padding: 11px 13px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--quase-preto);
+}
+
+.oferecer__erro {
+  margin: 14px 0 0;
+  font-size: 14px;
+  color: #a8392e;
+}
+
+.oferecer__acoes {
+  display: flex;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.oferecer__btn {
+  flex: 1;
+  border: 1px solid var(--dourado-botao);
+  background: var(--dourado-botao);
+  color: #fff;
+  border-radius: 24px;
+  padding: 12px 18px;
+  font-size: 15px;
+  transition: filter 0.15s ease, background 0.15s ease;
+}
+
+.oferecer__btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.oferecer__btn:disabled {
+  opacity: 0.55;
+}
+
+.oferecer__btn--claro {
+  background: transparent;
+  color: var(--castanho);
+  border-color: rgba(41, 38, 33, 0.2);
+}
+
+.oferecer__btn--claro:hover {
+  background: var(--creme);
+  filter: none;
+}
+
+/* ---------------- Depois de registar ---------------- */
+.oferecer__feito {
+  text-align: center;
+  padding: 12px 0;
+}
+
+.oferecer__feito p {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #5f5952;
+}
+
+.oferecer__iban {
+  margin: 16px 0 22px !important;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--creme);
+  font-family: var(--form-serif);
+  font-size: 16px;
+  word-break: break-all;
+}
+
+.oferecer__feito .oferecer__btn {
+  width: 100%;
+  flex: none;
+}
+
+@keyframes oferecer-fundo {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes oferecer-caixa {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oferecer,
+  .oferecer__caixa {
+    animation: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .oferecer {
+    padding: 12px;
+    place-items: end center;
+  }
+  .oferecer__caixa {
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+  .oferecer__numeros {
+    gap: 4px;
+    padding: 12px 6px;
+  }
+  .oferecer__numeros strong {
+    font-size: 16px;
+  }
+  .oferecer__acoes {
+    flex-direction: column-reverse;
+  }
+}

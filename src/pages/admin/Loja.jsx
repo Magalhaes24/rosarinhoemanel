@@ -13,6 +13,7 @@ import { app } from '../../lib/firebase.js'
 import { apagarFotografia } from '../../lib/fotografias.js'
 import CampoFotografia from '../../components/CampoFotografia.jsx'
 import { useConfirmar } from '../../components/Confirmacao.jsx'
+import { useConteudo, resolverImagem } from '../../lib/conteudo.jsx'
 
 const db = getFirestore(app)
 const COLECAO = 'presentes-casa'
@@ -110,6 +111,7 @@ function Formulario({ inicial, aoGravar, aoCancelar }) {
 
 export default function Loja() {
   const confirmar = useConfirmar()
+  const { fotografias, contribuido } = useConteudo()
   const [itens, setItens] = useState(null)
   const [erro, setErro] = useState('')
   const [aEditar, setAEditar] = useState(null) // null | 'novo' | id
@@ -217,7 +219,11 @@ export default function Loja() {
           ) : (
             <li key={item.id} className="admin__lista-item">
               <div className="admin__mini-fotografia">
-                {item.imagem ? <img src={item.imagem} alt="" /> : <span>sem fotografia</span>}
+                {item.imagem ? (
+                  <img src={resolverImagem(item.imagem, fotografias)} alt="" />
+                ) : (
+                  <span>sem fotografia</span>
+                )}
               </div>
 
               <div className="admin__lista-texto">
@@ -225,6 +231,13 @@ export default function Loja() {
                 {item.reservado && <em className="admin__etiqueta">já oferecido</em>}
                 {item.descricao && <p>{item.descricao}</p>}
                 {item.preco !== '' && item.preco != null && <p>{item.preco} €</p>}
+                {contribuido[item.id] > 0 && (
+                  <p className="admin__contribuido">
+                    Já ofereceram {contribuido[item.id]} €
+                    {Number(item.preco) > 0 && ` de ${item.preco} €`}. Quem ofereceu está em
+                    «Presentes».
+                  </p>
+                )}
               </div>
 
               <div className="admin__acoes">

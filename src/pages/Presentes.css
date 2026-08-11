@@ -37,8 +37,36 @@
   padding: 0;
   max-width: calc(940 * var(--pt));
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(calc(210 * var(--pt)), 1fr));
-  gap: calc(34 * var(--esp)) calc(30 * var(--pt));
+  /* Número de colunas fixo por largura, em vez de `auto-fill`.
+     Como o `--pt` já encolhe com o ecrã, o `auto-fill` encolhia duas vezes: a
+     1024px dava seis cartões de 136px. Assim o cartão fica sempre à volta dos
+     220px e é a quantidade por fila que muda. */
+  grid-template-columns: repeat(6, 1fr);
+  gap: calc(30 * var(--esp)) calc(22 * var(--pt));
+}
+
+@media (max-width: 1300px) {
+  .loja {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .loja {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .loja {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .loja {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .loja__vazio {
@@ -50,20 +78,77 @@
   white-space: pre-line;
 }
 
+/* O cartão inteiro é o botão que abre a janela de oferta — daí a reposição
+   dos estilos que o browser põe nos botões. */
 .loja__item {
   display: block;
+  width: 100%;
   height: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  text-align: left;
   color: inherit;
   text-decoration: none;
   transition: transform 0.2s ease;
 }
 
-a.loja__item:hover {
+.loja__item:not(:disabled):hover {
   transform: translateY(calc(-4 * var(--pt)));
+}
+
+.loja__item:not(:disabled):hover .loja__oferecer {
+  background: var(--dourado-botao);
+  color: #fff;
 }
 
 .loja__item.is-reservado {
   opacity: 0.55;
+}
+
+.loja__item:disabled {
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loja__item {
+    transition: none;
+  }
+  .loja__item:not(:disabled):hover {
+    transform: none;
+  }
+}
+
+/* Preço, barra e quanto falta andam juntos. */
+.loja__estado {
+  margin-top: calc(8 * var(--esp));
+  display: flex;
+  flex-direction: column;
+  gap: calc(5 * var(--esp));
+}
+
+.loja__estado .loja__preco {
+  margin: 0;
+}
+
+.loja__falta {
+  font-family: var(--sans);
+  font-size: calc(12.5 * var(--pt) * var(--escala-corpo));
+  color: var(--castanho);
+  margin: 0;
+}
+
+.loja__oferecer {
+  display: inline-block;
+  margin-top: calc(10 * var(--esp));
+  padding: calc(6 * var(--esp)) calc(16 * var(--pt));
+  border: 1px solid var(--dourado-botao);
+  border-radius: calc(24 * var(--pt));
+  font-family: var(--sans);
+  font-size: calc(13 * var(--pt) * var(--escala-corpo));
+  color: var(--castanho-escuro);
+  transition: background 0.18s ease, color 0.18s ease;
 }
 
 .loja__imagem {
@@ -107,24 +192,25 @@ a.loja__item:hover {
 .loja__nome {
   font-family: var(--form-serif);
   font-weight: 700;
-  font-size: calc(20 * var(--pt) * var(--escala-corpo));
+  font-size: calc(17 * var(--pt) * var(--escala-corpo));
+  line-height: 1.25;
   color: var(--castanho-escuro);
-  margin: calc(14 * var(--esp)) 0 0;
+  margin: calc(11 * var(--esp)) 0 0;
 }
 
 .loja__descricao {
   font-family: var(--sans);
-  font-size: calc(16 * var(--pt) * var(--escala-corpo));
-  line-height: 1.45;
+  font-size: calc(14 * var(--pt) * var(--escala-corpo));
+  line-height: 1.4;
   color: var(--castanho);
-  margin: calc(6 * var(--esp)) 0 0;
+  margin: calc(5 * var(--esp)) 0 0;
 }
 
 .loja__preco {
   font-family: var(--form-serif);
-  font-size: calc(18 * var(--pt) * var(--escala-corpo));
+  font-size: calc(16 * var(--pt) * var(--escala-corpo));
   color: var(--dourado);
-  margin: calc(8 * var(--esp)) 0 0;
+  margin: calc(7 * var(--esp)) 0 0;
 }
 
 /* ---------------- Fita de destinos ---------------- */

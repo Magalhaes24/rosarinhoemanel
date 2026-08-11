@@ -95,6 +95,32 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
+    // Contribuições para os presentes.
+    //
+    // Guardam SÓ o presente e o valor — nunca o nome de quem deu. É o que
+    // permite mostrar a barra de progresso a toda a gente sem tornar pública
+    // a lista de quem ofereceu o quê. O nome e a mensagem vão para a coleção
+    // `presentes`, que só o admin lê.
+    //
+    // Uma contribuição não se altera nem se apaga: o total tem de ser a soma
+    // do que aconteceu, não do que ficou por reescrever.
+    // ---------------------------------------------------------------------
+
+    match /contribuicoes/{doc} {
+      allow read: if true;
+      allow create: if
+        request.resource.data.keys().hasOnly(['presenteId', 'valor', 'criadoEm']) &&
+        request.resource.data.keys().hasAll(['presenteId', 'valor', 'criadoEm']) &&
+        textoValido(request.resource.data.presenteId, 200) &&
+        request.resource.data.valor is number &&
+        request.resource.data.valor > 0 &&
+        request.resource.data.valor <= 100000 &&
+        dataDoServidor();
+      allow update: if false;
+      allow delete: if ehAdmin();
+    }
+
+    // ---------------------------------------------------------------------
     // Fotografias em base64.
     //
     // O Firebase Storage exige o plano Blaze, por isso as fotografias que a

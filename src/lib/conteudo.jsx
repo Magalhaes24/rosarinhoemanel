@@ -95,6 +95,9 @@ export function ConteudoProvider({ children }) {
   const [rascunhoImagens, setRascunhoImagens] = useState(null)
   const [rascunhoGalerias, setRascunhoGalerias] = useState(null)
 
+  // presenteId -> total já contribuído, somado das contribuições públicas.
+  const [contribuido, setContribuido] = useState({})
+
   const [presentesCasa, setPresentesCasa] = useState(null)
   // Distingue «ainda não chegou» de «chegou vazio» de «não foi possível ler».
   const [erroPresentes, setErroPresentes] = useState('')
@@ -127,6 +130,7 @@ export function ConteudoProvider({ children }) {
     let cancelarConteudo = () => {}
     let cancelarPresentes = () => {}
     let cancelarFotografias = () => {}
+    let cancelarContribuicoes = () => {}
 
     // Se o Firestore não responder (base de dados ainda por criar, sem rede),
     // assume-se lista vazia em vez de deixar a secção em «a carregar» para
@@ -162,6 +166,23 @@ export function ConteudoProvider({ children }) {
             })
           },
           () => {} // sem conteúdo gravado ainda, ou sem rede: fica o padrão
+        )
+
+        // Soma das contribuições por presente. Só valores, sem nomes — ver o
+        // porquê em firestore.rules.
+        cancelarContribuicoes = fs.onSnapshot(
+          fs.collection(db, 'contribuicoes'),
+          (snap) => {
+            const somas = {}
+            snap.docs.forEach((d) => {
+              const { presenteId, valor } = d.data() || {}
+              if (presenteId && typeof valor === 'number') {
+                somas[presenteId] = (somas[presenteId] || 0) + valor
+              }
+            })
+            setContribuido(somas)
+          },
+          () => {}
         )
 
         // Fotografias em base64. Coleção à parte para não inchar o documento
@@ -212,6 +233,7 @@ export function ConteudoProvider({ children }) {
       cancelarConteudo()
       cancelarPresentes()
       cancelarFotografias()
+      cancelarContribuicoes()
     }
   }, [])
 
@@ -232,6 +254,7 @@ export function ConteudoProvider({ children }) {
       galerias: galeriasEfetivas,
       presentesCasa,
       erroPresentes,
+      contribuido,
 
       /** t('hero.nome1') — devolve o texto atual, ou a própria chave se faltar. */
       t: (chave) => textosEfetivos[chave] ?? chave,
@@ -279,6 +302,7 @@ export function ConteudoProvider({ children }) {
     erroFotografias,
     presentesCasa,
     erroPresentes,
+    contribuido,
   ])
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>
