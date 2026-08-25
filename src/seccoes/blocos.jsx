@@ -1,3 +1,6 @@
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import AjustesTexto, { LIMITES, estiloDoTexto, numero } from '../components/AjustesTexto.jsx'
+
 /**
  * Blocos de conteúdo dentro de uma secção.
  *
@@ -10,6 +13,15 @@
  * A ordem vive na lista e não em campos numerados: reordenar é mexer na lista,
  * e é isso que permite arrastar sem deixar buracos nas chaves.
  */
+
+/**
+ * Por onde um bloco escreve de volta na sua secção.
+ *
+ * Quem desenha a secção em modo de edição põe aqui uma função que recebe o
+ * índice do bloco e os dados novos. Fora da edição não há contexto nenhum e
+ * os blocos desenham-se como sempre, sem uma linha de código a mais.
+ */
+export const ContextoBlocos = createContext(null)
 
 const ALINHAMENTOS_DO_BLOCO = [
   ['', 'Como a secção'],
@@ -83,12 +95,105 @@ export const TIPOS_DE_BLOCO = {
 
 const LARGURAS = { pequena: '40%', media: '70%', inteira: '100%' }
 
+/** Os três blocos que são texto e mais nada, com a etiqueta que os desenha. */
+const BLOCOS_DE_TEXTO = {
+  titulo: ['h2', 'display bloco__titulo'],
+  subtitulo: ['h3', 'bloco__subtitulo'],
+  texto: ['p', 'corpo bloco__texto'],
+}
+
+/**
+ * Um bloco de texto, escrito no próprio sítio quando se está em edição.
+ *
+ * É o mesmo gesto dos textos do site: carrega-se, escreve-se, e por cima
+ * aparecem os botões de tamanho, lado e largura. A diferença é onde os
+ * valores ficam — aqui viajam dentro do próprio bloco, e não no tema, porque
+ * um bloco não tem chave de texto que sirva de nome.
+ */
+function BlocoDeTexto({ dados, indice, aoMudar }) {
+  const [Etiqueta, classe] = BLOCOS_DE_TEXTO[dados.tipo]
+  const ref = useRef(null)
+  const [focado, setFocado] = useState(false)
+
+  const tamanho = numero(dados.tamanho, LIMITES.tamanho)
+  const largura = numero(dados.largura, LIMITES.largura)
+  const alinhar = dados.alinhamento || ''
+
+  // Um bloco já é um elemento de bloco: não precisa do `inline-block` que a
+  // `span` de um texto do site precisa para ter caixa de linhas própria.
+  const estilo = estiloDoTexto({ tamanho, largura, alinhar }, false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (el && el.textContent !== (dados.texto || '')) el.textContent = dados.texto || ''
+  }, [dados.texto])
+
+  const mudar = (campo, v) =>
+    aoMudar(indice, { ...dados, [campo === 'alinhar' ? 'alinhamento' : campo]: v })
+
+  return (
+    <>
+      <Etiqueta
+        ref={ref}
+        className={classe + ' editavel'}
+        style={Object.keys(estilo).length ? estilo : undefined}
+        contentEditable
+        suppressContentEditableWarning
+        spellCheck={false}
+        role="textbox"
+        aria-label={dados.tipo}
+        onFocus={() => setFocado(true)}
+        onBlur={() => setFocado(false)}
+        onInput={(e) => aoMudar(indice, { ...dados, texto: e.currentTarget.textContent })}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            // Como nos textos do site: a quebra do próprio contentEditable mete
+            // <div>/<br> e o `textContent` — que é o que se grava — perdia-a.
+            e.preventDefault()
+            document.execCommand('insertText', false, '\n')
+          }
+          if (e.key === 'Escape') e.currentTarget.blur()
+        }}
+        onPaste={(e) => {
+          e.preventDefault()
+          document.execCommand('insertText', false, e.clipboardData.getData('text/plain'))
+        }}
+      />
+      {focado && (
+        <AjustesTexto
+          alvo={ref}
+          tamanho={tamanho}
+          largura={largura}
+          alinhar={alinhar}
+          aoMudar={mudar}
+          aoRepor={() =>
+            aoMudar(indice, { ...dados, tamanho: 1, largura: 100, alinhamento: '' })
+          }
+        />
+      )}
+    </>
+  )
+}
+
 /** Um bloco. Tipo desconhecido não desenha nada, em vez de rebentar a página. */
-export function Bloco({ dados }) {
+export function Bloco({ dados, indice }) {
+  const edicao = useContext(ContextoBlocos)
   const alinhamento = dados.alinhamento || undefined
+
+  // Em edição os blocos de texto escrevem-se no sítio. Um bloco vazio continua
+  // a aparecer, senão um parágrafo acabado de acrescentar não teria onde se
+  // carregar para o escrever.
+  if (edicao && BLOCOS_DE_TEXTO[dados.tipo]) {
+    return <BlocoDeTexto dados={dados} indice={indice} aoMudar={edicao.aoMudarBloco} />
+  }
+
   // Só declara `text-align` quando o bloco tem alinhamento próprio; sem isso
   // herda o da secção, que é o que a opção «Como a secção» promete.
-  const estilo = alinhamento ? { textAlign: alinhamento } : undefined
+  const estiloTexto = estiloDoTexto(
+    { tamanho: numero(dados.tamanho, LIMITES.tamanho), largura: numero(dados.largura, LIMITES.largura), alinhar: alinhamento || '' },
+    false
+  )
+  const estilo = Object.keys(estiloTexto).length ? estiloTexto : undefined
 
   switch (dados.tipo) {
     case 'titulo':
@@ -130,7 +235,7 @@ export function Bloco({ dados }) {
 
     case 'botao':
       return dados.texto ? (
-        <div className="bloco__botao" style={estilo}>
+        <div className="bloco__botao" style={alinhamento ? { textAlign: alinhamento } : undefined}>
           <a className="botao-contorno" href={dados.destino || '#'}>
             {dados.texto}
           </a>

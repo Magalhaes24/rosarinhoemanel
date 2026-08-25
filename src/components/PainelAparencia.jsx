@@ -32,6 +32,13 @@ export default function PainelAparencia({ aoFechar }) {
 
   const reporTudo = () => {
     for (const [chave, valor] of Object.entries(temaPadrao)) alterarTema(chave, valor)
+    // Os tamanhos dados a textos soltos não estão no tema original, por isso
+    // não eram apanhados pelo ciclo de cima e sobreviviam ao «repor».
+    for (const chave of Object.keys(tema)) {
+      if (chave.startsWith('tamanho.')) alterarTema(chave, 1)
+      if (chave.startsWith('largura.')) alterarTema(chave, 100)
+      if (chave.startsWith('alinhar.')) alterarTema(chave, '')
+    }
   }
 
   return (
@@ -45,7 +52,8 @@ export default function PainelAparencia({ aoFechar }) {
 
       <p className="aparencia__ajuda">
         Aplica-se ao site inteiro. Vês o resultado por trás enquanto mexes; só fica gravado quando
-        carregares em «Gravar».
+        carregares em «Gravar». Para mexer só num texto — tamanho, lado e largura da caixa —
+        carrega nele no site e usa os botões que aparecem por cima.
       </p>
 
       <h3 className="aparencia__sub">Cores</h3>

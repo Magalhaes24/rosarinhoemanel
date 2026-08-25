@@ -4,21 +4,48 @@ import { useEdicao } from '../lib/edicao.jsx'
 import { useConfirmar } from '../components/Confirmacao.jsx'
 import { tiposNativos } from './nativas.jsx'
 import { tiposPersonalizados } from './personalizadas.jsx'
+import { Bloco, ContextoBlocos } from './blocos.jsx'
 import Campos from './campos.jsx'
 import './edicao.css'
+
+/**
+ * Blocos que se podem acrescentar ao fim de qualquer secção.
+ *
+ * A forma das nativas continua a ser a que se mediu do rascunho — não têm
+ * campos que a mudem. Mas passam a poder levar mais coisas atrás: outro
+ * parágrafo, um botão, uma fotografia. É o mesmo editor de blocos da secção
+ * «Conteúdo livre», e por isso arrasta-se e reordena-se da mesma maneira.
+ */
+const campoBlocosExtra = {
+  chave: 'blocos',
+  etiqueta: 'Acrescentar a esta secção',
+  tipo: 'blocos',
+}
 
 /**
  * Registo único de tipos de secção.
  *
  * `nativo: true` marca os blocos desenhados a partir do rascunho: podem ser
- * reordenados e escondidos, mas não têm campos de forma — o texto edita-se no
- * próprio sítio, ou no separador «Textos» da administração.
+ * reordenados, escondidos, removidos e ganhar blocos no fim, mas não têm
+ * campos que mudem a forma — o texto edita-se no próprio sítio, ou no
+ * separador «Textos» da administração. Remover uma delas não perde nada: o
+ * «Repor o original desta página» volta à lista de `paginasPadrao`.
  */
 export const registo = {
   ...Object.fromEntries(
-    Object.entries(tiposNativos).map(([id, def]) => [id, { ...def, nativo: true, campos: [] }])
+    Object.entries(tiposNativos).map(([id, def]) => [
+      id,
+      { ...def, nativo: true, campos: [campoBlocosExtra] },
+    ])
   ),
-  ...tiposPersonalizados,
+  ...Object.fromEntries(
+    Object.entries(tiposPersonalizados).map(([id, def]) => [
+      id,
+      // A «Conteúdo livre» já é feita de blocos e desenha-os ela própria; nas
+      // outras o campo entra no fim da lista, a seguir aos campos de forma.
+      id === 'livre' ? def : { ...def, campos: [...def.campos, campoBlocosExtra] },
+    ])
+  ),
 }
 
 /** Só os que fazem sentido no menu «acrescentar secção». */
@@ -27,12 +54,46 @@ export const tiposAcrescentaveis = Object.entries(tiposPersonalizados).map(([id,
   ...def,
 }))
 
-/** Desenha uma secção da lista. Um tipo desconhecido é ignorado, não rebenta. */
-export function Seccao({ seccao }) {
+/**
+ * Desenha uma secção da lista. Um tipo desconhecido é ignorado, não rebenta.
+ *
+ * `aoMudar` só chega em modo de edição: é por aí que os blocos de texto se
+ * escrevem no próprio sítio. Sem ele não há contexto nenhum e os blocos
+ * desenham-se como sempre.
+ */
+export function Seccao({ seccao, aoMudar }) {
   const def = registo[seccao.tipo]
   if (!def || seccao.escondida) return null
   const { Componente } = def
-  return <Componente dados={seccao} />
+
+  // A «Conteúdo livre» trata dos seus blocos por dentro; nas outras os blocos
+  // acrescentados vêm a seguir à secção, com o mesmo recuo do resto do site.
+  const extra = seccao.tipo === 'livre' || !Array.isArray(seccao.blocos) ? [] : seccao.blocos
+
+  const desenho = (
+    <>
+      <Componente dados={seccao} />
+      {extra.length > 0 && (
+        <div className="seccao-extra" data-revelar>
+          {extra.map((b, i) => (
+            <Bloco key={i} indice={i} dados={b} />
+          ))}
+        </div>
+      )}
+    </>
+  )
+
+  if (!aoMudar) return desenho
+
+  const aoMudarBloco = (indice, dados) => {
+    const lista = Array.isArray(seccao.blocos) ? [...seccao.blocos] : []
+    lista[indice] = dados
+    aoMudar({ ...seccao, blocos: lista })
+  }
+
+  return (
+    <ContextoBlocos.Provider value={{ aoMudarBloco }}>{desenho}</ContextoBlocos.Provider>
+  )
 }
 
 /** Identificador estável, para o React e para a reordenação. */
@@ -134,7 +195,9 @@ function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar, aEditar, setAEdit
   const remover = async () => {
     const ok = await confirmar({
       titulo: 'Remover esta secção?',
-      mensagem: 'Só sai do site quando gravares. Até lá podes descartar as alterações.',
+      mensagem: def?.nativo
+        ? 'Só sai do site quando gravares. Esta é uma das secções do desenho original — para a trazer de volta, usa «Repor o original desta página» na administração.'
+        : 'Só sai do site quando gravares. Até lá podes descartar as alterações.',
       detalhe: def?.nome || s.tipo,
       textoConfirmar: 'Remover secção',
     })
@@ -162,16 +225,12 @@ function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar, aEditar, setAEdit
       <button type="button" onClick={alternarVisivel}>
         {s.escondida ? 'Mostrar' : 'Esconder'}
       </button>
-      {!def?.nativo && (
-        <>
-          <button type="button" onClick={() => setAEditar(aEditar === s.id ? null : s.id)}>
-            {aEditar === s.id ? 'Fechar' : 'Editar'}
-          </button>
-          <button type="button" className="is-perigo" onClick={remover}>
-            Remover
-          </button>
-        </>
-      )}
+      <button type="button" onClick={() => setAEditar(aEditar === s.id ? null : s.id)}>
+        {aEditar === s.id ? 'Fechar' : def?.nativo ? 'Acrescentar' : 'Editar'}
+      </button>
+      <button type="button" className="is-perigo" onClick={remover}>
+        Remover
+      </button>
     </div>
   )
 }
@@ -219,7 +278,7 @@ export function Pagina({ pagina, seccoes }) {
                 aEditar={aEditar}
                 setAEditar={setAEditar}
               />
-              {aEditar === s.id && def && !def.nativo && (
+              {aEditar === s.id && def && (
                 <PainelDaSeccao
                   definicao={def}
                   dados={s}
@@ -232,7 +291,7 @@ export function Pagina({ pagina, seccoes }) {
                   «{def?.nome || s.tipo}» está escondida dos convidados.
                 </p>
               ) : (
-                <Seccao seccao={s} />
+                <Seccao seccao={s} aoMudar={(d) => editar(i, d)} />
               )}
             </div>
           </div>

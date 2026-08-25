@@ -27,7 +27,30 @@
 }
 
 #lua .presentes__titulo {
-  margin-bottom: calc(130 * var(--esp));
+  margin-bottom: 0;
+}
+
+/* O texto de abertura de cada bloco, na medida pequena do site (.corpo-sm):
+   a mesma dos anos e dos drivers. `pre-line` para as quebras escritas na
+   edição — a lista do "Como funciona" precisa delas. */
+.presentes__intro {
+  max-width: calc(700 * var(--pt));
+  margin: calc(40 * var(--esp)) auto 0;
+  font-family: var(--sans);
+  font-size: calc(22 * var(--pt) * var(--escala-corpo));
+  line-height: 1.6;
+  text-align: center;
+  color: var(--castanho-escuro);
+  white-space: pre-line;
+}
+
+.presentes__acao {
+  margin-top: calc(30 * var(--esp));
+  text-align: center;
+}
+
+#lua .destinos {
+  margin-top: calc(60 * var(--esp));
 }
 
 /* ---------------- Lista de presentes "Para a casa" ---------------- */
@@ -286,19 +309,19 @@
 .contribuicao {
   margin-top: calc(132 * var(--esp));
   padding: 0 calc(40 * var(--pt));
-  display: grid;
-  /* Largura do cartão medida no rascunho: x de 660 a 907. */
-  grid-template-columns: 1fr calc(247 * var(--pt));
-  align-items: start;
-  column-gap: calc(60 * var(--pt));
+  padding-bottom: calc(120 * var(--esp));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: calc(38 * var(--esp));
 }
 
 .contribuicao__texto {
   text-align: center;
-  font-family: var(--form-serif);
-  font-size: calc(22 * var(--pt));
-  line-height: 1.55;
-  color: #000;
+  font-family: var(--sans);
+  font-size: calc(22 * var(--pt) * var(--escala-corpo));
+  line-height: 1.6;
+  color: var(--castanho-escuro);
   padding-top: calc(26 * var(--esp));
 }
 
@@ -310,9 +333,10 @@
   white-space: pre-line;
 }
 
-/* No rascunho o "IBAN:" fica à mesma distância que os restantes parágrafos. */
-.contribuicao__iban {
-  margin-top: 0;
+.contribuicao__dados {
+  width: 100%;
+  max-width: calc(460 * var(--pt));
+  font-size: calc(17 * var(--pt) * var(--escala-corpo));
 }
 
 @media (max-width: 760px) {
@@ -320,8 +344,11 @@
     padding-bottom: calc(140 * var(--esp));
   }
 
-  #lua .presentes__titulo {
-    margin-bottom: calc(76 * var(--esp));
+  .presentes__intro {
+    margin-top: calc(30 * var(--esp));
+  }
+  #lua .destinos {
+    margin-top: calc(56 * var(--esp));
   }
 
   /* Sem `flex-wrap`: com ele o browser parte a linha ANTES de deixar os
@@ -338,11 +365,10 @@
   }
 
   .contribuicao {
-    grid-template-columns: 1fr;
-    row-gap: calc(46 * var(--esp));
+    row-gap: calc(32 * var(--esp));
   }
   .contribuicao__texto {
-    font-size: calc(24 * var(--pt));
+    padding-top: 0;
   }
 }
 

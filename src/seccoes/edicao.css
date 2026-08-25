@@ -309,6 +309,97 @@
   background: rgba(190, 168, 128, 0.22);
 }
 
+/* ---------------- Ajustes de cada texto ---------------- */
+/* Flutua por cima do campo que está a ser escrito. `fixed` porque a posição
+   vem medida do ecrã: assim não é preciso embrulhar o texto em mais um
+   elemento só para ter onde o pendurar. */
+.ajuste-texto {
+  position: fixed;
+  z-index: 60;
+  transform: translate(-50%, -100%) translateY(-10px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border: 1px solid rgba(41, 38, 33, 0.16);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(41, 38, 33, 0.16);
+  font-family: var(--sans);
+  white-space: nowrap;
+}
+
+/* Quando o texto está colado ao topo da página, a barra desce para baixo dele. */
+.ajuste-texto.is-abaixo {
+  transform: translate(-50%, 0) translateY(10px);
+}
+
+.ajuste-texto__grupo {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Risca a separar os grupos, para os três conjuntos de botões não se lerem
+   como uma fila só. */
+.ajuste-texto__grupo + .ajuste-texto__grupo,
+.ajuste-texto__grupo + button {
+  border-left: 1px solid rgba(41, 38, 33, 0.12);
+  padding-left: 8px;
+}
+
+.ajuste-texto button {
+  border: 1px solid rgba(41, 38, 33, 0.18);
+  background: #fff;
+  color: var(--quase-preto);
+  border-radius: 7px;
+  padding: 3px 8px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.ajuste-texto button:hover:not(:disabled) {
+  background: var(--botao-creme);
+}
+
+.ajuste-texto button.is-ativo {
+  background: var(--dourado-botao);
+  border-color: var(--dourado-botao);
+  color: #fff;
+}
+
+.ajuste-texto button:disabled {
+  opacity: 0.4;
+}
+
+.ajuste-texto__valor {
+  min-width: 40px;
+  text-align: center;
+  font-size: 12px;
+  color: #7a746c;
+}
+
+/* Os blocos de uma secção já são elementos de bloco e têm de continuar a
+   sê-lo: o `inline-block` do `.editavel` serve às `span` dos textos do site,
+   e aqui encolhia o parágrafo ao tamanho das letras. */
+.bloco__titulo.editavel,
+.bloco__subtitulo.editavel,
+.bloco__texto.editavel {
+  display: block;
+}
+
+/* Um bloco acabado de acrescentar está vazio; sem isto não tinha altura
+   nenhuma e não havia onde carregar para o começar a escrever. */
+.editavel:empty {
+  display: block;
+  min-height: 1.2em;
+}
+
+.editavel:empty::before {
+  content: 'Escreve aqui…';
+  color: rgba(41, 38, 33, 0.35);
+}
+
 /* Em edição, os links não devem navegar ao serem clicados para editar. */
 .em-edicao a .editavel {
   pointer-events: auto;

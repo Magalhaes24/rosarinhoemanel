@@ -1,0 +1,207 @@
+/* ---------------- Métodos de pagamento ---------------- */
+/* Tudo em `em`: o bloco herda a medida de quem o põe na página. Dentro da
+   janela do presente isso é a medida do formulário; na página dos presentes é
+   a que encolhe com o ecrã, como o resto do site. */
+
+.pagar {
+  padding: 1em;
+  border: 1px solid rgba(141, 112, 80, 0.24);
+  border-radius: 1em;
+  text-align: left;
+  font-family: var(--sans);
+  line-height: 1.4;
+}
+
+.pagar__titulo {
+  margin: 0 0 0.9em;
+  font-size: 0.78em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--castanho);
+}
+
+/* `auto-fit` e não três colunas fixas: com um método só, o cartão ocupa a
+   largura toda em vez de ficar encolhido a um canto. */
+.pagar__cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.8em, 1fr));
+  gap: 0.7em;
+}
+
+.pagar__cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9em;
+  padding: 0.85em;
+  border: 1px solid rgba(141, 112, 80, 0.2);
+  border-radius: 0.8em;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* `align-items: start` e não `stretch`: o selo tem a largura do seu texto,
+   como uma etiqueta, em vez de atravessar o cartão de lado a lado. */
+.pagar__topo {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  max-width: 100%;
+}
+
+/* Um selo de texto em vez das marcas verdadeiras: os logótipos do MB WAY e do
+   Revolut são deles, não nossos. A forma é a mesma. */
+.pagar__selo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.6em;
+  padding: 0.5em 0.85em;
+  border: 1px solid rgba(141, 112, 80, 0.24);
+  border-radius: 0.6em;
+  background: #fff;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--castanho-escuro);
+  white-space: nowrap;
+}
+
+/* Sobreposto ao canto do selo, como um autocolante — e não do outro lado do
+   cartão, que é estreito de mais para os dois lado a lado. */
+.pagar__abrir {
+  position: absolute;
+  top: -0.5em;
+  left: 100%;
+  transform: translateX(-60%);
+  display: grid;
+  place-items: center;
+  width: 1.7em;
+  height: 1.7em;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: var(--verde);
+  color: #fff;
+}
+
+.pagar__topo > .pagar__selo {
+  flex: 0 1 auto;
+}
+
+.pagar__abrir svg {
+  width: 0.9em;
+  height: 0.9em;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pagar__dado + .pagar__dado {
+  margin-top: 0.2em;
+  padding-top: 0.7em;
+  border-top: 1px solid rgba(141, 112, 80, 0.18);
+}
+
+.pagar__etiqueta {
+  display: block;
+  margin-bottom: 0.25em;
+  font-size: 0.7em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b847b;
+}
+
+/* `break-word` no valor: um IBAN não tem por onde partir e, sem isto, alarga
+   o cartão todo. O botão fica no fim do texto, e não numa coluna à parte,
+   para acompanhar a última linha em vez de ficar a meio do nada. */
+.pagar__valor {
+  display: block;
+  font-family: var(--form-serif);
+  font-size: 1.02em;
+  line-height: 1.35;
+  color: var(--quase-preto);
+  overflow-wrap: anywhere;
+}
+
+.pagar__copiar {
+  display: inline-grid;
+  place-items: center;
+  vertical-align: -0.2em;
+  margin-left: 0.35em;
+  width: 1.5em;
+  height: 1.5em;
+  border: none;
+  border-radius: 0.35em;
+  background: transparent;
+  color: var(--verde);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pagar__copiar svg {
+  width: 1em;
+  height: 1em;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pagar__copiar:hover {
+  background: var(--creme);
+  color: var(--castanho-escuro);
+}
+
+.pagar__copiar.is-copiado {
+  color: var(--verde);
+  background: rgba(148, 177, 122, 0.18);
+}
+
+/* Em edição os três cartões aparecem sempre, para haver onde escrever. O
+   tracejado marca os que ainda estão vazios e que os convidados não vão ver. */
+.pagar__cartao.is-vazio {
+  border-style: dashed;
+  background: transparent;
+}
+
+.pagar__falta {
+  margin: 0.9em 0 0;
+  font-size: 0.82em;
+  line-height: 1.5;
+  color: var(--castanho);
+}
+
+/* Os campos editáveis precisam de altura própria: um valor vazio deixava a
+   linha sem nada onde carregar. */
+.pagar--edicao .pagar__valor,
+.pagar--edicao .pagar__etiqueta {
+  min-height: 1.2em;
+}
+
+.pagar__nota {
+  margin: 0.9em 0 0;
+  font-size: 0.82em;
+  line-height: 1.5;
+  color: #7a746c;
+}
+
+/* Visível só para leitores de ecrã. */
+.pagar__aviso {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pagar__copiar {
+    transition: none;
+  }
+}
+
+/* Em duas colunas o IBAN passa a ocupar a linha toda: e o mais comprido dos
+   tres e, sozinho na segunda linha, so ficava a meio sem necessidade. */
+@media (max-width: 560px) {
+  .pagar__cartao--iban {
+    grid-column: 1 / -1;
+  }
+}

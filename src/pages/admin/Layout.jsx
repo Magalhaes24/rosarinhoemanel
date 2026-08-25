@@ -71,7 +71,9 @@ export default function Layout() {
     const def = registo[seccoes[i]?.tipo]
     const ok = await confirmar({
       titulo: 'Remover esta secção?',
-      mensagem: 'Só sai do site quando gravares. Até lá podes descartar as alterações.',
+      mensagem: def?.nativo
+        ? 'Só sai do site quando gravares. Esta é uma das secções do desenho original — para a trazer de volta, usa «Repor o original desta página» na administração.'
+        : 'Só sai do site quando gravares. Até lá podes descartar as alterações.',
       detalhe: def?.nome || seccoes[i]?.tipo,
       textoConfirmar: 'Remover secção',
     })
@@ -109,9 +111,11 @@ export default function Layout() {
       </div>
 
       <p className="admin__ajuda">
-        As secções desenhadas a partir do rascunho podem ser reordenadas e escondidas, mas não têm
-        campos de forma — o texto delas edita-se no separador «Textos». As que acrescentares aqui
-        são configuráveis por inteiro.
+        As secções desenhadas a partir do rascunho podem ser reordenadas, escondidas, removidas e
+        levar blocos atrás, mas não têm campos que mudem a forma — o texto delas edita-se no
+        próprio site ou no separador «Textos». As que acrescentares aqui são configuráveis por
+        inteiro. Se removeres uma do desenho original e te arrependeres, o botão «Repor o original
+        desta página» lá em baixo trá-la de volta.
       </p>
 
       <nav className="admin__separadores" aria-label="Página a editar">
@@ -163,7 +167,7 @@ export default function Layout() {
                 {s.escondida && <em className="admin__etiqueta">escondida</em>}
                 {s.titulo && <p>{s.titulo}</p>}
 
-                {aEditar === s.id && !def.nativo && (
+                {aEditar === s.id && (
                   <div className="admin__form">
                     <Campos definicao={def} dados={s} aoMudar={(d) => editar(i, d)} />
                     <div className="admin__form-acoes">
@@ -205,24 +209,20 @@ export default function Layout() {
                 >
                   {s.escondida ? 'Mostrar' : 'Esconder'}
                 </button>
-                {!def.nativo && (
-                  <>
-                    <button
-                      type="button"
-                      className="admin__btn admin__btn--claro"
-                      onClick={() => setAEditar(aEditar === s.id ? null : s.id)}
-                    >
-                      {aEditar === s.id ? 'Fechar' : 'Editar'}
-                    </button>
-                    <button
-                      type="button"
-                      className="admin__btn admin__btn--perigo"
-                      onClick={() => remover(i)}
-                    >
-                      Remover
-                    </button>
-                  </>
-                )}
+                <button
+                  type="button"
+                  className="admin__btn admin__btn--claro"
+                  onClick={() => setAEditar(aEditar === s.id ? null : s.id)}
+                >
+                  {aEditar === s.id ? 'Fechar' : def.nativo ? 'Acrescentar' : 'Editar'}
+                </button>
+                <button
+                  type="button"
+                  className="admin__btn admin__btn--perigo"
+                  onClick={() => remover(i)}
+                >
+                  Remover
+                </button>
               </div>
             </li>
           )

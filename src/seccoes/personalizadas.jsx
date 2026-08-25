@@ -76,7 +76,7 @@ function ConteudoLivre({ dados }) {
     <section className={`seccao seccao--livre ${classesFundo(dados.fundo)}`}>
       <div className="seccao__interior" data-revelar style={estiloAlinhado(dados.alinhamento)}>
         {blocos.map((b, i) => (
-          <Bloco key={i} dados={b} />
+          <Bloco key={i} indice={i} dados={b} />
         ))}
       </div>
     </section>

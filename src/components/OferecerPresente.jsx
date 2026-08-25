@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTexto } from '../lib/conteudo.jsx'
 import { enviar } from '../lib/enviar.js'
+import MetodosPagamento from './MetodosPagamento.jsx'
 import './OferecerPresente.css'
 
 export function euros(valor) {
@@ -30,6 +31,7 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
   const [nome, setNome] = useState('')
   const [mensagem, setMensagem] = useState('')
   const [estado, setEstado] = useState('idle')
+  const [enviado, setEnviado] = useState(0)
   const [erro, setErro] = useState('')
   const [armadilha, setArmadilha] = useState('')
 
@@ -74,6 +76,7 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
         presente: `${item.nome} — ${euros(montante)}`.slice(0, 200),
         mensagem: mensagem.trim().slice(0, 1000),
       })
+      setEnviado(montante)
       setEstado('feito')
     } catch (err) {
       console.error(err)
@@ -108,80 +111,82 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
           <div className="oferecer__feito">
             <h2 id="oferecer-titulo">Obrigado!</h2>
             <p>
-              Ficou registado. Falta só fazeres a transferência para o IBAN abaixo, com o teu
-              nome na descrição.
+              Ficou registado. Falta só enviares{enviado > 0 ? ` ${euros(enviado)}` : ''} por
+              um dos métodos abaixo, com o teu nome na descrição.
             </p>
-            <p className="oferecer__iban">{t('contribuicao.iban')}</p>
+            <div className="oferecer__pagar">
+              <MetodosPagamento titulo={t('pagamento.titulo')} />
+            </div>
             <button type="button" className="oferecer__btn" onClick={aoFechar}>
               Fechar
             </button>
           </div>
         ) : (
           <>
-            <header className="oferecer__topo">
-              {item.imagem && <img className="oferecer__imagem" src={item.imagem} alt="" />}
-              <div>
-                <h2 id="oferecer-titulo">{item.nome}</h2>
-                {item.descricao && <p className="oferecer__descricao">{item.descricao}</p>}
-                {/* `noopener` fecha o acesso ao `window.opener` a partir da loja. */}
-                {item.link && (
-                  <a
-                    className="oferecer__link"
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Ver na loja ↗
-                  </a>
-                )}
+            {item.imagem && (
+              <div className="oferecer__imagem">
+                <img src={item.imagem} alt="" />
               </div>
+            )}
+
+            <header className="oferecer__topo">
+              <span className="oferecer__etiqueta">{t('presentes.etiquetaJanela')}</span>
+              <h2 id="oferecer-titulo">{item.nome}</h2>
+              {item.descricao && <p className="oferecer__descricao">{item.descricao}</p>}
             </header>
 
             {preco > 0 && (
               <div className="oferecer__numeros">
                 <span>
-                  <strong>{euros(preco)}</strong>no total
+                  Valor total
+                  <strong>{euros(preco)}</strong>
                 </span>
                 <span>
-                  <strong>{euros(jaContribuido)}</strong>já oferecido
+                  Já oferecido
+                  <strong>{euros(jaContribuido)}</strong>
                 </span>
                 <span>
-                  <strong>{euros(falta)}</strong>ainda falta
+                  Em falta
+                  <strong>{euros(falta)}</strong>
                 </span>
               </div>
             )}
 
             <form onSubmit={submeter} noValidate>
-              <label className="oferecer__campo">
-                <span>Quanto queres dar</span>
-                <div className="oferecer__valor">
-                  <span aria-hidden="true">€</span>
-                  <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    inputMode="decimal"
-                    value={valor}
-                    onChange={(e) => {
-                      setValor(e.target.value)
-                      setErro('')
-                    }}
-                    autoFocus
-                  />
-                </div>
-              </label>
+              <div className="oferecer__linha">
+                <label className="oferecer__campo">
+                  <span>Valor</span>
+                  <div className="oferecer__valor">
+                    <span aria-hidden="true">€</span>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      inputMode="decimal"
+                      placeholder="0"
+                      value={valor}
+                      onChange={(e) => {
+                        setValor(e.target.value)
+                        setErro('')
+                      }}
+                      autoFocus
+                    />
+                  </div>
+                </label>
 
-              <label className="oferecer__campo">
-                <span>O teu nome</span>
-                <input
-                  type="text"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  maxLength={120}
-                  autoComplete="name"
-                  required
-                />
-              </label>
+                <label className="oferecer__campo">
+                  <span>O teu nome</span>
+                  <input
+                    type="text"
+                    placeholder="Nome completo"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    maxLength={120}
+                    autoComplete="name"
+                    required
+                  />
+                </label>
+              </div>
 
               <label className="oferecer__campo">
                 <span>Mensagem (opcional)</span>
@@ -189,9 +194,15 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
                   value={mensagem}
                   onChange={(e) => setMensagem(e.target.value)}
                   maxLength={1000}
-                  rows={3}
+                  rows={2}
                 />
               </label>
+
+              {/* Os dados ficam à vista enquanto se preenche: quem oferece
+                  copia o IBAN sem sair da janela nem perder o que escreveu. */}
+              <div className="oferecer__pagar">
+                <MetodosPagamento titulo={t('pagamento.titulo')} nota={t('pagamento.nota')} />
+              </div>
 
               {/* Honeypot: invisível para pessoas, irresistível para bots. */}
               <div className="form-armadilha" aria-hidden="true">
@@ -220,8 +231,8 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
                   {estado === 'a-enviar'
                     ? 'A registar…'
                     : montante > 0
-                      ? `Oferecer ${euros(montante)}`
-                      : 'Oferecer'}
+                      ? `Registar ${euros(montante)}`
+                      : t('presentes.registar')}
                 </button>
               </div>
             </form>

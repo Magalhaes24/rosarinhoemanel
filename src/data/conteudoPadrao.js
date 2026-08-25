@@ -68,6 +68,8 @@ export const textosPadrao = {
   'historia.botao': 'Aqui!',
 
   'presentes.titulo': 'Lista de presentes',
+  'presentes.etiquetaJanela': 'Contribuição',
+  'presentes.registar': 'Registar contribuição',
   'presentes.botaoCasa': 'Para a casa',
   'presentes.botaoLua': 'Lua de mel',
 
@@ -79,15 +81,88 @@ export const textosPadrao = {
 
   'hoteis.titulo': 'Onde\nficar?\nHoteis',
 
+  'hoteis.intro':
+    'Aqui ficam algumas sugestões para quem estiver a pensar dormir perto da quinta.',
+  'hoteis.verEspaco': 'Ver o espaço',
+  // Junta-se ao nome na procura do Google Maps, para o botão não cair numa
+  // casa com o mesmo nome do outro lado do país.
+  'hoteis.regiao': 'Alenquer',
+
+  'hoteis.h1.nome': 'Dolce Campo Real',
+  'hoteis.h1.tipo': 'Hotel',
+  'hoteis.h1.telefone': '261 960 900',
+  'hoteis.h1.email': 'camporeal.reservations@dolce.com',
+  'hoteis.h1.site': 'https://www.dolcecamporeal.com',
+
+  'hoteis.h2.nome': 'Stay Hotels',
+  'hoteis.h2.tipo': 'Hotel',
+  'hoteis.h2.telefone': '261 314 232',
+  'hoteis.h2.email': '',
+  'hoteis.h2.site': 'https://www.stayhotels.pt/torres-vedras-centro/',
+
+  'hoteis.h3.nome': 'Arcos Hotel',
+  'hoteis.h3.tipo': 'Hotel',
+  'hoteis.h3.telefone': '261 312 489',
+  'hoteis.h3.email': 'reservas@arcoshotel.pt / geral@arcoshotel.pt',
+  'hoteis.h3.site': 'https://www.arcoshotel.pt',
+
+  'hoteis.h4.nome': 'Quinta da Carlota',
+  'hoteis.h4.tipo': 'Casa',
+  'hoteis.h4.telefone': '926 384 443',
+  'hoteis.h4.email': 'reservas@quintadacarlota.com',
+  'hoteis.h4.site': '',
+
+  'hoteis.h5.nome': 'Páteo das Laranjeiras',
+  'hoteis.h5.tipo': 'Casa (3 quartos)',
+  'hoteis.h5.telefone': '914 452 774',
+  'hoteis.h5.email': 'info.pateodaslaranjeiras@gmail.com',
+  'hoteis.h5.site': '',
+
+  'hoteis.h6.nome': 'Quinta da Palhacana',
+  'hoteis.h6.tipo': 'Casa (4 quartos)',
+  'hoteis.h6.telefone': '917 529 243',
+  'hoteis.h6.email': '',
+  'hoteis.h6.site': '',
+
+  'hoteis.h7.nome': 'Quinta dos Pucarinhos',
+  'hoteis.h7.tipo': 'Casa',
+  'hoteis.h7.telefone': '969 968 075 / 927 660 066',
+  'hoteis.h7.email': '',
+  'hoteis.h7.site': '',
+
+  'hoteis.h8.nome': 'Pomar da Choca',
+  'hoteis.h8.tipo': 'Country House',
+  'hoteis.h8.telefone': '936 584 343',
+  'hoteis.h8.email': 'pomardachoca@gmail.com',
+  'hoteis.h8.site': 'https://www.instagram.com/pomardachoca/',
+
   'casa.titulo': 'Para a casa',
+  'casa.intro':
+    'Estamos muito felizes por poder contar convosco para celebrar este dia e dar início a esta nova fase da nossa vida.\n\nTivemos a sorte de encontrar um T2 na Ajuda. A casa já vem mobilada, mas ainda há algumas coisas que gostaríamos de acrescentar para a tornar mais nossa e prepará-la para esta nova fase. Para quem nos quiser ajudar neste projeto, deixamos aqui algumas sugestões.\n\nComo funciona:\n\n1.º Escolher um presente e clicar em “Oferecer”\n2.º Preencher o formulário com o vosso nome e o presente escolhido (podem contribuir apenas com uma parte do valor)\n3.º Fazer a transferência para os dados indicados no formulário',
   'casa.vazio': 'A lista de presentes está a ser preparada.',
   'lua.titulo': 'Lua de mel',
+  'lua.intro':
+    'Também nos podem ajudar com uma contribuição para a nossa viagem de Lua de Mel.',
+  'lua.botao': 'Contribuir',
   'lua.destinos': 'Peru, Colombia, Panamá',
 
   'contribuicao.texto1': 'A melhor forma de nos ajudarem é com uma contribuição para o IBAN abaixo.',
   'contribuicao.texto2':
     'Para conseguirmos agradecer a todos, deixem por favor uma nota com o presente que escolheram!',
-  'contribuicao.iban': 'IBAN:',
+  // Dados para pagar. Cada cartão só aparece se tiver valores: enquanto o
+  // Revolut não tiver tag, por exemplo, fica de fora em vez de vazio. O MB Way
+  // aceita dois números, um de cada um, como no dos noivos que serviu de
+  // referência — há quem tenha a conta num banco e o telemóvel noutro.
+  'pagamento.titulo': 'Métodos de pagamento',
+  'pagamento.mbway1.nome': '',
+  'pagamento.mbway1.numero': '',
+  'pagamento.mbway2.nome': '',
+  'pagamento.mbway2.numero': '',
+  'pagamento.revolut.tag': '',
+  'pagamento.iban': '',
+  'pagamento.titular': '',
+  'pagamento.nota':
+    'Deixem por favor o vosso nome na descrição, para conseguirmos agradecer a todos.',
 
   'ano2018.numero': '2018',
   'ano2018.texto': 'Conhecemos-nos em agosto de 2018, no campo do MAPA.',
@@ -146,6 +221,14 @@ export const imagensEditaveis = [
   ['ano2026.fotografia', '2026 — fotografia'],
 ]
 
+/**
+ * Os hotéis, pela ordem em que aparecem no site.
+ *
+ * A secção e o editor de textos leem esta mesma lista, para não ficarem a
+ * divergir quando se acrescentar ou tirar um.
+ */
+export const hoteisIds = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8']
+
 /** Etiquetas legíveis para o editor de textos da administração. */
 export const gruposDeTexto = [
   { titulo: 'Menu', chaves: ['nav.inicio', 'nav.noivos', 'nav.presentes'] },
@@ -169,7 +252,13 @@ export const gruposDeTexto = [
   { titulo: 'História', chaves: ['historia.texto', 'historia.destaque', 'historia.botao'] },
   {
     titulo: 'Lista de presentes',
-    chaves: ['presentes.titulo', 'presentes.botaoCasa', 'presentes.botaoLua'],
+    chaves: [
+      'presentes.titulo',
+      'presentes.botaoCasa',
+      'presentes.botaoLua',
+      'presentes.etiquetaJanela',
+      'presentes.registar',
+    ],
   },
   {
     titulo: 'Drivers',
@@ -180,17 +269,43 @@ export const gruposDeTexto = [
       'drivers.telefone',
     ],
   },
-  { titulo: 'Onde ficar', chaves: ['hoteis.titulo'] },
+  {
+    titulo: 'Onde ficar',
+    chaves: [
+      'hoteis.titulo',
+      'hoteis.intro',
+      'hoteis.verEspaco',
+      'hoteis.regiao',
+      ...hoteisIds.flatMap((n) => [
+        `hoteis.${n}.nome`,
+        `hoteis.${n}.tipo`,
+        `hoteis.${n}.telefone`,
+        `hoteis.${n}.email`,
+        `hoteis.${n}.site`,
+      ]),
+    ],
+  },
   {
     titulo: 'Página dos presentes',
     chaves: [
       'casa.titulo',
+      'casa.intro',
       'casa.vazio',
       'lua.titulo',
+      'lua.intro',
+      'lua.botao',
       'lua.destinos',
       'contribuicao.texto1',
       'contribuicao.texto2',
-      'contribuicao.iban',
+      'pagamento.titulo',
+      'pagamento.mbway1.nome',
+      'pagamento.mbway1.numero',
+      'pagamento.mbway2.nome',
+      'pagamento.mbway2.numero',
+      'pagamento.revolut.tag',
+      'pagamento.iban',
+      'pagamento.titular',
+      'pagamento.nota',
     ],
   },
   {

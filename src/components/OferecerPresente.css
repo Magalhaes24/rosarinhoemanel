@@ -37,50 +37,74 @@
 .oferecer__caixa {
   position: relative;
   width: 100%;
-  max-width: 460px;
+  max-width: 520px;
+  max-height: calc(100svh - 40px);
+  overflow-y: auto;
   background: #fff;
   border-radius: 18px;
-  padding: 26px;
+  padding: 22px;
   box-shadow: 0 18px 56px rgba(41, 38, 33, 0.32);
   font-family: var(--sans);
+  font-size: 15px;
   color: var(--quase-preto);
   animation: oferecer-caixa 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 .oferecer__fechar {
-  position: absolute;
-  top: 12px;
-  right: 14px;
-  border: none;
-  background: transparent;
-  font-size: 26px;
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(141, 112, 80, 0.24);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 20px;
   line-height: 1;
-  color: #9a938a;
-  padding: 4px 8px;
+  color: var(--castanho);
+  padding: 0;
 }
 
 .oferecer__fechar:hover {
+  background: var(--creme);
   color: var(--quase-preto);
 }
 
 .oferecer__topo {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  padding-right: 30px;
+  padding-right: 44px;
 }
 
+/* `contain` e não `cover`: as fotografias vêm das lojas, com o produto
+   recortado sobre fundo claro — cortadas ficavam sem as pernas. */
 .oferecer__imagem {
-  width: 76px;
-  height: 76px;
-  flex: none;
-  object-fit: cover;
-  border-radius: 12px;
+  margin-bottom: 18px;
+  border-radius: 14px;
+  background: var(--creme);
+  overflow: hidden;
+}
+
+.oferecer__imagem img {
+  display: block;
+  width: 100%;
+  height: 210px;
+  object-fit: contain;
+}
+
+.oferecer__etiqueta {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--castanho);
 }
 
 .oferecer h2 {
   font-family: var(--form-serif);
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 700;
   color: var(--castanho-escuro);
   margin: 0;
@@ -94,32 +118,32 @@
   color: #7a746c;
 }
 
-.oferecer__link {
-  display: inline-block;
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--dourado);
-}
-
 /* Total, já oferecido e o que falta — lado a lado. */
 .oferecer__numeros {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
   margin: 20px 0 4px;
-  padding: 14px 10px;
+  border: 1px solid rgba(141, 112, 80, 0.2);
   border-radius: 12px;
   background: var(--creme);
   text-align: center;
+  overflow: hidden;
 }
 
 .oferecer__numeros span {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  font-size: 11px;
-  color: #7a746c;
+  gap: 4px;
+  padding: 12px 6px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8b847b;
   line-height: 1.3;
+}
+
+.oferecer__numeros span + span {
+  border-left: 1px solid rgba(141, 112, 80, 0.18);
 }
 
 .oferecer__numeros strong {
@@ -132,11 +156,21 @@
 .oferecer__campo {
   display: block;
   margin-top: 18px;
+  min-width: 0;
+}
+
+/* Valor e nome lado a lado, como no dos noivos que serviu de referência. */
+.oferecer__linha {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 12px;
 }
 
 .oferecer__campo > span {
   display: block;
-  font-size: 13px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--castanho);
   margin-bottom: 6px;
 }
@@ -255,14 +289,12 @@
   color: #5f5952;
 }
 
-.oferecer__iban {
-  margin: 16px 0 22px !important;
-  padding: 12px;
-  border-radius: 10px;
-  background: var(--creme);
-  font-family: var(--form-serif);
-  font-size: 16px;
-  word-break: break-all;
+.oferecer__pagar .pagar {
+  margin: 20px 0 0;
+}
+
+.oferecer__feito .pagar {
+  margin-bottom: 22px;
 }
 
 .oferecer__feito .oferecer__btn {
@@ -308,5 +340,15 @@
   }
   .oferecer__acoes {
     flex-direction: column-reverse;
+  }
+  .oferecer__linha {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .oferecer__imagem img {
+    height: 160px;
+  }
+  .oferecer__pagar .pagar {
+    padding: 12px 10px;
   }
 }

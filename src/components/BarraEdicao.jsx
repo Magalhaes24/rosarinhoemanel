@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from '../lib/router.jsx'
 import { useEdicao } from '../lib/edicao.jsx'
+import { useConfirmar } from './Confirmacao.jsx'
 import PainelAparencia from './PainelAparencia.jsx'
 import './BarraEdicao.css'
 
@@ -14,7 +15,32 @@ export default function BarraEdicao() {
   const { podeEditar, emEdicao, alternar, porGravar, resumo, gravar, descartar, estado } =
     useEdicao()
   const { pathname } = useLocation()
+  const confirmar = useConfirmar()
   const [aparencia, setAparencia] = useState(false)
+
+  /**
+   * Sair da edição com alterações por gravar apagava-as sem dizer nada.
+   *
+   * O rascunho vive em memória: sair do modo de edição deixa de o mostrar e o
+   * primeiro recarregamento leva-o. Quem tinha removido uma secção via-a
+   * voltar sem perceber porquê — e a culpa parecia ser do botão de remover.
+   */
+  const sair = async () => {
+    if (!emEdicao || !porGravar) {
+      alternar()
+      return
+    }
+    const ok = await confirmar({
+      titulo: 'Sair sem gravar?',
+      mensagem:
+        'As alterações que fizeste ainda não estão no site. Se saíres agora, perdem-se.',
+      detalhe: resumo,
+      textoConfirmar: 'Sair e perder',
+    })
+    if (!ok) return
+    descartar()
+    alternar()
+  }
   // Invisível para quem não é o admin — que é toda a gente.
   if (!podeEditar) return null
 
@@ -27,7 +53,7 @@ export default function BarraEdicao() {
       {emEdicao && aparencia && <PainelAparencia aoFechar={() => setAparencia(false)} />}
 
       <div className={'barra-edicao' + (emEdicao ? ' is-ativa' : '')}>
-        <button type="button" className="barra-edicao__principal" onClick={alternar}>
+        <button type="button" className="barra-edicao__principal" onClick={sair}>
           {emEdicao ? 'Sair da edição' : 'Editar esta página'}
         </button>
 
@@ -56,7 +82,15 @@ export default function BarraEdicao() {
             <button
               type="button"
               className="barra-edicao__btn barra-edicao__btn--claro"
-              onClick={descartar}
+              onClick={async () => {
+                const ok = await confirmar({
+                  titulo: 'Descartar as alterações?',
+                  mensagem: 'Voltam a ficar como estavam no site. Não dá para desfazer.',
+                  detalhe: resumo,
+                  textoConfirmar: 'Descartar',
+                })
+                if (ok) descartar()
+              }}
               disabled={!porGravar}
             >
               Descartar
