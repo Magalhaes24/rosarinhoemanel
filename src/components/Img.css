@@ -12,7 +12,8 @@
 .em-edicao .ano__fotografia,
 .em-edicao .drivers,
 .em-edicao .seccao__fotografia,
-.em-edicao .loja__imagem {
+.em-edicao .loja__imagem,
+.em-edicao .hoteis__foto {
   position: relative;
 }
 

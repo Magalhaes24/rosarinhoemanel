@@ -141,8 +141,7 @@ function Cartao({ marca, selo, link, vazio, children }) {
 
 export default function MetodosPagamento({ titulo, nota }) {
   const t = useTexto()
-  const { emEdicao: _e } = useEdicao()
-  const emEdicao = true // TESTE
+  const { emEdicao } = useEdicao()
 
   const limpo = (chave) => (t(chave) || '').trim()
 
@@ -210,6 +209,13 @@ export default function MetodosPagamento({ titulo, nota }) {
           </Cartao>
         )}
       </div>
+
+      {emEdicao && (
+        <p className="pagar__falta">
+          Escreve por cima de cada valor para o mudar. Um cartão que fique sem dados não chega a
+          aparecer aos convidados.
+        </p>
+      )}
 
       {nota && <p className="pagar__nota">{emEdicao ? <T k="pagamento.nota" /> : nota}</p>}
     </div>

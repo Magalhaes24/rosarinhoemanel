@@ -78,12 +78,91 @@
 }
 
 /* `contain` e não `cover`: as fotografias vêm das lojas, com o produto
-   recortado sobre fundo claro — cortadas ficavam sem as pernas. */
+   recortado sobre fundo claro — cortadas ficavam sem as pernas. Como a caixa
+   é estreita, o produto sai pequeno; por isso a fotografia é um botão que a
+   abre em grande. */
 .oferecer__imagem {
+  position: relative;
+  display: block;
+  width: 100%;
   margin-bottom: 18px;
+  padding: 0;
+  border: none;
   border-radius: 14px;
   background: var(--creme);
   overflow: hidden;
+  cursor: zoom-in;
+}
+
+.oferecer__lupa {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(41, 38, 33, 0.18);
+  color: var(--castanho-escuro);
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.oferecer__imagem:hover .oferecer__lupa {
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+.oferecer__lupa svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+}
+
+/* ---------------- Fotografia em grande ---------------- */
+/* Por cima da janela do presente (que está no 200). Fecha ao carregar em
+   qualquer sítio: serve para ver, não para mexer. */
+.ampliada {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(41, 38, 33, 0.82);
+  backdrop-filter: blur(2px);
+  cursor: zoom-out;
+  animation: oferecer-fundo 0.16s ease both;
+}
+
+.ampliada img {
+  max-width: min(1100px, 100%);
+  max-height: calc(100svh - 48px);
+  object-fit: contain;
+  border-radius: 10px;
+  background: #fff;
+  animation: oferecer-caixa 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.ampliada__fechar {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 24px;
+  line-height: 1;
+  color: var(--quase-preto);
+  padding: 0;
 }
 
 .oferecer__imagem img {
@@ -317,8 +396,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .oferecer,
-  .oferecer__caixa {
+  .oferecer__caixa,
+  .ampliada,
+  .ampliada img {
     animation: none;
+  }
+  .oferecer__lupa {
+    transition: none;
   }
 }
 
@@ -347,6 +431,12 @@
   }
   .oferecer__imagem img {
     height: 160px;
+  }
+  .ampliada {
+    padding: 12px;
+  }
+  .ampliada img {
+    max-height: calc(100svh - 24px);
   }
   .oferecer__pagar .pagar {
     padding: 12px 10px;

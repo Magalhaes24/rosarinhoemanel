@@ -38,6 +38,9 @@ export default function PainelAparencia({ aoFechar }) {
       if (chave.startsWith('tamanho.')) alterarTema(chave, 1)
       if (chave.startsWith('largura.')) alterarTema(chave, 100)
       if (chave.startsWith('alinhar.')) alterarTema(chave, '')
+      if (chave.startsWith('cor.')) alterarTema(chave, '')
+      if (chave.startsWith('fundo.')) alterarTema(chave, '')
+      if (chave.startsWith('espaco.')) alterarTema(chave, '')
     }
   }
 
@@ -52,8 +55,9 @@ export default function PainelAparencia({ aoFechar }) {
 
       <p className="aparencia__ajuda">
         Aplica-se ao site inteiro. Vês o resultado por trás enquanto mexes; só fica gravado quando
-        carregares em «Gravar». Para mexer só num texto — tamanho, lado e largura da caixa —
-        carrega nele no site e usa os botões que aparecem por cima.
+        carregares em «Gravar». Para mexer só num texto — tamanho, lado, largura, espaço e cores —
+        carrega nele no site e usa os botões que aparecem por cima; as cores de uma secção
+        inteira estão na barra que aparece por cima dela.
       </p>
 
       <h3 className="aparencia__sub">Cores</h3>

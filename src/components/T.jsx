@@ -38,16 +38,22 @@ export default function T({ k, multilinha = true }) {
   const tamanho = numero(tema[chaveAjuste('tamanho', k)], LIMITES.tamanho)
   const largura = numero(tema[chaveAjuste('largura', k)], LIMITES.largura)
   const alinhar = tema[chaveAjuste('alinhar', k)] || ''
+  const cor = tema[chaveAjuste('cor', k)] || ''
+  const fundo = tema[chaveAjuste('fundo', k)] || ''
+  const espaco = tema[chaveAjuste('espaco', k)] ?? ''
 
   // Aqui o texto vive dentro de uma `span` no meio de um parágrafo, e por isso
   // precisa de caixa de linhas própria quando muda de tamanho.
-  const estilo = estiloDoTexto({ tamanho, largura, alinhar }, true)
+  const estilo = estiloDoTexto({ tamanho, largura, alinhar, cor, fundo, espaco }, true)
   const temEstilo = Object.keys(estilo).length > 0
 
   const repor = () => {
     alterarTema(chaveAjuste('tamanho', k), 1)
     alterarTema(chaveAjuste('largura', k), 100)
     alterarTema(chaveAjuste('alinhar', k), '')
+    alterarTema(chaveAjuste('cor', k), '')
+    alterarTema(chaveAjuste('fundo', k), '')
+    alterarTema(chaveAjuste('espaco', k), '')
   }
 
   // Só escreve no DOM quando o valor muda de fora. Escrever a cada tecla
@@ -104,6 +110,9 @@ export default function T({ k, multilinha = true }) {
           tamanho={tamanho}
           largura={largura}
           alinhar={alinhar}
+          cor={cor}
+          fundo={fundo}
+          espaco={espaco}
           aoMudar={(tipo, v) => alterarTema(chaveAjuste(tipo, k), v)}
           aoRepor={repor}
         />

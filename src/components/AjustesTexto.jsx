@@ -1,4 +1,54 @@
 import { useLayoutEffect, useState } from 'react'
+import EscolherCor from './EscolherCor.jsx'
+
+/**
+ * Quanto vale, em pixels, um ponto da medida do site (`--pt`).
+ *
+ * O site inteiro está escrito em pontos do rascunho, e o `--pt` traduz-os para
+ * o ecrã de cada um. Para mostrar um tamanho em pontos — e não em
+ * percentagem, que não diz nada — é preciso medir esse ponto onde o texto
+ * está, porque a escala dos títulos e a do corpo podem ser diferentes.
+ */
+function unidadeDePonto(el) {
+  if (!el || !el.parentElement) return 0
+  const sonda = document.createElement('span')
+  sonda.style.cssText =
+    'position:absolute;visibility:hidden;font-size:calc(100 * var(--pt));line-height:0'
+  el.parentElement.appendChild(sonda)
+  const px = parseFloat(getComputedStyle(sonda).fontSize) / 100
+  sonda.remove()
+  return px || 0
+}
+
+/** O tamanho do texto em pontos do rascunho, tal como se vê neste momento. */
+function pontosDoTexto(el) {
+  const unidade = unidadeDePonto(el)
+  if (!unidade) return null
+  return parseFloat(getComputedStyle(el).fontSize) / unidade
+}
+
+/**
+ * O espaço por baixo do item, em pontos.
+ *
+ * O espaçamento vertical do site anda no `--esp`, que é o `--pt` com o
+ * respiro por cima; é essa a unidade em que se mede aqui, para o número na
+ * barra querer dizer o mesmo que os números da folha de estilo.
+ */
+function unidadeDeEspaco(el) {
+  if (!el || !el.parentElement) return 0
+  const sonda = document.createElement('div')
+  sonda.style.cssText = 'position:absolute;visibility:hidden;height:calc(100 * var(--esp))'
+  el.parentElement.appendChild(sonda)
+  const px = sonda.getBoundingClientRect().height / 100
+  sonda.remove()
+  return px || 0
+}
+
+function espacoDoTexto(el) {
+  const unidade = unidadeDeEspaco(el)
+  if (!unidade) return null
+  return parseFloat(getComputedStyle(el).marginBottom) / unidade
+}
 
 /**
  * A barra de ajustes que aparece por cima de um texto que está a ser escrito:
@@ -11,38 +61,25 @@ import { useLayoutEffect, useState } from 'react'
  */
 
 /**
- * Os degraus do tamanho, de um quarto ao quádruplo.
- *
- * É uma escada e não um passo fixo porque a percentagem não se lê toda da
- * mesma maneira: entre 25% e 100% cinco pontos são muito, e acima de 200% são
- * nada. Assim os números que aparecem são sempre redondos e chega-se aos
- * extremos com meia dúzia de cliques em vez de sessenta.
+ * O tamanho continua guardado como proporção do tamanho de origem — é o que
+ * mantém um título a comportar-se como título e a acompanhar a escala global.
+ * O que muda é o que se vê e se comanda: pontos, de um em um.
  */
-const ESCADA_TAMANHO = [
-  0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 3.5, 4,
-]
-
 export const LIMITES = {
-  tamanho: {
-    min: ESCADA_TAMANHO[0],
-    max: ESCADA_TAMANHO[ESCADA_TAMANHO.length - 1],
-    escada: ESCADA_TAMANHO,
-    omissao: 1,
-  },
+  tamanho: { min: 0.25, max: 4, omissao: 1 },
   largura: { min: 20, max: 100, passo: 5, omissao: 100 },
+}
+
+/** Passo em pontos: de um em um nos tamanhos de texto, de dois nos de título. */
+function passoEmPontos(pt) {
+  return pt >= 40 ? 2 : 1
 }
 
 export function arredondar(v) {
   return Math.round(v * 100) / 100
 }
 
-/** O degrau seguinte da escada, acima ou abaixo do valor onde se está. */
-function degrau(escada, valor, sinal) {
-  const folga = 1e-9
-  if (sinal > 0) return escada.find((v) => v > valor + folga) ?? escada[escada.length - 1]
-  const abaixo = escada.filter((v) => v < valor - folga)
-  return abaixo.length ? abaixo[abaixo.length - 1] : escada[0]
-}
+
 
 /** Lê um valor numérico com limites, caindo na omissão quando não presta. */
 export function numero(v, { min, max, omissao }) {
@@ -63,8 +100,26 @@ export function numero(v, { min, max, omissao }) {
  * que cada tipo de bloco declara na folha de estilo. A entrelinha, sendo um
  * número sem unidade, acompanha sozinha nos dois casos.
  */
-export function estiloDoTexto({ tamanho = 1, largura = 100, alinhar = '' }, embrulhado = false) {
+export function estiloDoTexto(
+  { tamanho = 1, largura = 100, alinhar = '', cor = '', fundo = '', espaco = '' },
+  embrulhado = false
+) {
   const estilo = {}
+  // `espaco` vazio quer dizer «não lhe toquei»; um zero escrito à mão é uma
+  // escolha, e cola mesmo o item ao seguinte.
+  if (espaco !== '' && espaco !== null && espaco !== undefined) {
+    estilo.marginBottom = `calc(${Number(espaco) || 0} * var(--esp))`
+    if (embrulhado) estilo.display = estilo.display || 'inline-block'
+  }
+  if (cor) estilo.color = cor
+  // O fundo precisa de folga à volta das letras, senão fica um bloco de cor
+  // colado ao texto. `inline-block` para a caixa existir de facto.
+  if (fundo) {
+    estilo.background = fundo
+    estilo.padding = '0.25em 0.5em'
+    estilo.borderRadius = '0.25em'
+    if (embrulhado) estilo.display = 'inline-block'
+  }
   if (tamanho !== 1) {
     if (embrulhado) {
       estilo.fontSize = `${tamanho}em`
@@ -91,8 +146,20 @@ const ALINHAMENTOS = [
   ['right', '⇥', 'Encostar à direita'],
 ]
 
-export default function AjustesTexto({ alvo, tamanho, largura, alinhar, aoMudar, aoRepor }) {
+export default function AjustesTexto({
+  alvo,
+  tamanho,
+  largura,
+  alinhar,
+  cor,
+  fundo,
+  espaco,
+  aoMudar,
+  aoRepor,
+}) {
   const [pos, setPos] = useState(null)
+  const [pt, setPt] = useState(null)
+  const [espacoPt, setEspacoPt] = useState(null)
 
   // `useLayoutEffect` para a barra não aparecer primeiro no canto e só depois
   // saltar para o sítio certo.
@@ -105,6 +172,8 @@ export default function AjustesTexto({ alvo, tamanho, largura, alinhar, aoMudar,
       // fora do ecrã em tudo o que está encostado ao topo da página.
       const acima = r.top > 70
       setPos({ top: acima ? r.top : r.bottom, left: r.left + r.width / 2, acima })
+      setPt(pontosDoTexto(el))
+      setEspacoPt(espacoDoTexto(el))
     }
     medir()
     window.addEventListener('scroll', medir, true)
@@ -113,7 +182,7 @@ export default function AjustesTexto({ alvo, tamanho, largura, alinhar, aoMudar,
       window.removeEventListener('scroll', medir, true)
       window.removeEventListener('resize', medir)
     }
-  }, [alvo])
+  }, [alvo, tamanho, espaco])
 
   if (!pos) return null
 
@@ -135,9 +204,32 @@ export default function AjustesTexto({ alvo, tamanho, largura, alinhar, aoMudar,
   )
 
   const passo = (tipo, valor, sinal) => {
-    const { min, max, passo: p, escada } = LIMITES[tipo]
-    const seguinte = escada ? degrau(escada, valor, sinal) : arredondar(valor + sinal * p)
+    const { min, max, passo: p } = LIMITES[tipo]
+    const seguinte = arredondar(valor + sinal * p)
     return () => aoMudar(tipo, Math.min(max, Math.max(min, seguinte)))
+  }
+
+  /**
+   * Sobe ou desce um ponto.
+   *
+   * O que se guarda continua a ser a proporção, mas ela sai da conta em vez de
+   * ser escolhida à mão: sabendo o tamanho de origem — os pontos que o texto
+   * teria sem ajuste nenhum — a proporção para chegar aos pontos que se querem
+   * é uma divisão. Assim o número na barra é o tamanho real, e o texto continua
+   * a encolher com o ecrã e a obedecer à escala global.
+   */
+  const passoEmPt = (sinal) => () => {
+    if (!pt) return
+    const { min, max } = LIMITES.tamanho
+    const origem = pt / (tamanho || 1)
+    const alvoPt = Math.max(1, Math.round(pt) + sinal * passoEmPontos(pt))
+    aoMudar('tamanho', Math.min(max, Math.max(min, arredondar(alvoPt / origem))))
+  }
+
+  /** O espaço por baixo sobe e desce de quatro em quatro pontos. */
+  const mudarEspaco = (sinal) => {
+    if (espacoPt === null) return
+    aoMudar('espaco', Math.max(0, Math.round(espacoPt) + sinal * 4))
   }
 
   return (
@@ -147,12 +239,12 @@ export default function AjustesTexto({ alvo, tamanho, largura, alinhar, aoMudar,
       contentEditable={false}
     >
       <span className="ajuste-texto__grupo">
-        {botao('A−', 'Diminuir o texto', passo('tamanho', tamanho, -1), {
-          desativado: tamanho <= LIMITES.tamanho.min,
+        {botao('A−', 'Diminuir o texto', passoEmPt(-1), {
+          desativado: !pt || tamanho <= LIMITES.tamanho.min,
         })}
-        <span className="ajuste-texto__valor">{Math.round(tamanho * 100)}%</span>
-        {botao('A+', 'Aumentar o texto', passo('tamanho', tamanho, +1), {
-          desativado: tamanho >= LIMITES.tamanho.max,
+        <span className="ajuste-texto__valor">{pt ? `${Math.round(pt)} pt` : '—'}</span>
+        {botao('A+', 'Aumentar o texto', passoEmPt(+1), {
+          desativado: !pt || tamanho >= LIMITES.tamanho.max,
         })}
       </span>
 
@@ -170,6 +262,33 @@ export default function AjustesTexto({ alvo, tamanho, largura, alinhar, aoMudar,
         {botao('◧+', 'Alargar a caixa', passo('largura', largura, +1), {
           desativado: largura >= LIMITES.largura.max,
         })}
+      </span>
+
+      <span className="ajuste-texto__grupo">
+        {botao('↕−', 'Menos espaço por baixo', () => mudarEspaco(-1), {
+          desativado: espacoPt === null || Math.round(espacoPt) <= 0,
+        })}
+        <span className="ajuste-texto__valor">
+          {espacoPt === null ? '—' : `${Math.round(espacoPt)} pt`}
+        </span>
+        {botao('↕+', 'Mais espaço por baixo', () => mudarEspaco(+1), {
+          desativado: espacoPt === null,
+        })}
+      </span>
+
+      <span className="ajuste-texto__grupo">
+        <EscolherCor
+          etiqueta="Cor do texto"
+          icone="A"
+          valor={cor}
+          aoMudar={(v) => aoMudar('cor', v)}
+        />
+        <EscolherCor
+          etiqueta="Cor de fundo do texto"
+          icone="■"
+          valor={fundo}
+          aoMudar={(v) => aoMudar('fundo', v)}
+        />
       </span>
 
       {botao('↺', 'Voltar ao normal', aoRepor)}

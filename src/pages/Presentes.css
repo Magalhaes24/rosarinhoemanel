@@ -49,6 +49,31 @@
   text-align: center;
 }
 
+.presentes__contribuir {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: calc(7 * var(--esp)) calc(20 * var(--pt));
+  border: 1px solid var(--dourado-botao);
+  border-radius: calc(24 * var(--pt));
+  background: transparent;
+  font-family: var(--sans);
+  font-size: calc(15 * var(--pt) * var(--escala-corpo));
+  color: var(--castanho-escuro);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.presentes__contribuir:hover {
+  background: var(--dourado-botao);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presentes__contribuir {
+    transition: none;
+  }
+}
+
 #lua .destinos {
   margin-top: calc(60 * var(--esp));
 }

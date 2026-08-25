@@ -293,8 +293,7 @@
      aspeto que terá depois de gravado. */
   font: inherit;
   color: inherit;
-  min-width: 1ch;
-  display: inline-block;
+  display: inline;
   /* As quebras feitas com Enter têm de aparecer já durante a edição. */
   white-space: pre-line;
 }
@@ -318,8 +317,11 @@
   z-index: 60;
   transform: translate(-50%, -100%) translateY(-10px);
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 6px 8px;
+  max-width: min(96vw, 620px);
   padding: 5px 6px;
   border: 1px solid rgba(41, 38, 33, 0.16);
   border-radius: 10px;
@@ -388,10 +390,11 @@
   display: block;
 }
 
-/* Um bloco acabado de acrescentar está vazio; sem isto não tinha altura
-   nenhuma e não havia onde carregar para o começar a escrever. */
+/* Um texto vazio não tinha altura nem largura nenhuma, e não havia onde
+   carregar para o começar a escrever. Só este caso ganha caixa própria. */
 .editavel:empty {
-  display: block;
+  display: inline-block;
+  min-width: 8ch;
   min-height: 1.2em;
 }
 

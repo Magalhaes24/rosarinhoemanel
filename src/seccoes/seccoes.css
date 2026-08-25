@@ -13,6 +13,35 @@
   text-align: center;
 }
 
+/* ---------------- Cores dadas a uma secção ---------------- */
+/* O embrulho não pinta nada por si: passa as cores à secção que tem dentro.
+   Pintá-lo a ele deixava o fundo próprio da secção (o creme, o azul dos
+   drivers) por cima e não se via nada. */
+.seccao-cores {
+  display: contents;
+}
+
+.seccao-cores--fundo > section,
+.seccao-cores--fundo > .seccao-extra {
+  background: var(--fundo-seccao);
+}
+
+/* As bandas da missa e do copo d'água têm a fotografia como fundo; a cor vai
+   para a caixa de texto, que é o que ali se lê. */
+.seccao-cores--fundo > section > .banda__caixa {
+  background: var(--fundo-seccao);
+}
+
+/* A cor do texto tem de chegar aos filhos: quase todos declaram a sua própria
+   (o verde dos títulos, o dourado dos contactos) e sem isto ignoravam-na. Os
+   textos que levarem cor própria ganham a esta, por serem estilo em linha. */
+.seccao-cores--texto > section,
+.seccao-cores--texto > section *:not(.editavel-fora),
+.seccao-cores--texto > .seccao-extra,
+.seccao-cores--texto > .seccao-extra * {
+  color: var(--cor-seccao);
+}
+
 /* Blocos acrescentados ao fim de uma secção que não é de conteúdo livre.
    Segue o mesmo recuo e a mesma largura do interior das outras, para o que se
    acrescenta não ficar desalinhado do que já lá estava. O espaço em cima é

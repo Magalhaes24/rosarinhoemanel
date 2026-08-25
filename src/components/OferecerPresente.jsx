@@ -34,6 +34,7 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
   const [enviado, setEnviado] = useState(0)
   const [erro, setErro] = useState('')
   const [armadilha, setArmadilha] = useState('')
+  const [ampliada, setAmpliada] = useState(false)
 
   const preco = Number(item.preco) || 0
   const falta = preco > 0 ? Math.max(0, preco - jaContribuido) : 0
@@ -41,10 +42,14 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
   const passaOQueFalta = preco > 0 && montante > falta
 
   useEffect(() => {
-    const aoTeclar = (e) => e.key === 'Escape' && aoFechar()
+    const aoTeclar = (e) => {
+      if (e.key !== 'Escape') return
+      if (ampliada) setAmpliada(false)
+      else aoFechar()
+    }
     document.addEventListener('keydown', aoTeclar)
     return () => document.removeEventListener('keydown', aoTeclar)
-  }, [aoFechar])
+  }, [aoFechar, ampliada])
 
   async function submeter(e) {
     e.preventDefault()
@@ -124,9 +129,20 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
         ) : (
           <>
             {item.imagem && (
-              <div className="oferecer__imagem">
+              <button
+                type="button"
+                className="oferecer__imagem"
+                onClick={() => setAmpliada(true)}
+                aria-label="Ver a fotografia maior"
+              >
                 <img src={item.imagem} alt="" />
-              </div>
+                <span className="oferecer__lupa" aria-hidden="true">
+                  <svg viewBox="0 0 20 20">
+                    <circle cx="8.6" cy="8.6" r="5.4" fill="none" strokeWidth="1.6" />
+                    <path d="M12.6 12.6 17 17M6.4 8.6h4.4M8.6 6.4v4.4" strokeWidth="1.6" />
+                  </svg>
+                </span>
+              </button>
             )}
 
             <header className="oferecer__topo">
@@ -239,6 +255,21 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
           </>
         )}
       </div>
+
+      {ampliada && item.imagem && (
+        <div
+          className="ampliada"
+          role="dialog"
+          aria-modal="true"
+          aria-label={item.nome}
+          onPointerDown={() => setAmpliada(false)}
+        >
+          <img src={item.imagem} alt={item.nome} />
+          <button type="button" className="ampliada__fechar" aria-label="Fechar">
+            ×
+          </button>
+        </div>
+      )}
     </div>
   )
 }

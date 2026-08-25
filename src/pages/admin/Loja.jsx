@@ -14,6 +14,11 @@ import { apagarFotografia } from '../../lib/fotografias.js'
 import CampoFotografia from '../../components/CampoFotografia.jsx'
 import { useConfirmar } from '../../components/Confirmacao.jsx'
 import { useConteudo, resolverImagem } from '../../lib/conteudo.jsx'
+import {
+  presentesDoRascunho,
+  porImportar,
+  documentoDoPresente,
+} from '../../data/presentesDoRascunho.js'
 
 const db = getFirestore(app)
 const COLECAO = 'presentes-casa'
@@ -115,6 +120,7 @@ export default function Loja() {
   const [itens, setItens] = useState(null)
   const [erro, setErro] = useState('')
   const [aEditar, setAEditar] = useState(null) // null | 'novo' | id
+  const [aImportar, setAImportar] = useState(false)
 
   useEffect(() => {
     // Sem `orderBy`: o Firestore excluiria documentos sem o campo `ordem`,
@@ -127,12 +133,14 @@ export default function Loja() {
         setItens(lista)
         setErro('')
       },
-      (e) =>
+      (e) => {
+        setItens([])
         setErro(
           e.code === 'permission-denied'
             ? 'Sem permissão para ler a lista. Falta publicar as regras: npm run regras'
             : e.message
         )
+      }
     )
   }, [])
 
@@ -168,6 +176,55 @@ export default function Loja() {
     await deleteDoc(doc(db, COLECAO, item.id))
   }
 
+  /**
+   * Cria de uma vez os presentes do rascunho que ainda não existirem.
+   *
+   * Compara pelo nome e preço, para se poder carregar duas vezes sem duplicar
+   * nada — e para as três almofadas, que têm o mesmo nome, não se atropelarem.
+   * Entram no fim da lista, pela ordem do rascunho.
+   */
+  async function importar() {
+    const novos = porImportar(itens || [])
+
+    if (novos.length === 0) {
+      setErro('A lista do rascunho já está toda cá dentro — não há nada a acrescentar.')
+      return
+    }
+
+    const ok = await confirmar({
+      titulo: `Acrescentar ${novos.length} presentes?`,
+      mensagem:
+        'São os do rascunho em PDF, com as fotografias que vieram de lá. Os que já estão na '
+        + 'lista ficam como estão, e podes editar ou apagar qualquer um a seguir.',
+      detalhe: novos.map((i) => i.nome).join(', '),
+      textoConfirmar: 'Acrescentar',
+      destrutivo: false,
+    })
+    if (!ok) return
+
+    setAImportar(true)
+    setErro('')
+    try {
+      let ordem = (itens?.length ? Math.max(...itens.map((i) => i.ordem ?? 0)) : 0) + 10
+      // Um a um e por ordem: em paralelo, as `ordem` saíam trocadas.
+      for (const item of novos) {
+        await addDoc(collection(db, COLECAO), {
+          ...documentoDoPresente(item, ordem),
+          criadoEm: serverTimestamp(),
+        })
+        ordem += 10
+      }
+    } catch (e) {
+      setErro(
+        e.code === 'permission-denied'
+          ? 'Sem permissão para gravar. As regras ainda não foram publicadas — corre «npm run regras».'
+          : e.message
+      )
+    } finally {
+      setAImportar(false)
+    }
+  }
+
   /** Troca a ordem com o vizinho, para o admin poder reordenar a lista. */
   async function mover(indice, direcao) {
     const outro = itens[indice + direcao]
@@ -184,15 +241,27 @@ export default function Loja() {
       <div className="admin__seccao-topo">
         <h2>Lista de presentes «Para a casa»</h2>
         {aEditar !== 'novo' && (
-          <button type="button" className="admin__btn" onClick={() => setAEditar('novo')}>
-            Acrescentar presente
-          </button>
+          <>
+            <button
+              type="button"
+              className="admin__btn admin__btn--claro"
+              onClick={importar}
+              disabled={!itens || aImportar}
+            >
+              {aImportar ? 'A importar…' : 'Importar a lista do rascunho'}
+            </button>
+            <button type="button" className="admin__btn" onClick={() => setAEditar('novo')}>
+              Acrescentar presente
+            </button>
+          </>
         )}
       </div>
 
       <p className="admin__ajuda">
         Estes itens aparecem em grelha na página «O que dar?», na secção «Para a casa». A ordem
-        aqui é a ordem no site.
+        aqui é a ordem no site. O «Importar a lista do rascunho» acrescenta os{' '}
+        {presentesDoRascunho.length} presentes do PDF que ainda não estiverem cá — pode carregar-se
+        mais do que uma vez sem duplicar nada.
       </p>
 
       {erro && <p className="admin__erro">{erro}</p>}

@@ -121,7 +121,17 @@ function BlocoDeTexto({ dados, indice, aoMudar }) {
 
   // Um bloco já é um elemento de bloco: não precisa do `inline-block` que a
   // `span` de um texto do site precisa para ter caixa de linhas própria.
-  const estilo = estiloDoTexto({ tamanho, largura, alinhar }, false)
+  const estilo = estiloDoTexto(
+    {
+      tamanho,
+      largura,
+      alinhar,
+      cor: dados.cor || '',
+      fundo: dados.fundo || '',
+      espaco: dados.espaco ?? '',
+    },
+    false
+  )
 
   useEffect(() => {
     const el = ref.current
@@ -166,8 +176,19 @@ function BlocoDeTexto({ dados, indice, aoMudar }) {
           largura={largura}
           alinhar={alinhar}
           aoMudar={mudar}
+          cor={dados.cor || ''}
+          fundo={dados.fundo || ''}
+          espaco={dados.espaco ?? ''}
           aoRepor={() =>
-            aoMudar(indice, { ...dados, tamanho: 1, largura: 100, alinhamento: '' })
+            aoMudar(indice, {
+              ...dados,
+              tamanho: 1,
+              largura: 100,
+              alinhamento: '',
+              cor: '',
+              fundo: '',
+              espaco: '',
+            })
           }
         />
       )}
@@ -190,7 +211,14 @@ export function Bloco({ dados, indice }) {
   // Só declara `text-align` quando o bloco tem alinhamento próprio; sem isso
   // herda o da secção, que é o que a opção «Como a secção» promete.
   const estiloTexto = estiloDoTexto(
-    { tamanho: numero(dados.tamanho, LIMITES.tamanho), largura: numero(dados.largura, LIMITES.largura), alinhar: alinhamento || '' },
+    {
+      tamanho: numero(dados.tamanho, LIMITES.tamanho),
+      largura: numero(dados.largura, LIMITES.largura),
+      alinhar: alinhamento || '',
+      cor: dados.cor || '',
+      fundo: dados.fundo || '',
+      espaco: dados.espaco ?? '',
+    },
     false
   )
   const estilo = Object.keys(estiloTexto).length ? estiloTexto : undefined

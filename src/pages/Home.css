@@ -293,6 +293,8 @@
 .drivers__texto {
   color: var(--quase-preto);
   max-width: calc(950 * var(--pt));
+  align-self: center;
+  text-align: center;
 }
 
 .drivers__tel {
@@ -342,8 +344,8 @@
   padding: 0;
   max-width: calc(1000 * var(--pt));
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(240 * var(--pt)), 1fr));
-  gap: calc(22 * var(--pt));
+  grid-template-columns: repeat(auto-fit, minmax(calc(190 * var(--pt)), 1fr));
+  gap: calc(18 * var(--pt));
   text-align: left;
 }
 
@@ -353,13 +355,13 @@
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(141, 112, 80, 0.22);
   border-radius: calc(14 * var(--pt));
-  padding: calc(22 * var(--esp)) calc(22 * var(--pt));
+  padding: calc(17 * var(--esp)) calc(18 * var(--pt));
   overflow: hidden;
 }
 
 .hoteis__foto {
-  margin: calc(-22 * var(--esp)) calc(-22 * var(--pt)) calc(20 * var(--esp));
-  aspect-ratio: 3 / 2;
+  margin: calc(-17 * var(--esp)) calc(-18 * var(--pt)) calc(16 * var(--esp));
+  aspect-ratio: 4 / 3;
   background: rgba(141, 112, 80, 0.08);
 }
 
@@ -380,7 +382,7 @@
 .hoteis__nome {
   margin: 0;
   font-family: var(--form-serif);
-  font-size: calc(21 * var(--pt) * var(--escala-titulos));
+  font-size: calc(18 * var(--pt) * var(--escala-titulos));
   line-height: 1.25;
   color: var(--castanho-escuro);
 }
@@ -388,7 +390,7 @@
 .hoteis__tipo {
   margin: calc(4 * var(--esp)) 0 0;
   font-family: var(--sans);
-  font-size: calc(14 * var(--pt) * var(--escala-corpo));
+  font-size: calc(12 * var(--pt) * var(--escala-corpo));
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--castanho);
@@ -401,9 +403,9 @@
   flex-direction: column;
   align-items: flex-start;
   gap: calc(4 * var(--esp));
-  margin: calc(14 * var(--esp)) 0 0;
+  margin: calc(11 * var(--esp)) 0 0;
   font-family: var(--sans);
-  font-size: calc(15 * var(--pt) * var(--escala-corpo));
+  font-size: calc(13 * var(--pt) * var(--escala-corpo));
 }
 
 .hoteis__contacto a {
@@ -421,11 +423,11 @@
 /* `margin-top: auto` cola-o ao fundo do cartão; a margem negativa dos lados
    faz a risca de cima atravessar o cartão todo, como um rodapé. */
 .hoteis__espaco {
-  margin: auto calc(-22 * var(--pt)) calc(-22 * var(--esp));
-  padding: calc(16 * var(--esp)) calc(22 * var(--pt));
+  margin: auto calc(-18 * var(--pt)) calc(-17 * var(--esp));
+  padding: calc(13 * var(--esp)) calc(18 * var(--pt));
   border-top: 1px solid rgba(141, 112, 80, 0.18);
   font-family: var(--sans);
-  font-size: calc(15 * var(--pt) * var(--escala-corpo));
+  font-size: calc(13 * var(--pt) * var(--escala-corpo));
   color: var(--castanho-escuro);
   text-decoration: none;
   transition: background 0.16s ease, color 0.16s ease;
@@ -439,7 +441,7 @@
 /* Sem isto o link do fundo encostava aos contactos quando o cartão é o mais
    alto da linha e não sobra espaço nenhum para o `auto` distribuir. */
 .hoteis__contacto {
-  margin-bottom: calc(18 * var(--esp));
+  margin-bottom: calc(14 * var(--esp));
 }
 
 @media (prefers-reduced-motion: reduce) {

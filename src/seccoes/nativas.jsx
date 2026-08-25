@@ -171,7 +171,7 @@ function Drivers() {
         <br />
         <T k="drivers.contactoTexto" />{' '}
         <strong>
-          <T k="drivers.contactoNome" /> -{' '}
+          <T k="drivers.contactoNome" />{' '}
           <a href={`tel:+351${t('drivers.telefone').replace(/\s/g, '')}`} className="drivers__tel">
             <T k="drivers.telefone" multilinha={false} />
           </a>
@@ -514,7 +514,11 @@ function LuaDeMel() {
       </p>
 
       <div className="presentes__acao" data-revelar style={{ '--atraso': '0.1s' }}>
-        <button type="button" className="botao-contorno" onClick={() => setAContribuir(true)}>
+        <button
+          type="button"
+          className="presentes__contribuir"
+          onClick={() => setAContribuir(true)}
+        >
           <T k="lua.botao" multilinha={false} />
         </button>
       </div>

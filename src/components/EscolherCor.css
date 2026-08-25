@@ -1,0 +1,125 @@
+/* ---------------- Escolher uma cor ---------------- */
+/* Só se vê em modo de edição, dentro da barra de ajustes de um texto ou dos
+   controlos de uma secção. Herda a medida de quem o põe lá. */
+
+.cor {
+  position: relative;
+  display: inline-flex;
+}
+
+.cor .cor__botao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid rgba(41, 38, 33, 0.18);
+  background: #fff;
+  border-radius: 7px;
+  padding: 3px 7px 4px;
+  line-height: 1;
+}
+
+.cor .cor__botao:hover {
+  background: var(--botao-creme);
+}
+
+.cor__icone {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--quase-preto);
+}
+
+.cor__tira {
+  width: 16px;
+  height: 4px;
+  border-radius: 2px;
+  border: 1px solid rgba(41, 38, 33, 0.2);
+}
+
+/* Aos quadradinhos quando não há cor posta, como nos programas de desenho. */
+.cor__tira.is-vazia {
+  background:
+    linear-gradient(45deg, rgba(41, 38, 33, 0.3) 25%, transparent 25%, transparent 75%, rgba(41, 38, 33, 0.3) 75%),
+    linear-gradient(45deg, rgba(41, 38, 33, 0.3) 25%, transparent 25%, transparent 75%, rgba(41, 38, 33, 0.3) 75%),
+    #fff;
+  background-size: 6px 6px;
+  background-position: 0 0, 3px 3px;
+}
+
+.cor__paleta {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 188px;
+  padding: 10px;
+  border: 1px solid rgba(41, 38, 33, 0.16);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(41, 38, 33, 0.18);
+}
+
+.cor__grelha {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+}
+
+.cor .cor__amostra {
+  aspect-ratio: 1;
+  border: 1px solid rgba(41, 38, 33, 0.22);
+  border-radius: 5px;
+  padding: 0;
+}
+
+.cor .cor__amostra:hover {
+  transform: scale(1.12);
+}
+
+.cor .cor__amostra.is-ativa {
+  outline: 2px solid var(--dourado);
+  outline-offset: 1px;
+}
+
+.cor__livre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--castanho);
+}
+
+.cor .cor__livre input {
+  width: 40px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(41, 38, 33, 0.2);
+  border-radius: 5px;
+  background: none;
+}
+
+.cor .cor__limpar {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid rgba(41, 38, 33, 0.18);
+  background: #fff;
+  border-radius: 7px;
+  padding: 5px;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--castanho);
+}
+
+.cor .cor__limpar:hover {
+  background: var(--botao-creme);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cor .cor__amostra:hover {
+    transform: none;
+  }
+}

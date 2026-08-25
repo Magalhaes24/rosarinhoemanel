@@ -5,6 +5,7 @@ import { useConfirmar } from '../components/Confirmacao.jsx'
 import { tiposNativos } from './nativas.jsx'
 import { tiposPersonalizados } from './personalizadas.jsx'
 import { Bloco, ContextoBlocos } from './blocos.jsx'
+import EscolherCor from '../components/EscolherCor.jsx'
 import Campos from './campos.jsx'
 import './edicao.css'
 
@@ -70,7 +71,7 @@ export function Seccao({ seccao, aoMudar }) {
   // acrescentados vêm a seguir à secção, com o mesmo recuo do resto do site.
   const extra = seccao.tipo === 'livre' || !Array.isArray(seccao.blocos) ? [] : seccao.blocos
 
-  const desenho = (
+  const conteudo = (
     <>
       <Componente dados={seccao} />
       {extra.length > 0 && (
@@ -81,6 +82,27 @@ export function Seccao({ seccao, aoMudar }) {
         </div>
       )}
     </>
+  )
+
+  const classes = [
+    seccao.corFundo ? 'seccao-cores--fundo' : '',
+    seccao.corTexto ? 'seccao-cores--texto' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  const desenho = classes ? (
+    <div
+      className={`seccao-cores ${classes}`}
+      style={{
+        ...(seccao.corFundo ? { '--fundo-seccao': seccao.corFundo } : null),
+        ...(seccao.corTexto ? { '--cor-seccao': seccao.corTexto } : null),
+      }}
+    >
+      {conteudo}
+    </div>
+  ) : (
+    conteudo
   )
 
   if (!aoMudar) return desenho
@@ -172,6 +194,13 @@ function PainelDaSeccao({ definicao, dados, aoMudar, aoFechar }) {
   )
 }
 
+/** A lista de secções com uma cor mudada numa delas. */
+function comCor(seccoes, indice, campo, valor) {
+  const nova = [...seccoes]
+  nova[indice] = { ...nova[indice], [campo]: valor }
+  return nova
+}
+
 /** Controlos que aparecem por cima de cada secção, em modo de edição. */
 function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar, aEditar, setAEditar }) {
   const confirmar = useConfirmar()
@@ -225,6 +254,18 @@ function ControlosDaSeccao({ pagina, seccoes, indice, aoMudar, aEditar, setAEdit
       <button type="button" onClick={alternarVisivel}>
         {s.escondida ? 'Mostrar' : 'Esconder'}
       </button>
+      <EscolherCor
+        etiqueta="Cor do texto da secção"
+        icone="A"
+        valor={s.corTexto || ''}
+        aoMudar={(v) => aoMudar(pagina, comCor(seccoes, indice, 'corTexto', v))}
+      />
+      <EscolherCor
+        etiqueta="Cor de fundo da secção"
+        icone="■"
+        valor={s.corFundo || ''}
+        aoMudar={(v) => aoMudar(pagina, comCor(seccoes, indice, 'corFundo', v))}
+      />
       <button type="button" onClick={() => setAEditar(aEditar === s.id ? null : s.id)}>
         {aEditar === s.id ? 'Fechar' : def?.nativo ? 'Acrescentar' : 'Editar'}
       </button>
