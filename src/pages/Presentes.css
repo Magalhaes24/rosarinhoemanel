@@ -129,7 +129,9 @@
 /* O cartão inteiro é o botão que abre a janela de oferta — daí a reposição
    dos estilos que o browser põe nos botões. */
 .loja__item {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   width: 100%;
   height: 100%;
   border: none;
@@ -168,15 +170,17 @@
   }
 }
 
-/* Preço, barra e quanto falta andam juntos. */
+/* Preço, barra e quanto falta andam juntos, encostados ao fundo do cartão. */
 .loja__estado {
-  margin-top: calc(8 * var(--esp));
+  margin-top: auto;
+  padding-top: calc(8 * var(--esp));
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: calc(5 * var(--esp));
 }
 
-.loja__estado .loja__preco {
+.loja__preco {
   margin: 0;
 }
 
@@ -190,6 +194,7 @@
 .loja__oferecer {
   display: inline-block;
   margin-top: calc(10 * var(--esp));
+  align-self: flex-start;
   padding: calc(6 * var(--esp)) calc(16 * var(--pt));
   border: 1px solid var(--dourado-botao);
   border-radius: calc(24 * var(--pt));
@@ -200,6 +205,8 @@
 }
 
 .loja__imagem {
+  flex: none;
+  width: 100%;
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
@@ -242,17 +249,11 @@
   font-weight: 700;
   font-size: calc(17 * var(--pt) * var(--escala-corpo));
   line-height: 1.25;
+  min-height: 2.5em;
   color: var(--castanho-escuro);
   margin: calc(11 * var(--esp)) 0 0;
 }
 
-.loja__descricao {
-  font-family: var(--sans);
-  font-size: calc(14 * var(--pt) * var(--escala-corpo));
-  line-height: 1.4;
-  color: var(--castanho);
-  margin: calc(5 * var(--esp)) 0 0;
-}
 
 .loja__preco {
   font-family: var(--form-serif);
@@ -367,6 +368,25 @@
 @media (max-width: 760px) {
   #casa {
     padding-bottom: calc(140 * var(--esp));
+  }
+
+  /* Pisos mínimos no cartão: o `--pt` do telemóvel levava o «Faltam X €» para
+     os 10px e o «Oferecer» para os 10,6px. O cartão inteiro é clicável, mas o
+     botão tem de se ler. */
+  .loja__nome {
+    font-size: max(15px, calc(17 * var(--pt) * var(--escala-corpo)));
+  }
+  .loja__preco {
+    font-size: max(14px, calc(16 * var(--pt) * var(--escala-corpo)));
+  }
+  .loja__falta {
+    font-size: max(12px, calc(12.5 * var(--pt) * var(--escala-corpo)));
+  }
+  .loja__oferecer {
+    font-size: max(13px, calc(13 * var(--pt) * var(--escala-corpo)));
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .presentes__intro {

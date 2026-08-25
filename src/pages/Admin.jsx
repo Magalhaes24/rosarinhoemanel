@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from '../lib/router.jsx'
 import { entrar, sair, observarSessao, ehAdmin, mensagemDeErro } from '../lib/auth.js'
 import Respostas from './admin/Respostas.jsx'
+import Contribuicoes from './admin/Contribuicoes.jsx'
+import Resumo, { useNumeros } from './admin/Resumo.jsx'
 import Loja from './admin/Loja.jsx'
 import Aparencia from './admin/Aparencia.jsx'
 import Layout from './admin/Layout.jsx'
@@ -64,50 +66,61 @@ function Login() {
 }
 
 const SEPARADORES = [
-  { id: 'respostas', nome: 'Respostas' },
-  { id: 'loja', nome: 'Lista de presentes' },
+  { id: 'contribuicoes', nome: 'Contribuições', conta: 'contribuicoes' },
+  { id: 'loja', nome: 'Presentes', conta: 'presentes' },
+  { id: 'respostas', nome: 'Presenças', conta: 'rsvps' },
   { id: 'layout', nome: 'Secções' },
   { id: 'textos', nome: 'Textos' },
   { id: 'tema', nome: 'Aparência' },
 ]
 
 function Painel({ utilizador }) {
-  const [separador, setSeparador] = useState('respostas')
+  const [separador, setSeparador] = useState('contribuicoes')
+  const numeros = useNumeros()
 
   return (
     <div className="admin__painel">
       <header className="admin__topo">
-        <h1 className="admin__titulo">Administração</h1>
+        <div>
+          <p className="admin__sobrescrito">Painel de administração</p>
+          <h1 className="admin__titulo">Administração</h1>
+          <p className="admin__lead">
+            Acompanha as contribuições, gere a lista de presentes e edita o site sem sair
+            desta página.
+          </p>
+        </div>
         <div className="admin__sessao">
-          <span>{utilizador.email}</span>
-          <button className="admin__sair" type="button" onClick={sair}>
+          <span className="admin__email">{utilizador.email}</span>
+          <Link to="/" className="admin__btn admin__btn--claro">
+            Editar o site
+          </Link>
+          <button className="admin__btn admin__btn--claro" type="button" onClick={sair}>
             Sair
           </button>
         </div>
       </header>
 
-      <p className="admin__ajuda admin__ajuda--destaque">
-        Podes editar os textos e a ordem das secções diretamente nas páginas:
-        abre o site e usa a barra que aparece em baixo.{' '}
-        <Link to="/" className="admin__btn admin__btn--claro">
-          Ir para o site e editar
-        </Link>
-      </p>
+      <Resumo numeros={numeros} />
 
       <nav className="admin__separadores" aria-label="Secções da administração">
-        {SEPARADORES.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            className={'admin__separador' + (separador === s.id ? ' is-ativo' : '')}
-            onClick={() => setSeparador(s.id)}
-            aria-current={separador === s.id ? 'page' : undefined}
-          >
-            {s.nome}
-          </button>
-        ))}
+        {SEPARADORES.map((s) => {
+          const n = s.conta ? numeros.contagens[s.conta] : null
+          return (
+            <button
+              key={s.id}
+              type="button"
+              className={'admin__separador' + (separador === s.id ? ' is-ativo' : '')}
+              onClick={() => setSeparador(s.id)}
+              aria-current={separador === s.id ? 'page' : undefined}
+            >
+              {s.nome}
+              {n !== null && n !== undefined && <span className="admin__conta">{n}</span>}
+            </button>
+          )
+        })}
       </nav>
 
+      {separador === 'contribuicoes' && <Contribuicoes />}
       {separador === 'respostas' && <Respostas />}
       {separador === 'loja' && <Loja />}
       {separador === 'layout' && <Layout />}

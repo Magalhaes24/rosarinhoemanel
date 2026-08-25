@@ -204,4 +204,20 @@
   .pagar__cartao--iban {
     grid-column: 1 / -1;
   }
+
+  .pagar__copiar {
+    width: 44px;
+    height: 44px;
+    margin: -11px -11px -11px 0;
+  }
+
+  .pagar__abrir {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pagar__abrir svg {
+    width: 16px;
+    height: 16px;
+  }
 }

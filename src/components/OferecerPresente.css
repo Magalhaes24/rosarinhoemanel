@@ -77,10 +77,9 @@
   padding-right: 44px;
 }
 
-/* `contain` e não `cover`: as fotografias vêm das lojas, com o produto
-   recortado sobre fundo claro — cortadas ficavam sem as pernas. Como a caixa
-   é estreita, o produto sai pequeno; por isso a fotografia é um botão que a
-   abre em grande. */
+/* `cover`: a fotografia enche a caixa toda em vez de ficar ao meio com barras
+   de creme dos lados. O que fica de fora vê-se na fotografia em grande, que é
+   o que o botão da lupa abre — essa continua em `contain`, inteira. */
 .oferecer__imagem {
   position: relative;
   display: block;
@@ -169,7 +168,7 @@
   display: block;
   width: 100%;
   height: 210px;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .oferecer__etiqueta {
@@ -414,6 +413,12 @@
   .oferecer__caixa {
     padding: 22px 18px;
     border-radius: 16px;
+  }
+  /* O fechar é o único caminho de saída à vista: 44px de lado, como manda. */
+  .oferecer__fechar {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
   }
   .oferecer__numeros {
     gap: 4px;

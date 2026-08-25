@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from './lib/router.jsx'
 import { ConteudoProviderEdicao } from './lib/edicao.jsx'
 import Nav from './components/Nav.jsx'
 import BarraEdicao from './components/BarraEdicao.jsx'
+import VoltarAoTopo from './components/VoltarAoTopo.jsx'
 import Home from './pages/Home.jsx'
 import Noivos from './pages/Noivos.jsx'
 import Presentes from './pages/Presentes.jsx'
@@ -50,6 +51,7 @@ export default function App() {
         />
         <Route path="*" element={<Home />} />
       </Routes>
+      <VoltarAoTopo />
       <BarraEdicao />
     </ConteudoProviderEdicao>
   )

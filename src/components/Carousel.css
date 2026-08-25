@@ -155,10 +155,13 @@
   height: calc(9 * var(--pt));
   min-width: 8px;
   min-height: 8px;
-  padding: 0;
+  box-sizing: content-box;
+  padding: 10px;
+  margin: -10px 0;
   border: none;
   border-radius: 50%;
   background: currentColor;
+  background-clip: content-box;
   opacity: 0.3;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
@@ -205,5 +208,16 @@
   }
   .carousel__arrow--next {
     right: 6px;
+  }
+}
+
+/* No telemóvel o `--pt` levava as setas para os 36px. São o único modo de
+   avançar sem arrastar, por isso ficam com 44px de lado. */
+@media (max-width: 760px) {
+  .carousel__arrow {
+    width: 44px;
+    height: 44px;
+    top: calc(50% - 22px);
+    font-size: 26px;
   }
 }

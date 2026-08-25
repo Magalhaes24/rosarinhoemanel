@@ -1,0 +1,73 @@
+/* ---------------- Voltar ao topo ---------------- */
+/* Canto inferior direito, pequeno e apagado — está ali se precisares dele e
+   não chama por ti. Ganha corpo ao passar por cima. */
+
+.ao-topo {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(141, 112, 80, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(4px);
+  color: var(--castanho);
+  box-shadow: 0 4px 14px rgba(41, 38, 33, 0.12);
+
+  /* Fora do caminho enquanto não serve: sem cliques e sem ocupar espaço na
+     leitura. A transição faz a entrada e a saída. */
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.ao-topo.is-visivel {
+  opacity: 0.75;
+  transform: none;
+  pointer-events: auto;
+}
+
+.ao-topo.is-visivel:hover,
+.ao-topo.is-visivel:focus-visible {
+  opacity: 1;
+  background: #fff;
+  color: var(--castanho-escuro);
+}
+
+.ao-topo svg {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Em edição a barra fixa vive no fundo do ecrã; o botão sobe para não lhe
+   ficar por cima. */
+.em-edicao .ao-topo {
+  bottom: 120px;
+}
+
+@media (max-width: 760px) {
+  .ao-topo {
+    width: 44px;
+    height: 44px;
+    right: 16px;
+    bottom: 16px;
+  }
+  .em-edicao .ao-topo {
+    bottom: 166px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ao-topo {
+    transition: opacity 0.2s ease;
+    transform: none;
+  }
+}

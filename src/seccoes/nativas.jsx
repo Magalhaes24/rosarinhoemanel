@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Link } from '../lib/router.jsx'
 import { useConteudo, useTexto, resolverImagem } from '../lib/conteudo.jsx'
 import { useEdicao } from '../lib/edicao.jsx'
@@ -413,7 +413,6 @@ function CartaoPresente({ item, jaContribuido, aoOferecer }) {
         {completo && <span className="loja__selo">{t('loja.reservado')}</span>}
       </div>
       <h3 className="loja__nome">{item.nome}</h3>
-      {item.descricao && <p className="loja__descricao">{item.descricao}</p>}
 
       {preco > 0 && (
         <div className="loja__estado">
@@ -434,9 +433,43 @@ function CartaoPresente({ item, jaContribuido, aoOferecer }) {
   )
 }
 
+/**
+ * Quantos cartões cabem numa fila.
+ *
+ * O número de colunas está na folha de estilo, e muda com a largura do ecrã —
+ * seis num ecrã largo, dois num telemóvel. Lê-se de lá em vez de o repetir
+ * aqui, senão as duas filas que se mostram deixavam de ser filas inteiras
+ * assim que alguém mexesse no CSS.
+ */
+function colunasDaGrelha(grelha) {
+  if (!grelha) return 0
+  return getComputedStyle(grelha).gridTemplateColumns.split(' ').filter(Boolean).length
+}
+
 function ParaACasa() {
+  const t = useTexto()
   const { presentesCasa, contribuido, fotografias } = useConteudo()
   const [aOferecer, setAOferecer] = useState(null)
+  const [tudo, setTudo] = useState(false)
+  const [colunas, setColunas] = useState(0)
+  const [grelha, setGrelha] = useState(null)
+
+  useEffect(() => {
+    if (!grelha) return
+    const medir = () => setColunas(colunasDaGrelha(grelha))
+    medir()
+
+    window.addEventListener('resize', medir)
+    let observador
+    if (typeof ResizeObserver !== 'undefined') {
+      observador = new ResizeObserver(medir)
+      observador.observe(grelha)
+    }
+    return () => {
+      window.removeEventListener('resize', medir)
+      observador?.disconnect()
+    }
+  }, [grelha])
 
   // A fotografia é resolvida aqui, uma vez, e não em cada sítio que a mostra:
   // o que está gravado no presente pode ser `firestore:<id>`, que não serve
@@ -459,17 +492,33 @@ function ParaACasa() {
       {presentesCasa === null ? null : itens.length === 0 ? (
         <p className="loja__vazio"><T k="casa.vazio" /></p>
       ) : (
-        <ul className="loja" data-revelar>
-          {itens.map((item) => (
-            <li key={item.id}>
-              <CartaoPresente
-                item={item}
-                jaContribuido={contribuido[item.id] || 0}
-                aoOferecer={setAOferecer}
-              />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="loja" data-revelar ref={setGrelha}>
+            {(tudo || !colunas ? itens : itens.slice(0, colunas * 2)).map((item) => (
+              <li key={item.id}>
+                <CartaoPresente
+                  item={item}
+                  jaContribuido={contribuido[item.id] || 0}
+                  aoOferecer={setAOferecer}
+                />
+              </li>
+            ))}
+          </ul>
+
+          {colunas > 0 && itens.length > colunas * 2 && (
+            <div className="presentes__acao">
+              <button
+                type="button"
+                className="presentes__contribuir"
+                onClick={() => setTudo((v) => !v)}
+              >
+                {tudo
+                  ? t('casa.verMenos')
+                  : `${t('casa.verMais')} (${itens.length - colunas * 2})`}
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {aOferecer && (

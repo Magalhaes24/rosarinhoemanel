@@ -59,6 +59,16 @@
      Os três rótulos são longos e têm de caber numa linha até aos 320px. */
   .nav__link {
     font-size: clamp(9px, 2.9vw, 13px);
+    display: flex;
+    align-items: center;
+    height: var(--nav-h);
+    padding: 0 2px;
+  }
+  .nav__logo {
+    display: flex;
+    align-items: center;
+    height: var(--nav-h);
+    padding-right: 4px;
   }
 }
 

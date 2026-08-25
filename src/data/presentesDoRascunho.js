@@ -78,7 +78,6 @@ export function documentoDoPresente(item, ordem) {
     nome: item.nome,
     descricao: item.descricao || '',
     preco: item.preco,
-    link: item.link || '',
     imagem: item.imagem,
     reservado: false,
     ordem,

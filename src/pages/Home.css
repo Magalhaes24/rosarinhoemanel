@@ -472,10 +472,12 @@
   /* No telemóvel a escala é outra: as pílulas precisam de mais corpo para
      continuarem legíveis, e ainda assim cabem as três numa linha. */
   .comoChegar .comoChegar__pill {
-    font-size: calc(12 * var(--pt) * var(--escala-corpo));
+    font-size: max(12px, calc(12 * var(--pt) * var(--escala-corpo)));
+    min-height: 40px;
+    padding: 0.5em 0.7em;
   }
   .comoChegar .comoChegar__legenda {
-    font-size: calc(11 * var(--pt) * var(--escala-corpo));
+    font-size: max(12px, calc(11 * var(--pt) * var(--escala-corpo)));
   }
   .banda--missa .banda__caixa,
   .banda--copo .banda__caixa {
@@ -505,6 +507,12 @@
   .drivers {
     padding: calc(54 * var(--esp)) calc(30 * var(--pt)) 0;
   }
+  /* O telefone do Manel é para se carregar e ligar: alvo de dedo. */
+  .drivers__tel {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
 
   .hoteis {
     min-height: 0;
@@ -513,5 +521,26 @@
   .hoteis__lista {
     grid-template-columns: 1fr;
     gap: calc(16 * var(--pt));
+  }
+  .hoteis__contacto {
+    gap: 0;
+  }
+  .hoteis__contacto a {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    font-size: max(13px, calc(13 * var(--pt) * var(--escala-corpo)));
+  }
+  .hoteis__espaco {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: max(13px, calc(13 * var(--pt) * var(--escala-corpo)));
+  }
+  .hoteis__nome {
+    font-size: max(17px, calc(18 * var(--pt) * var(--escala-titulos)));
+  }
+  .hoteis__tipo {
+    font-size: max(11px, calc(12 * var(--pt) * var(--escala-corpo)));
   }
 }

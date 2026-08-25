@@ -23,7 +23,7 @@ import {
 const db = getFirestore(app)
 const COLECAO = 'presentes-casa'
 
-const VAZIO = { nome: '', descricao: '', preco: '', link: '', imagem: '', reservado: false }
+const VAZIO = { nome: '', descricao: '', preco: '', imagem: '', reservado: false }
 
 function Formulario({ inicial, aoGravar, aoCancelar }) {
   const [item, setItem] = useState(inicial)
@@ -36,10 +36,6 @@ function Formulario({ inicial, aoGravar, aoCancelar }) {
     e.preventDefault()
     if (!item.nome.trim()) {
       setErro('O nome é obrigatório.')
-      return
-    }
-    if (item.link && !/^https?:\/\//i.test(item.link)) {
-      setErro('A ligação tem de começar por http:// ou https://')
       return
     }
     setAGravar(true)
@@ -77,16 +73,6 @@ function Formulario({ inicial, aoGravar, aoCancelar }) {
           />
         </label>
 
-        <label className="admin__campo">
-          <span>Ligação para a loja</span>
-          <input
-            type="url"
-            value={item.link}
-            onChange={campo('link')}
-            maxLength={600}
-            placeholder="https://…"
-          />
-        </label>
       </div>
 
       <CampoFotografia valor={item.imagem} aoMudar={(url) => setItem({ ...item, imagem: url })} />
