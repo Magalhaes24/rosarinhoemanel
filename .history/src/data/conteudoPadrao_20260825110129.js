@@ -83,7 +83,7 @@ export const textosPadrao = {
 
   'hoteis.intro':
     'Aqui ficam algumas sugestões para quem estiver a pensar dormir perto da quinta.',
-  'hoteis.verEspaco': 'Ver o hotel',
+  'hoteis.verEspaco': 'Ver o espaço',
   // Junta-se ao nome na procura do Google Maps, para o botão não cair numa
   // casa com o mesmo nome do outro lado do país.
   'hoteis.regiao': 'Alenquer',
