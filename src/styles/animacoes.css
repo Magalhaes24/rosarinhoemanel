@@ -80,34 +80,29 @@
    Estados de interação — sempre ativos, não dependem de JavaScript.
 --------------------------------------------------------------------------- */
 
-.nav {
-  transition: box-shadow 0.25s ease;
-}
-
-.nav.is-deslocada {
-  box-shadow: 0 calc(1 * var(--pt)) calc(10 * var(--pt)) rgba(41, 38, 33, 0.1);
-}
-
 .nav__link {
   position: relative;
 }
 
-/* Sublinhado que cresce a partir do centro, no hover e na página atual. */
+/* Marca da página atual: uma risca curta encostada à esquerda do rótulo. O
+   menu é uma coluna — o sublinhado que aqui estava, pensado para os links lado
+   a lado numa barra, atravessava o painel de lado a lado e transbordava-lhe as
+   margens. */
 .nav__link::after {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(-4 * var(--pt));
-  height: calc(1.5 * var(--pt));
+  left: max(8px, calc(8 * var(--pt)));
+  top: 50%;
+  width: 3px;
+  height: max(18px, calc(18 * var(--pt)));
+  border-radius: 3px;
   background: currentColor;
-  transform: scaleX(0);
+  transform: translateY(-50%) scaleY(0);
   transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.nav__link:hover::after,
 .nav__link.is-active::after {
-  transform: scaleX(1);
+  transform: translateY(-50%) scaleY(1);
 }
 
 /* Botões descem ao ser premidos, em vez de ficarem estáticos. */
