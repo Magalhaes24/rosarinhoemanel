@@ -75,11 +75,17 @@ export default function OferecerPresente({ item, jaContribuido, aoFechar }) {
     try {
       // Primeiro o valor: é o que faz a barra andar e o que os outros
       // convidados veem. O nome segue a seguir, para o admin.
-      await enviar('contribuicoes', { presenteId: item.id, valor: montante })
+      const contribuicao = await enviar('contribuicoes', {
+        presenteId: item.id,
+        valor: montante,
+      })
+      // O identificador do valor segue com o nome: é o que permite à
+      // administração apagar os dois lados de uma vez.
       await enviar('presentes', {
         nome: nome.trim().slice(0, 120),
         presente: `${item.nome} — ${euros(montante)}`.slice(0, 200),
         mensagem: mensagem.trim().slice(0, 1000),
+        contribuicaoId: contribuicao.id,
       })
       setEnviado(montante)
       setEstado('feito')

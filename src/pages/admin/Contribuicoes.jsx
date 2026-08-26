@@ -75,17 +75,29 @@ function Oferta({ oferta }) {
     }
   }
 
+  // Os registos criados antes da ligação entre as duas coleções não trazem
+  // `contribuicaoId`: nesses, o valor tem mesmo de se apagar à mão na vista
+  // «Tabela», e o aviso diz isso em vez de prometer o que não consegue fazer.
+  const ligado = Boolean(oferta.contribuicaoId)
+
   async function apagar() {
     const ok = await confirmar({
       titulo: 'Apagar este registo?',
-      mensagem:
-        'Some o nome e a mensagem de quem ofereceu. O valor continua contado na barra de '
-        + 'progresso do presente — esse apaga-se na lista de contribuições, mais abaixo.',
+      mensagem: ligado
+        ? 'Some o nome, a mensagem e o valor que esta pessoa ofereceu. A barra de progresso '
+          + 'do presente acerta sozinha.'
+        : 'Some o nome e a mensagem de quem ofereceu. Este registo é antigo e não está ligado '
+          + 'ao valor — esse apaga-se na vista «Tabela».',
       detalhe: `${oferta.nome} — ${oferta.presente}`,
       textoConfirmar: 'Apagar registo',
     })
     if (!ok) return
     try {
+      if (ligado) {
+        // O valor primeiro: se algo falhar, fica o nome à vista em vez de um
+        // valor órfão que ninguém consegue localizar.
+        await deleteDoc(doc(db, 'contribuicoes', oferta.contribuicaoId))
+      }
       await deleteDoc(doc(db, 'presentes', oferta.id))
     } catch (e) {
       setErro(e.message)
@@ -350,17 +362,22 @@ export default function Contribuicoes() {
   const totalDoLado = asMinhas.reduce((s, c) => s + (Number(c.valor) || 0), 0)
 
   async function apagarContribuicao(c) {
+    // O registo do nome que veio com este valor, se existir: apagam-se os dois
+    // juntos, para não sobrar um agradecimento a dinheiro que já não conta.
+    const registo = (ofertas.itens || []).find((o) => o.contribuicaoId === c.id)
     const ok = await confirmar({
       titulo: 'Apagar esta contribuição?',
       mensagem:
         'O valor sai da barra de progresso que os convidados veem. Usa-se quando alguém '
-        + 'registou por engano e não chegou a transferir.',
+        + 'registou por engano e não chegou a transferir.'
+        + (registo ? ` Apaga também o registo de ${registo.nome}.` : ''),
       detalhe: `${c.presenteId} — ${euros(c.valor)}`,
       textoConfirmar: 'Apagar contribuição',
     })
     if (!ok) return
     try {
       await deleteDoc(doc(db, 'contribuicoes', c.id))
+      if (registo) await deleteDoc(doc(db, 'presentes', registo.id))
     } catch (e) {
       setErro(e.message)
     }
@@ -383,8 +400,8 @@ export default function Contribuicoes() {
 
       <p className="admin__ajuda">
         Cada cartão mostra quanto já foi oferecido e por quem. O nome e a mensagem editam-se
-        aqui; o valor não se altera — se alguém registou por engano, apaga-se a contribuição na
-        vista «Tabela», e a barra de progresso acerta sozinha.
+        aqui; o valor não se altera — se alguém registou por engano, apaga-se o registo (ou a
+        contribuição, na vista «Tabela»), e a barra de progresso acerta sozinha.
       </p>
 
       {ofertas.erro && <p className="admin__erro">{ofertas.erro}</p>}

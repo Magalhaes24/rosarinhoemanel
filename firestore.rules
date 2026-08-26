@@ -55,11 +55,14 @@ service cloud.firestore {
         dataDoServidor();
     }
 
+    // O campo `contribuicaoId` liga este registo ao valor que ficou em
+    // `contribuicoes`, para que apagar um apague o outro na administração.
     match /presentes/{doc} {
       allow read, update, delete: if ehAdmin();
       allow create: if
-        request.resource.data.keys().hasOnly(['nome', 'presente', 'mensagem', 'criadoEm']) &&
+        request.resource.data.keys().hasOnly(['nome', 'presente', 'mensagem', 'contribuicaoId', 'criadoEm']) &&
         request.resource.data.keys().hasAll(['nome', 'presente', 'mensagem', 'criadoEm']) &&
+        textoOpcional(request.resource.data.get('contribuicaoId', ''), 200) &&
         textoValido(request.resource.data.nome, 120) &&
         textoValido(request.resource.data.presente, 200) &&
         textoOpcional(request.resource.data.mensagem, 1000) &&
