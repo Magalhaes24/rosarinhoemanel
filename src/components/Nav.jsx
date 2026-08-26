@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from '../lib/router.jsx'
-import { caminho } from '../lib/caminho.js'
 import { useTexto } from '../lib/conteudo.jsx'
 import './Nav.css'
 
@@ -12,25 +11,22 @@ const links = [
 ]
 
 /**
- * A barra do topo.
+ * O menu do topo.
  *
- * No telemóvel os quatro rótulos são frases inteiras — «Quem são os noivos?»,
- * «Onde ficar?» — e não cabem lado a lado sem ficarem ilegíveis. Aí a barra
- * fecha-se num botão de menu e os links passam a um painel por baixo dela.
- * No computador continua tudo à vista, como sempre esteve.
+ * Não há barra: os quatro rótulos são frases inteiras — «Quem são os noivos?»,
+ * «Onde ficar?» — e uma faixa a atravessar o ecrã só para as arrumar tirava
+ * altura à fotografia de abertura. Fica só o botão, a flutuar por cima da
+ * página, e os links descem num painel quando se carrega nele. É o mesmo no
+ * telemóvel e no computador, para não haver dois desenhos a manter.
+ *
+ * O botão tem fundo próprio de propósito: por baixo dele tanto pode estar o
+ * verde da abertura como o creme das outras páginas, e sem esse fundo as
+ * riscas desapareciam numa delas.
  */
 export default function Nav() {
   const t = useTexto()
   const { pathname } = useLocation()
-  const [deslocada, setDeslocada] = useState(false)
   const [aberto, setAberto] = useState(false)
-
-  useEffect(() => {
-    const aoDeslizar = () => setDeslocada(window.scrollY > 8)
-    aoDeslizar()
-    window.addEventListener('scroll', aoDeslizar, { passive: true })
-    return () => window.removeEventListener('scroll', aoDeslizar)
-  }, [])
 
   // Mudar de página fecha o menu: sem isto ficava aberto por cima da página
   // nova, que é o mesmo que não ter fechado.
@@ -44,11 +40,7 @@ export default function Nav() {
   }, [aberto])
 
   return (
-    <header className={'nav' + (deslocada ? ' is-deslocada' : '') + (aberto ? ' is-aberta' : '')}>
-      <NavLink to="/" className="nav__logo" aria-label="Rosarinho e Manel — início">
-        <img src={caminho('/images/logo.png')} alt="" />
-      </NavLink>
-
+    <header className={'nav' + (aberto ? ' is-aberta' : '')}>
       <button
         type="button"
         className="nav__hamburger"

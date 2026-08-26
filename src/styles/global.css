@@ -89,12 +89,15 @@ body {
   --tela: 1024;
 
   --pt: calc(min(100cqw, 1600px) / var(--tela));
+  /* O espaço que o botão do menu ocupa no canto. Já não é uma faixa — não
+     empurra nada para baixo —, mas continua a ser a folga que uma âncora tem
+     de deixar por cima para não ficar escondida por trás dele. */
   --nav-h: calc(42 * var(--pt));
 
-  /* Altura útil abaixo do menu. `svh` e não `vh`: nos telemóveis o `vh` conta
-     com a barra de endereço recolhida, e o conteúdo ficava cortado até se
-     fazer scroll. */
-  --ecra-util: calc(100svh - var(--nav-h));
+  /* Altura útil do ecrã. `svh` e não `vh`: nos telemóveis o `vh` conta com a
+     barra de endereço recolhida, e o conteúdo ficava cortado até se fazer
+     scroll. Sem barra no topo, a abertura pode ocupar o ecrã inteiro. */
+  --ecra-util: 100svh;
 
   /* Folga vertical. O rascunho foi desenhado com a Lovelace Text, a Garet e a
      The Seasons; com as substitutas do Google Fonts, que têm altura de x e
