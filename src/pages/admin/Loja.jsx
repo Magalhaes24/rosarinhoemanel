@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   addDoc,
   collection,
@@ -14,11 +14,9 @@ import { apagarFotografia } from '../../lib/fotografias.js'
 import CampoFotografia from '../../components/CampoFotografia.jsx'
 import { useConfirmar } from '../../components/Confirmacao.jsx'
 import { useConteudo, resolverImagem } from '../../lib/conteudo.jsx'
-import {
-  presentesDoRascunho,
-  porImportar,
-  documentoDoPresente,
-} from '../../data/presentesDoRascunho.js'
+import AccoesDaFaixa from './AccoesDaFaixa.jsx'
+import { lerFicheiroDePresentes, MODELO_CSV } from '../../lib/importarPresentes.js'
+import { estadoDoPresente } from '../../lib/contribuicoes.js'
 
 const db = getFirestore(app)
 const COLECAO = 'presentes-casa'
@@ -100,6 +98,160 @@ function Formulario({ inicial, aoGravar, aoCancelar }) {
   )
 }
 
+/**
+ * Um presente da lista, com o mesmo aspecto dos cartões de contribuição.
+ *
+ * Mostra as duas coisas ao mesmo tempo: o que o presente é — fotografia,
+ * nome, descrição — e como vai a angariação. Antes eram linhas de lista, e
+ * para saber quanto já lá estava era preciso saltar para outro separador.
+ */
+function CartaoPresente({
+  item,
+  contribuido,
+  fotografias,
+  primeiro,
+  ultimo,
+  aoMover,
+  aoEditar,
+  aoApagar,
+}) {
+  const meta = Number(item.preco) || 0
+  const falta = Math.max(0, meta - contribuido)
+  const pct = meta > 0 ? Math.min(100, Math.round((contribuido / meta) * 100)) : 0
+  const estado = estadoDoPresente(contribuido, meta)
+
+  const ESTADOS = {
+    aberto: ['Sem meta', 'Este presente não tem preço — recebe o que quiserem dar.'],
+    completo: ['Completo', 'Este presente já atingiu ou ultrapassou a meta.'],
+    meio: ['A meio', `Faltam ${falta} € para completar este presente.`],
+    inicio: ['A começar', `Faltam ${falta} € para completar este presente.`],
+  }
+  const [etiqueta, explicacao] = ESTADOS[estado]
+
+  return (
+    <article className={`contrib loja__cartao contrib--${estado}`}>
+      <header className="contrib__topo">
+        <div className="contrib__fotografia">
+          {item.imagem ? (
+            <img src={resolverImagem(item.imagem, fotografias)} alt="" />
+          ) : (
+            <span aria-hidden="true" />
+          )}
+        </div>
+        <div>
+          <h3>{item.nome}</h3>
+          {item.descricao && <p className="contrib__descricao">{item.descricao}</p>}
+          {item.reservado && <em className="admin__etiqueta">já oferecido</em>}
+        </div>
+      </header>
+
+      <div className="loja__acoes">
+        <button
+          type="button"
+          className="admin__btn admin__btn--claro"
+          onClick={() => aoMover(-1)}
+          disabled={primeiro}
+          aria-label="Subir na lista"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          className="admin__btn admin__btn--claro"
+          onClick={() => aoMover(1)}
+          disabled={ultimo}
+          aria-label="Descer na lista"
+        >
+          ↓
+        </button>
+        <button type="button" className="admin__btn admin__btn--claro" onClick={aoEditar}>
+          Editar
+        </button>
+        <button type="button" className="admin__btn admin__btn--perigo" onClick={aoApagar}>
+          Apagar
+        </button>
+      </div>
+
+      <div className="contrib__numeros">
+        <div>
+          <span className="contrib__etiqueta">Progresso</span>
+          <strong>{meta > 0 ? `${pct}%` : '—'}</strong>
+        </div>
+        <div>
+          <span className="contrib__etiqueta">Contribuído</span>
+          <strong>{contribuido} €</strong>
+        </div>
+        <div className="contrib__estado">
+          <span className="contrib__etiqueta">Estado</span>
+          <strong>{etiqueta}</strong>
+          <p>{explicacao}</p>
+        </div>
+      </div>
+
+      {meta > 0 && (
+        <div className="contrib__barra">
+          <div style={{ width: `${pct}%` }} />
+        </div>
+      )}
+
+      <div className="contrib__marcas">
+        {meta > 0 && <span>Meta: {meta} €</span>}
+        {meta > 0 && <span>Falta: {falta} €</span>}
+      </div>
+    </article>
+  )
+}
+
+/**
+ * A janela onde o formulário do presente se abre.
+ *
+ * Editar deixou de ser um cartão que incha no meio da grelha e empurra os
+ * vizinhos: agora é uma janela por cima de tudo, com o resto da página a
+ * escurecer. Fecha-se com Escape ou carregando fora, como qualquer diálogo.
+ */
+function JanelaDoPresente({ titulo, nome, aoFechar, children }) {
+  useEffect(() => {
+    const aoTeclar = (e) => e.key === 'Escape' && aoFechar()
+    document.addEventListener('keydown', aoTeclar)
+    // Com a janela aberta, a página por trás não deve deslizar.
+    const antes = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', aoTeclar)
+      document.body.style.overflow = antes
+    }
+  }, [aoFechar])
+
+  return (
+    <div
+      className="janela"
+      role="dialog"
+      aria-modal="true"
+      aria-label={titulo}
+      onPointerDown={(e) => e.target === e.currentTarget && aoFechar()}
+    >
+      <div className="janela__caixa">
+        <header className="janela__topo">
+          <div>
+            <p className="janela__sobrescrito">{titulo}</p>
+            {nome && <h3 className="janela__nome">{nome}</h3>}
+          </div>
+          <button
+            type="button"
+            className="janela__fechar"
+            onClick={aoFechar}
+            aria-label="Fechar"
+          >
+            ×
+          </button>
+        </header>
+
+        {children}
+      </div>
+    </div>
+  )
+}
+
 export default function Loja() {
   const confirmar = useConfirmar()
   const { fotografias, contribuido } = useConteudo()
@@ -107,6 +259,10 @@ export default function Loja() {
   const [erro, setErro] = useState('')
   const [aEditar, setAEditar] = useState(null) // null | 'novo' | id
   const [aImportar, setAImportar] = useState(false)
+  const ficheiro = useRef(null)
+
+  // O presente que está aberto na janela de edição, tal como está na lista.
+  const emEdicao = itens?.find((i) => i.id === aEditar) || null
 
   useEffect(() => {
     // Sem `orderBy`: o Firestore excluiria documentos sem o campo `ordem`,
@@ -163,43 +319,68 @@ export default function Loja() {
   }
 
   /**
-   * Cria de uma vez os presentes do rascunho que ainda não existirem.
+   * Acrescenta de uma vez os presentes de uma folha de Excel ou de um CSV.
    *
-   * Compara pelo nome e preço, para se poder carregar duas vezes sem duplicar
-   * nada — e para as três almofadas, que têm o mesmo nome, não se atropelarem.
-   * Entram no fim da lista, pela ordem do rascunho.
+   * A folha precisa de uma coluna «nome» e de uma «preço»; «descrição» e
+   * «imagem» são opcionais. As linhas sem nome ou com um preço que não se
+   * perceba ficam de fora e são contadas no aviso — mais vale importar as
+   * boas e dizer quais faltaram do que recusar a folha inteira.
+   *
+   * Não compara com o que já cá está: uma folha carregada duas vezes cria os
+   * presentes duas vezes, e é por isso que a confirmação mostra os nomes todos
+   * antes de gravar seja o que for.
    */
-  async function importar() {
-    const novos = porImportar(itens || [])
+  async function importarFolha(evento) {
+    const escolhido = evento.target.files?.[0]
+    // Limpa já a escolha: sem isto, escolher o mesmo ficheiro outra vez a
+    // seguir não dispararia o evento.
+    evento.target.value = ''
+    if (!escolhido) return
 
-    if (novos.length === 0) {
-      setErro('A lista do rascunho já está toda cá dentro — não há nada a acrescentar.')
+    setErro('')
+    let lido
+    try {
+      lido = await lerFicheiroDePresentes(escolhido)
+    } catch (e) {
+      setErro(e.message)
+      return
+    }
+
+    const { presentes, avisos } = lido
+    if (presentes.length === 0) {
+      setErro(
+        'Não veio nenhum presente aproveitável desse ficheiro.'
+          + (avisos.length ? ` ${avisos.join(' ')}` : '')
+      )
       return
     }
 
     const ok = await confirmar({
-      titulo: `Acrescentar ${novos.length} presentes?`,
+      titulo: `Acrescentar ${presentes.length} presentes?`,
       mensagem:
-        'São os do rascunho em PDF, com as fotografias que vieram de lá. Os que já estão na '
-        + 'lista ficam como estão, e podes editar ou apagar qualquer um a seguir.',
-      detalhe: novos.map((i) => i.nome).join(', '),
+        `Vêm de «${escolhido.name}» e entram no fim da lista. Os que já cá estão ficam como `
+        + 'estão — se a folha repetir algum, ele fica lá duas vezes.'
+        + (avisos.length ? ` ${avisos.length} linha(s) ficaram de fora.` : ''),
+      detalhe: [...presentes.map((i) => i.nome), ...avisos].join(', '),
       textoConfirmar: 'Acrescentar',
       destrutivo: false,
     })
     if (!ok) return
 
     setAImportar(true)
-    setErro('')
     try {
       let ordem = (itens?.length ? Math.max(...itens.map((i) => i.ordem ?? 0)) : 0) + 10
       // Um a um e por ordem: em paralelo, as `ordem` saíam trocadas.
-      for (const item of novos) {
+      for (const item of presentes) {
         await addDoc(collection(db, COLECAO), {
-          ...documentoDoPresente(item, ordem),
+          ...item,
+          reservado: false,
+          ordem,
           criadoEm: serverTimestamp(),
         })
         ordem += 10
       }
+      if (avisos.length) setErro(`Importado. Linhas de fora: ${avisos.join(' ')}`)
     } catch (e) {
       setErro(
         e.code === 'permission-denied'
@@ -209,6 +390,18 @@ export default function Loja() {
     } finally {
       setAImportar(false)
     }
+  }
+
+  /** O modelo da folha, para quem não sabe que colunas escrever. */
+  function descarregarModelo() {
+    const url = URL.createObjectURL(
+      new Blob(['﻿' + MODELO_CSV], { type: 'text/csv;charset=utf-8' })
+    )
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'modelo-presentes.csv'
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   /** Troca a ordem com o vizinho, para o admin poder reordenar a lista. */
@@ -226,113 +419,85 @@ export default function Loja() {
     <section className="admin__seccao">
       <div className="admin__seccao-topo">
         <h2>Lista de presentes «Para a casa»</h2>
-        {aEditar !== 'novo' && (
-          <>
-            <button
-              type="button"
-              className="admin__btn admin__btn--claro"
-              onClick={importar}
-              disabled={!itens || aImportar}
-            >
-              {aImportar ? 'A importar…' : 'Importar a lista do rascunho'}
-            </button>
-            <button type="button" className="admin__btn" onClick={() => setAEditar('novo')}>
-              Acrescentar presente
-            </button>
-          </>
-        )}
       </div>
+
+      <input
+        ref={ficheiro}
+        type="file"
+        accept=".xlsx,.xls,.xlsm,.csv,text/csv"
+        hidden
+        onChange={importarFolha}
+      />
+
+      {aEditar !== 'novo' && (
+        <AccoesDaFaixa>
+          <button
+            type="button"
+            className="admin__btn admin__btn--claro"
+            onClick={() => ficheiro.current?.click()}
+            disabled={!itens || aImportar}
+          >
+            {aImportar ? 'A importar…' : 'Importar Excel/CSV'}
+          </button>
+          <button type="button" className="admin__btn" onClick={() => setAEditar('novo')}>
+            + Acrescentar presente
+          </button>
+        </AccoesDaFaixa>
+      )}
 
       <p className="admin__ajuda">
         Estes itens aparecem em grelha na página «O que dar?», na secção «Para a casa». A ordem
-        aqui é a ordem no site. O «Importar a lista do rascunho» acrescenta os{' '}
-        {presentesDoRascunho.length} presentes do PDF que ainda não estiverem cá — pode carregar-se
-        mais do que uma vez sem duplicar nada.
+        aqui é a ordem no site. O «Importar Excel/CSV» acrescenta de uma vez os presentes de uma
+        folha — precisa de uma coluna «nome» e de uma «preço»; «descrição» e «imagem» (um
+        endereço da fotografia) são opcionais.{' '}
+        <button type="button" className="admin__ligacao" onClick={descarregarModelo}>
+          Descarregar um modelo
+        </button>
+        .
       </p>
 
       {erro && <p className="admin__erro">{erro}</p>}
-
-      {aEditar === 'novo' && (
-        <Formulario inicial={VAZIO} aoGravar={criar} aoCancelar={() => setAEditar(null)} />
-      )}
 
       {!itens && <p className="admin__vazio">A carregar…</p>}
       {itens?.length === 0 && aEditar !== 'novo' && (
         <p className="admin__vazio">Ainda não há presentes na lista.</p>
       )}
 
-      <ul className="admin__lista">
-        {itens?.map((item, i) =>
-          aEditar === item.id ? (
-            <li key={item.id} className="admin__lista-item">
-              <Formulario
-                inicial={item}
-                aoGravar={(dados) => guardar(item.id, dados)}
-                aoCancelar={() => setAEditar(null)}
-              />
-            </li>
-          ) : (
-            <li key={item.id} className="admin__lista-item">
-              <div className="admin__mini-fotografia">
-                {item.imagem ? (
-                  <img src={resolverImagem(item.imagem, fotografias)} alt="" />
-                ) : (
-                  <span>sem fotografia</span>
-                )}
-              </div>
+      <div className="loja__grelha">
+        {itens?.map((item, i) => (
+          <CartaoPresente
+            key={item.id}
+            item={item}
+            contribuido={contribuido[item.id] || 0}
+            fotografias={fotografias}
+            primeiro={i === 0}
+            ultimo={i === itens.length - 1}
+            aoMover={(direcao) => mover(i, direcao)}
+            aoEditar={() => setAEditar(item.id)}
+            aoApagar={() => apagar(item)}
+          />
+        ))}
+      </div>
 
-              <div className="admin__lista-texto">
-                <strong>{item.nome}</strong>
-                {item.reservado && <em className="admin__etiqueta">já oferecido</em>}
-                {item.descricao && <p>{item.descricao}</p>}
-                {item.preco !== '' && item.preco != null && <p>{item.preco} €</p>}
-                {contribuido[item.id] > 0 && (
-                  <p className="admin__contribuido">
-                    Já ofereceram {contribuido[item.id]} €
-                    {Number(item.preco) > 0 && ` de ${item.preco} €`}. Quem ofereceu está em
-                    «Presentes».
-                  </p>
-                )}
-              </div>
+      {aEditar === 'novo' && (
+        <JanelaDoPresente titulo="Novo presente" aoFechar={() => setAEditar(null)}>
+          <Formulario inicial={VAZIO} aoGravar={criar} aoCancelar={() => setAEditar(null)} />
+        </JanelaDoPresente>
+      )}
 
-              <div className="admin__acoes">
-                <button
-                  type="button"
-                  className="admin__btn admin__btn--claro"
-                  onClick={() => mover(i, -1)}
-                  disabled={i === 0}
-                  aria-label="Subir"
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  className="admin__btn admin__btn--claro"
-                  onClick={() => mover(i, 1)}
-                  disabled={i === itens.length - 1}
-                  aria-label="Descer"
-                >
-                  ↓
-                </button>
-                <button
-                  type="button"
-                  className="admin__btn admin__btn--claro"
-                  onClick={() => setAEditar(item.id)}
-                >
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  className="admin__btn admin__btn--perigo"
-                  onClick={() => apagar(item)}
-                >
-                  Apagar
-                </button>
-              </div>
-            </li>
-          )
-        )}
-      </ul>
+      {aEditar && aEditar !== 'novo' && emEdicao && (
+        <JanelaDoPresente
+          titulo="Editar presente"
+          nome={emEdicao.nome}
+          aoFechar={() => setAEditar(null)}
+        >
+          <Formulario
+            inicial={emEdicao}
+            aoGravar={(dados) => guardar(emEdicao.id, dados)}
+            aoCancelar={() => setAEditar(null)}
+          />
+        </JanelaDoPresente>
+      )}
     </section>
   )
 }

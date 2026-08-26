@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import AjustesTexto, { LIMITES, estiloDoTexto, numero } from '../components/AjustesTexto.jsx'
+import { limparMarcacao, semMarcacao, temMarcacao } from '../lib/marcacao.js'
 
 /**
  * Blocos de conteúdo dentro de uma secção.
@@ -137,7 +138,8 @@ function BlocoDeTexto({ dados, indice, aoMudar, aoRemover }) {
 
   useEffect(() => {
     const el = ref.current
-    if (el && el.textContent !== (dados.texto || '')) el.textContent = dados.texto || ''
+    const limpo = limparMarcacao(dados.texto || '')
+    if (el && el.innerHTML !== limpo) el.innerHTML = limpo
   }, [dados.texto])
 
   const mudar = (campo, v) =>
@@ -156,7 +158,9 @@ function BlocoDeTexto({ dados, indice, aoMudar, aoRemover }) {
         aria-label={dados.tipo}
         onFocus={() => setFocado(true)}
         onBlur={() => setFocado(false)}
-        onInput={(e) => aoMudar(indice, { ...dados, texto: e.currentTarget.textContent })}
+        onInput={(e) =>
+          aoMudar(indice, { ...dados, texto: limparMarcacao(e.currentTarget.innerHTML) })
+        }
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             // Como nos textos do site: a quebra do próprio contentEditable mete
@@ -184,6 +188,9 @@ function BlocoDeTexto({ dados, indice, aoMudar, aoRemover }) {
           peso={dados.peso || ''}
           fonte={dados.fonte || ''}
           aoEliminar={aoRemover ? () => aoRemover(indice) : undefined}
+          aoNegritoDaSelecao={() =>
+            aoMudar(indice, { ...dados, texto: limparMarcacao(ref.current.innerHTML) })
+          }
           aoRepor={() =>
             aoMudar(indice, {
               ...dados,
@@ -239,26 +246,26 @@ export function Bloco({ dados, indice }) {
   )
   const estilo = Object.keys(estiloTexto).length ? estiloTexto : undefined
 
+  // Um texto com negrito por dentro vai como HTML — mas só depois de limpo,
+  // que é o que garante que ali dentro nunca entra mais nada além de `<b>`.
+  const conteudo = temMarcacao(dados.texto)
+    ? { dangerouslySetInnerHTML: { __html: limparMarcacao(dados.texto) } }
+    : { children: semMarcacao(dados.texto) }
+
   switch (dados.tipo) {
     case 'titulo':
       return dados.texto ? (
-        <h2 className="display bloco__titulo" style={estilo}>
-          {dados.texto}
-        </h2>
+        <h2 className="display bloco__titulo" style={estilo} {...conteudo} />
       ) : null
 
     case 'subtitulo':
       return dados.texto ? (
-        <h3 className="bloco__subtitulo" style={estilo}>
-          {dados.texto}
-        </h3>
+        <h3 className="bloco__subtitulo" style={estilo} {...conteudo} />
       ) : null
 
     case 'texto':
       return dados.texto ? (
-        <p className="corpo bloco__texto" style={estilo}>
-          {dados.texto}
-        </p>
+        <p className="corpo bloco__texto" style={estilo} {...conteudo} />
       ) : null
 
     case 'imagem':

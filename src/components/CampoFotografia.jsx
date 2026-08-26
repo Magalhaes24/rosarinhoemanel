@@ -1,24 +1,39 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { guardarFotografia, mensagemDeEnvio } from '../lib/fotografias.js'
 import { useConteudo, resolverImagem } from '../lib/conteudo.jsx'
 
 /**
- * Campo de imagem, por duas vias:
+ * Campo de imagem, por duas vias que se escolhem num par de pastilhas:
  *
- *  - enviar um ficheiro para o Firebase Storage;
- *  - colar o endereço de uma imagem que já esteja algures na internet.
+ *  - «Endereço»: colar o endereço de uma imagem que já esteja algures;
+ *  - «Carregar»: enviar um ficheiro para o Firebase Storage.
  *
- * A segunda existe porque o Storage exige o plano Blaze do Firebase. Sem ele,
+ * A primeira existe porque o Storage exige o plano Blaze do Firebase. Sem ele,
  * o envio falha e só resta o endereço — que funciona bem, com a ressalva de
  * que a imagem deixa de aparecer se quem a aloja a mudar de sítio.
+ *
+ * A pré-visualização fica por baixo das duas, com o «Remover imagem» no canto:
+ * assim vê-se sempre o que está lá, seja qual for a via escolhida.
  */
-export default function CampoFotografia({ valor, aoMudar, etiqueta = 'Fotografia' }) {
+
+/** Um endereço que serve como imagem: da internet ou colado como dados. */
+function enderecoValido(texto) {
+  return /^(https?:\/\/|data:image\/)/i.test(texto)
+}
+
+export default function CampoFotografia({ valor, aoMudar, etiqueta = 'Imagem' }) {
   const { fotografias } = useConteudo()
   const input = useRef(null)
   const [estado, setEstado] = useState('idle')
   const [erro, setErro] = useState('')
-  const [aColar, setAColar] = useState(false)
+  const [via, setVia] = useState('endereco')
   const [endereco, setEndereco] = useState('')
+
+  // Uma fotografia enviada fica gravada como `firestore:<id>`, que não é
+  // endereço nenhum e não faz sentido mostrar na caixa de texto.
+  const valorEditavel = enderecoValido(valor || '') ? valor : ''
+
+  useEffect(() => setEndereco(valorEditavel), [valorEditavel])
 
   async function aoEscolher(e) {
     const ficheiro = e.target.files?.[0]
@@ -36,25 +51,77 @@ export default function CampoFotografia({ valor, aoMudar, etiqueta = 'Fotografia
     }
   }
 
-  function confirmarEndereco() {
+  /** Aplica o que está escrito na caixa — ao sair dela ou com Enter. */
+  function aplicarEndereco() {
     const limpo = endereco.trim()
-    if (!limpo) return
-    if (!/^https:\/\//i.test(limpo)) {
-      setErro('O endereço tem de começar por https://')
+    if (limpo === (valorEditavel || '')) return
+    if (!limpo) {
+      setErro('')
+      aoMudar('')
+      return
+    }
+    if (!enderecoValido(limpo)) {
+      setErro('O endereço tem de começar por https:// (ou ser uma imagem colada como dados).')
       return
     }
     setErro('')
     aoMudar(limpo)
-    setEndereco('')
-    setAColar(false)
   }
 
   return (
     <div className="admin__fotografia">
       <span className="admin__campo-etiqueta">{etiqueta}</span>
 
+      <div className="foto__vias">
+        {[
+          ['endereco', 'Endereço'],
+          ['ficheiro', 'Carregar'],
+        ].map(([chave, nome]) => (
+          <button
+            key={chave}
+            type="button"
+            aria-pressed={via === chave}
+            className={'foto__via' + (via === chave ? ' is-ativa' : '')}
+            onClick={() => setVia(chave)}
+          >
+            {nome}
+          </button>
+        ))}
+      </div>
+
+      {via === 'endereco' ? (
+        <input
+          type="text"
+          className="foto__endereco"
+          value={endereco}
+          onChange={(e) => setEndereco(e.target.value)}
+          onBlur={aplicarEndereco}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              aplicarEndereco()
+            }
+          }}
+          placeholder={valor && !valorEditavel ? 'Fotografia guardada no site' : 'https://…'}
+          disabled={!!valor && !valorEditavel}
+        />
+      ) : (
+        <button
+          type="button"
+          className="admin__btn admin__btn--claro foto__carregar"
+          onClick={() => input.current?.click()}
+          disabled={estado === 'a-enviar'}
+        >
+          {estado === 'a-enviar'
+            ? 'A enviar…'
+            : valor
+              ? 'Escolher outro ficheiro'
+              : 'Escolher ficheiro'}
+        </button>
+      )}
+
       {valor && (
-        <div className="admin__fotografia-previa">
+        <figure className="foto__previa">
           {/* O que fica gravado pode ser `firestore:<id>`, que não serve como
               `src`: a pré-visualização tem de passar pelo mesmo tradutor que o
               site usa, senão o admin envia a fotografia e vê um quadrado vazio. */}
@@ -63,56 +130,12 @@ export default function CampoFotografia({ valor, aoMudar, etiqueta = 'Fotografia
             alt=""
             onError={() => setErro('Esse endereço não devolveu uma imagem.')}
           />
-        </div>
-      )}
-
-      <div className="admin__fotografia-acoes">
-        <button
-          type="button"
-          className="admin__btn admin__btn--claro"
-          onClick={() => input.current?.click()}
-          disabled={estado === 'a-enviar'}
-        >
-          {estado === 'a-enviar' ? 'A enviar…' : valor ? 'Substituir ficheiro' : 'Enviar ficheiro'}
-        </button>
-
-        <button
-          type="button"
-          className="admin__btn admin__btn--claro"
-          onClick={() => setAColar((v) => !v)}
-        >
-          Colar endereço
-        </button>
-
-        {valor && (
-          <button
-            type="button"
-            className="admin__btn admin__btn--claro"
-            onClick={() => aoMudar('')}
-          >
-            Remover
-          </button>
-        )}
-      </div>
-
-      {aColar && (
-        <div className="admin__fotografia-endereco">
-          <input
-            type="url"
-            value={endereco}
-            onChange={(e) => setEndereco(e.target.value)}
-            placeholder="https://…"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                confirmarEndereco()
-              }
-            }}
-          />
-          <button type="button" className="admin__btn" onClick={confirmarEndereco}>
-            Usar
-          </button>
-        </div>
+          <figcaption>
+            <button type="button" className="admin__ligacao" onClick={() => aoMudar('')}>
+              Remover imagem
+            </button>
+          </figcaption>
+        </figure>
       )}
 
       <input

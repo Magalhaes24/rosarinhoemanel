@@ -4,6 +4,7 @@ import { entrar, sair, observarSessao, ehAdmin, mensagemDeErro } from '../lib/au
 import Respostas from './admin/Respostas.jsx'
 import Contribuicoes from './admin/Contribuicoes.jsx'
 import Resumo, { useNumeros } from './admin/Resumo.jsx'
+import { euros } from '../components/OferecerPresente.jsx'
 import Loja from './admin/Loja.jsx'
 import Aparencia from './admin/Aparencia.jsx'
 import Layout from './admin/Layout.jsx'
@@ -74,6 +75,27 @@ const SEPARADORES = [
   { id: 'tema', nome: 'Aparência' },
 ]
 
+/** A linha que acompanha os separadores, escrita para o que está à frente. */
+function resumoDoSeparador(separador, numeros) {
+  const { contagens } = numeros
+  if (separador === 'contribuicoes') {
+    return `${contagens.contribuicoes} ${
+      contagens.contribuicoes === 1 ? 'contribuição' : 'contribuições'
+    } · ${euros(numeros.total)} recebidos`
+  }
+  if (separador === 'loja') {
+    return `${contagens.presentes} ${
+      contagens.presentes === 1 ? 'presente na lista' : 'presentes na lista'
+    }`
+  }
+  if (separador === 'respostas') {
+    return `${contagens.rsvps} ${contagens.rsvps === 1 ? 'resposta' : 'respostas'} · ${
+      numeros.vem
+    } confirmam presença`
+  }
+  return ''
+}
+
 function Painel({ utilizador }) {
   const [separador, setSeparador] = useState('contribuicoes')
   const numeros = useNumeros()
@@ -102,23 +124,34 @@ function Painel({ utilizador }) {
 
       <Resumo numeros={numeros} />
 
-      <nav className="admin__separadores" aria-label="Secções da administração">
-        {SEPARADORES.map((s) => {
-          const n = s.conta ? numeros.contagens[s.conta] : null
-          return (
-            <button
-              key={s.id}
-              type="button"
-              className={'admin__separador' + (separador === s.id ? ' is-ativo' : '')}
-              onClick={() => setSeparador(s.id)}
-              aria-current={separador === s.id ? 'page' : undefined}
-            >
-              {s.nome}
-              {n !== null && n !== undefined && <span className="admin__conta">{n}</span>}
-            </button>
-          )
-        })}
-      </nav>
+      {/* A faixa dos separadores: as contas de cada um à esquerda e, à direita,
+          uma linha que resume o que se está a ver. */}
+      <div className="admin__faixa">
+        <nav className="admin__separadores" aria-label="Secções da administração">
+          {SEPARADORES.map((s) => {
+            const n = s.conta ? numeros.contagens[s.conta] : null
+            return (
+              <button
+                key={s.id}
+                type="button"
+                className={'admin__separador' + (separador === s.id ? ' is-ativo' : '')}
+                onClick={() => setSeparador(s.id)}
+                aria-current={separador === s.id ? 'page' : undefined}
+              >
+                {s.nome}
+                {n !== null && n !== undefined && <span className="admin__conta">{n}</span>}
+              </button>
+            )
+          })}
+        </nav>
+
+        <div className="admin__faixa-direita">
+          <p className="admin__faixa-resumo">{resumoDoSeparador(separador, numeros)}</p>
+          {/* Onde os separadores penduram os seus botões, através do
+              `AccoesDaFaixa`. Fica sempre desenhado para o portal ter destino. */}
+          <div className="admin__faixa-accoes" id="admin-faixa-accoes" />
+        </div>
+      </div>
 
       {separador === 'contribuicoes' && <Contribuicoes />}
       {separador === 'respostas' && <Respostas />}

@@ -244,12 +244,72 @@ function CartaoContribuicao({ item, contribuido, ofertas, fotografias }) {
   )
 }
 
+/** Um bloco por presente: o progresso em cima e quem ofereceu por baixo. */
+function GrupoDeOfertas({ item, contribuido, ofertas }) {
+  const meta = Number(item.preco) || 0
+  const pct = meta > 0 ? Math.min(100, Math.round((contribuido / meta) * 100)) : 0
+
+  return (
+    <article className="grupo">
+      <header className="grupo__topo">
+        <h4>{item.nome}</h4>
+        <span className="grupo__conta">
+          {ofertas.length} {ofertas.length === 1 ? 'contribuição' : 'contribuições'}
+        </span>
+      </header>
+
+      <div className="grupo__progresso">
+        {meta > 0 && (
+          <div className="contrib__barra">
+            <div style={{ width: `${pct}%` }} />
+          </div>
+        )}
+        <span>{meta > 0 ? `${euros(contribuido)} / ${euros(meta)}` : euros(contribuido)}</span>
+      </div>
+
+      {ofertas.length === 0 ? (
+        <p className="admin__vazio">Ainda ninguém ofereceu este presente.</p>
+      ) : (
+        <ul className="contrib__ofertas">
+          {ofertas.map((o) => (
+            <Oferta key={o.id} oferta={o} />
+          ))}
+        </ul>
+      )}
+    </article>
+  )
+}
+
+/** Descarrega uma folha com o que está à vista, para guardar ou imprimir. */
+function exportarCsv(nome, linhas) {
+  const escapar = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`
+  const texto = linhas.map((l) => l.map(escapar).join(';')).join('\r\n')
+  // O BOM é o que faz o Excel português abrir os acentos como deve ser.
+  const url = URL.createObjectURL(new Blob(['﻿' + texto], { type: 'text/csv;charset=utf-8' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = nome
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+const VISTAS = [
+  ['cartoes', 'Cartões'],
+  ['tabela', 'Tabela'],
+  ['grupos', 'Grupos'],
+]
+
 /**
  * O painel das contribuições.
  *
  * Junta os três lados da mesma coisa: a lista de presentes, quanto já foi
- * contribuído para cada um e quem ofereceu. A lua de mel entra como mais um
- * cartão, sem meta, porque é assim que funciona no site.
+ * contribuído para cada um e quem ofereceu. Está partido em dois — os
+ * presentes da casa e a lua de mel — porque são contas diferentes: uns têm
+ * meta e percentagem, a outra recebe o que lhe derem. Dentro de cada lado, a
+ * mesma informação vê-se de três maneiras: em cartões, em tabela, ou agrupada
+ * por presente com os nomes de quem ofereceu. Aparecem só os presentes que já
+ * receberam alguma coisa — a lista completa, incluindo os que estão a zero,
+ * é a do separador «Presentes».
  */
 export default function Contribuicoes() {
   const { presentesCasa, contribuido, fotografias, textos } = useConteudo()
@@ -257,15 +317,37 @@ export default function Contribuicoes() {
   const contribuicoes = useColecao('contribuicoes')
   const confirmar = useConfirmar()
   const [erro, setErro] = useState('')
+  const [lado, setLado] = useState('presentes')
+  const [vista, setVista] = useState('cartoes')
 
   const nomeLua = textos?.['lua.titulo'] || 'Lua de mel'
+  const ehLua = lado === 'lua'
 
   const porPresente = useMemo(() => agruparOfertas(ofertas.itens), [ofertas.itens])
 
-  const itens = [
-    ...(presentesCasa || []),
-    { id: ID_LUA, nome: nomeLua, preco: 0, imagem: '', descricao: 'Contribuições livres.' },
-  ]
+  const lua = {
+    id: ID_LUA,
+    nome: nomeLua,
+    preco: 0,
+    imagem: '',
+    descricao: 'Contribuições livres.',
+  }
+
+  // Os itens de cada lado: os presentes da casa de um, a lua de mel do outro.
+  // Só entram os que já receberam alguma coisa — este separador é o das
+  // contribuições, e não a lista de presentes; essa está no separador ao lado,
+  // onde faz sentido ver também os que ainda estão a zero.
+  const recebeuAlguma = (item) =>
+    (contribuido[item.id] || 0) > 0 || (porPresente[item.nome] || []).length > 0
+
+  const itens = (ehLua ? [lua] : presentesCasa || []).filter(recebeuAlguma)
+
+  const todas = contribuicoes.itens || []
+  const daLua = todas.filter((c) => c.presenteId === ID_LUA)
+  const dosPresentes = todas.filter((c) => c.presenteId !== ID_LUA)
+  const asMinhas = ehLua ? daLua : dosPresentes
+
+  const totalDoLado = asMinhas.reduce((s, c) => s + (Number(c.valor) || 0), 0)
 
   async function apagarContribuicao(c) {
     const ok = await confirmar({
@@ -284,6 +366,15 @@ export default function Contribuicoes() {
     }
   }
 
+  const nomeDaContribuicao = (c) =>
+    c.presenteId === ID_LUA ? nomeLua : nomeDoId(c.presenteId, presentesCasa)
+
+  const exportar = () =>
+    exportarCsv(ehLua ? 'lua-de-mel.csv' : 'presentes.csv', [
+      ['Presente', 'Valor', 'Quando'],
+      ...asMinhas.map((c) => [nomeDaContribuicao(c), Number(c.valor) || 0, dataPt(c.criadoEm)]),
+    ])
+
   return (
     <section className="admin__seccao">
       <div className="admin__seccao-topo">
@@ -293,68 +384,139 @@ export default function Contribuicoes() {
       <p className="admin__ajuda">
         Cada cartão mostra quanto já foi oferecido e por quem. O nome e a mensagem editam-se
         aqui; o valor não se altera — se alguém registou por engano, apaga-se a contribuição na
-        lista do fim, e a barra de progresso acerta sozinha.
+        vista «Tabela», e a barra de progresso acerta sozinha.
       </p>
 
       {ofertas.erro && <p className="admin__erro">{ofertas.erro}</p>}
       {contribuicoes.erro && <p className="admin__erro">{contribuicoes.erro}</p>}
       {erro && <p className="admin__erro">{erro}</p>}
 
-      {presentesCasa === null ? (
-        <p className="admin__vazio">A carregar…</p>
-      ) : (
-        <div className="contrib__grelha">
-          {itens.map((item) => (
-            <CartaoContribuicao
-              key={item.id}
-              item={item}
-              contribuido={contribuido[item.id] || 0}
-              ofertas={porPresente[item.nome] || []}
-              fotografias={fotografias}
-            />
-          ))}
+      <div className="contrib__lados" role="tablist" aria-label="Tipo de contribuição">
+        {[
+          ['presentes', 'Para a casa', dosPresentes.length],
+          ['lua', nomeLua, daLua.length],
+        ].map(([chave, etiqueta, quantas]) => (
+          <button
+            key={chave}
+            type="button"
+            role="tab"
+            aria-selected={lado === chave}
+            className={'contrib__lado' + (lado === chave ? ' is-ativo' : '')}
+            onClick={() => setLado(chave)}
+          >
+            {etiqueta} <span>{quantas}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="contrib__cabecalho">
+        <div className="contrib__numeros-lado">
+          <div>
+            <span className="contrib__etiqueta">Total angariado</span>
+            <strong>{euros(totalDoLado)}</strong>
+          </div>
+          <div>
+            <span className="contrib__etiqueta">Contribuições</span>
+            <strong>{asMinhas.length}</strong>
+          </div>
         </div>
-      )}
 
-      <h3 className="admin__sub">Todas as contribuições</h3>
-      <p className="admin__ajuda">
-        A lista em bruto, pela ordem de chegada. Não guarda nomes — é o que alimenta as barras
-        de progresso do site.
-      </p>
+        <div className="contrib__vistas">
+          {VISTAS.map(([chave, etiqueta]) => (
+            <button
+              key={chave}
+              type="button"
+              aria-pressed={vista === chave}
+              className={'contrib__vista' + (vista === chave ? ' is-ativa' : '')}
+              onClick={() => setVista(chave)}
+            >
+              {etiqueta}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="admin__btn admin__btn--claro"
+            onClick={exportar}
+            disabled={asMinhas.length === 0}
+          >
+            Exportar
+          </button>
+        </div>
+      </div>
 
-      {contribuicoes.itens === null ? (
+      {presentesCasa === null || contribuicoes.itens === null ? (
         <p className="admin__vazio">A carregar…</p>
-      ) : contribuicoes.itens.length === 0 ? (
-        <p className="admin__vazio">Ainda não há contribuições registadas.</p>
       ) : (
-        <table className="admin__tabela">
-          <thead>
-            <tr>
-              <th>Presente</th>
-              <th>Valor</th>
-              <th>Quando</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {contribuicoes.itens.map((c) => (
-              <tr key={c.id}>
-                <td>{c.presenteId === ID_LUA ? nomeLua : nomeDoId(c.presenteId, presentesCasa)}</td>
-                <td>{euros(c.valor)}</td>
-                <td>{dataPt(c.criadoEm)}</td>
-                <td>
-                  <button
-                    type="button"
-                    className="admin__btn admin__btn--perigo"
-                    onClick={() => apagarContribuicao(c)}
-                  >
-                    Apagar
-                  </button>
-                </td>
-              </tr>
+        <>
+          {vista === 'cartoes' && itens.length === 0 && (
+            <p className="admin__vazio">Ainda não há contribuições deste lado.</p>
+          )}
+
+          {vista === 'cartoes' && itens.length > 0 && (
+            <div className={'contrib__grelha' + (ehLua ? ' contrib__grelha--lua' : '')}>
+              {itens.map((item) => (
+                <CartaoContribuicao
+                  key={item.id}
+                  item={item}
+                  contribuido={contribuido[item.id] || 0}
+                  ofertas={porPresente[item.nome] || []}
+                  fotografias={fotografias}
+                />
+              ))}
+            </div>
+          )}
+
+          {vista === 'tabela' &&
+            (asMinhas.length === 0 ? (
+              <p className="admin__vazio">Ainda não há contribuições registadas.</p>
+            ) : (
+              <table className="admin__tabela">
+                <thead>
+                  <tr>
+                    <th>Presente</th>
+                    <th>Valor</th>
+                    <th>Quando</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {asMinhas.map((c) => (
+                    <tr key={c.id}>
+                      <td>{nomeDaContribuicao(c)}</td>
+                      <td>{euros(c.valor)}</td>
+                      <td>{dataPt(c.criadoEm)}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="admin__btn admin__btn--perigo"
+                          onClick={() => apagarContribuicao(c)}
+                        >
+                          Apagar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             ))}
-          </tbody>
-        </table>
+
+          {vista === 'grupos' && itens.length === 0 && (
+            <p className="admin__vazio">Ainda não há contribuições deste lado.</p>
+          )}
+
+          {vista === 'grupos' && itens.length > 0 && (
+            <div className="contrib__grupos">
+              {itens.map((item) => (
+                <GrupoDeOfertas
+                  key={item.id}
+                  item={item}
+                  contribuido={contribuido[item.id] || 0}
+                  ofertas={porPresente[item.nome] || []}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </section>
   )

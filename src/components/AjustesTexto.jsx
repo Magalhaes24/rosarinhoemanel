@@ -165,6 +165,7 @@ export default function AjustesTexto({
   aoMudar,
   aoRepor,
   aoEliminar,
+  aoNegritoDaSelecao,
 }) {
   const [pos, setPos] = useState(null)
   const [pt, setPt] = useState(null)
@@ -235,6 +236,36 @@ export default function AjustesTexto({
     aoMudar('tamanho', Math.min(max, Math.max(min, arredondar(alvoPt / origem))))
   }
 
+  /**
+   * O negrito, com dois destinos conforme o que está escolhido.
+   *
+   * Com palavras seleccionadas dentro do texto, são só essas que engordam — o
+   * `execCommand` embrulha-as num `<b>` e o que ficar gravado passa pela
+   * limpeza de quem nos chamou. Sem selecção, o negrito é do elemento todo,
+   * como era antes, e vai para os ajustes como qualquer outro.
+   */
+  const negrito = () => {
+    const sel = window.getSelection?.()
+    const el = alvo.current
+    const dentro =
+      sel &&
+      !sel.isCollapsed &&
+      sel.rangeCount > 0 &&
+      el &&
+      el.contains(sel.getRangeAt(0).commonAncestorContainer)
+
+    if (dentro && aoNegritoDaSelecao) {
+      // `styleWithCSS` a falso para vir `<b>` e não uma `<span>` com estilo:
+      // é `<b>` a única etiqueta que o texto pode guardar.
+      document.execCommand('styleWithCSS', false, false)
+      document.execCommand('bold')
+      aoNegritoDaSelecao()
+      return
+    }
+
+    aoMudar('peso', Number(peso) === 700 ? '' : 700)
+  }
+
   /** O espaço por baixo sobe e desce de quatro em quatro pontos. */
   const mudarEspaco = (sinal) => {
     if (espacoPt === null) return
@@ -262,8 +293,8 @@ export default function AjustesTexto({
             origem, que nuns sítios é fino e noutros já era grosso. */}
         {botao(
           'B',
-          Number(peso) === 700 ? 'Tirar o negrito' : 'Pôr a negrito',
-          () => aoMudar('peso', Number(peso) === 700 ? '' : 700),
+          Number(peso) === 700 ? 'Tirar o negrito' : 'Pôr a negrito (ou só as palavras escolhidas)',
+          negrito,
           { ativo: Number(peso) === 700 }
         )}
         {botao(

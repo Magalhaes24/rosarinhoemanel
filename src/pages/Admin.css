@@ -224,23 +224,37 @@
 }
 
 /* ---------------- Separadores ---------------- */
+/* A faixa dos separadores: uma tira de cor a separar o resumo do conteúdo,
+   com os separadores em pastilha em vez de sublinhados. */
+.admin__faixa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 26px 0 22px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: rgba(190, 168, 128, 0.16);
+}
+
 .admin__separadores {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 26px 0 4px;
-  border-bottom: 1px solid rgba(41, 38, 33, 0.12);
+  gap: 8px;
 }
 
 .admin__separador {
-  border: none;
-  background: transparent;
-  padding: 10px 16px;
-  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(141, 112, 80, 0.24);
+  border-radius: 999px;
+  background: #fff;
+  padding: 8px 16px;
+  font-size: 14px;
   color: #7a746c;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .admin__separador:hover {
@@ -248,9 +262,48 @@
 }
 
 .admin__separador.is-ativo {
-  color: var(--quase-preto);
-  border-bottom-color: var(--dourado-botao);
+  background: var(--castanho-escuro);
+  border-color: var(--castanho-escuro);
+  color: #fff;
   font-weight: 600;
+}
+
+.admin__conta {
+  border-radius: 999px;
+  background: rgba(141, 112, 80, 0.14);
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.admin__separador.is-ativo .admin__conta {
+  background: rgba(255, 255, 255, 0.26);
+  color: #fff;
+}
+
+/* O lado direito da faixa: o resumo e, por baixo ou ao lado, os botões que o
+   separador que está à frente pendurou aqui. */
+.admin__faixa-direita {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.admin__faixa-accoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin__faixa-accoes:empty {
+  display: none;
+}
+
+.admin__faixa-resumo {
+  margin: 0;
+  font-size: 14px;
+  color: #7a746c;
 }
 
 /* ---------------- Botões ---------------- */
@@ -523,44 +576,67 @@
   margin-top: 18px;
 }
 
-.admin__fotografia-previa {
-  width: 140px;
-  height: 140px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--creme);
+/* As duas vias — endereço ou ficheiro — como um par de pastilhas, e a
+   pré-visualização por baixo, com o «Remover imagem» no canto. */
+.foto__vias {
+  display: flex;
+  gap: 6px;
   margin-bottom: 10px;
 }
 
-.admin__fotografia-previa img {
+.foto__via {
+  border: 1px solid rgba(141, 112, 80, 0.28);
+  border-radius: 999px;
+  background: #fff;
+  padding: 6px 16px;
+  font-size: 14px;
+  color: var(--quase-preto);
+}
+
+.foto__via.is-ativa {
+  background: var(--castanho-escuro);
+  border-color: var(--castanho-escuro);
+  color: #fff;
+}
+
+.foto__endereco {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.admin__fotografia-acoes {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.admin__fotografia-endereco {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-}
-
-.admin__fotografia-endereco input {
-  flex: 1;
-  min-width: 220px;
   font: inherit;
   font-size: 15px;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border: 1px solid var(--dourado-botao);
-  border-radius: 8px;
+  border-radius: 10px;
   background: #fff;
   outline: none;
+  /* Um endereço colado como dados tem milhares de caracteres: uma linha só,
+     sem estourar a largura da janela. */
+  text-overflow: ellipsis;
+}
+
+.foto__endereco:disabled {
+  background: var(--creme);
+  color: var(--castanho);
+}
+
+.foto__previa {
+  position: relative;
+  margin: 12px 0 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--creme);
+}
+
+.foto__previa img {
+  display: block;
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+}
+
+.foto__previa figcaption {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px;
 }
 
 .admin__grupo {
@@ -702,24 +778,233 @@
   color: var(--castanho);
 }
 
-/* ---------------- Contagem nos separadores ---------------- */
-.admin__conta {
-  display: inline-grid;
-  place-items: center;
-  min-width: 22px;
-  height: 20px;
-  margin-left: 8px;
-  padding: 0 6px;
+/* Um botão que se lê como uma ligação, para acções pequenas no meio de um
+   parágrafo de ajuda. */
+.admin__ligacao {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--dourado);
+  text-decoration: underline;
+}
+
+/* ---------------- Contribuições: os dois lados e as três vistas ----------
+   «Para a casa» e a lua de mel são contas diferentes — uma tem meta, a outra
+   não — e por isso vivem em separadores próprios em vez de na mesma grelha. */
+.contrib__lados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.contrib__lado {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(141, 112, 80, 0.28);
   border-radius: 999px;
-  background: var(--creme);
+  background: #fff;
+  padding: 7px 14px;
+  font-size: 14px;
+  color: var(--quase-preto);
+}
+
+.contrib__lado span {
+  border-radius: 999px;
+  background: rgba(141, 112, 80, 0.14);
+  padding: 1px 8px;
   font-size: 12px;
-  font-weight: 600;
+}
+
+.contrib__lado.is-ativo {
+  background: var(--dourado-botao);
+  border-color: var(--dourado-botao);
+  color: #fff;
+}
+
+.contrib__lado.is-ativo span {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.contrib__cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.contrib__numeros-lado {
+  display: flex;
+  gap: 10px;
+}
+
+.contrib__numeros-lado > div {
+  border: 1px solid rgba(141, 112, 80, 0.2);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 16px;
+  min-width: 128px;
+}
+
+.contrib__numeros-lado strong {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--form-serif);
+  font-size: 20px;
+}
+
+.contrib__vistas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.contrib__vista {
+  border: 1px solid rgba(141, 112, 80, 0.28);
+  border-radius: 999px;
+  background: #fff;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--quase-preto);
+}
+
+.contrib__vista.is-ativa {
+  background: rgba(190, 168, 128, 0.34);
+  border-color: rgba(141, 112, 80, 0.4);
+}
+
+/* A vista «Grupos»: um bloco por presente, com quem ofereceu já aberto. */
+.contrib__grupos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.grupo {
+  border: 1px solid rgba(141, 112, 80, 0.2);
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px 18px;
+}
+
+.grupo__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.grupo__topo h4 {
+  margin: 0;
+  font-family: var(--form-serif);
+  font-size: 18px;
+}
+
+.grupo__conta {
+  border-radius: 999px;
+  background: rgba(141, 112, 80, 0.12);
+  padding: 3px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.grupo__progresso {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 4px;
+  font-size: 13px;
+  color: var(--castanho-escuro);
+}
+
+.grupo__progresso .contrib__barra {
+  flex: 1;
+  margin: 0;
+}
+
+/* ---------------- Janela de edição ----------------
+   O formulário do presente abre por cima da página, e não dentro da grelha:
+   assim os cartões não saltam de sítio e o formulário tem espaço para as
+   fotografias. */
+.janela {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: start center;
+  overflow-y: auto;
+  padding: 24px 16px;
+  background: rgba(41, 38, 33, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.janela__caixa {
+  width: 100%;
+  max-width: 560px;
+  border-radius: 20px;
+  background: #fff;
+  padding: 24px 26px 26px;
+  box-shadow: 0 20px 60px rgba(41, 38, 33, 0.32);
+}
+
+.janela__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.janela__sobrescrito {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--castanho);
 }
 
-.admin__separador.is-ativo .admin__conta {
-  background: var(--dourado-botao);
-  color: #fff;
+.janela__nome {
+  margin: 6px 0 0;
+  font-family: var(--form-serif);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.janela__fechar {
+  border: 1px solid rgba(141, 112, 80, 0.28);
+  border-radius: 999px;
+  background: #fff;
+  width: 34px;
+  height: 34px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--castanho-escuro);
+}
+
+.janela__fechar:hover {
+  background: var(--creme);
+}
+
+/* ---------------- Presentes em cartões ----------------
+   A mesma grelha e o mesmo cartão das contribuições, mais a fila de botões:
+   ver a lista e vê-la a encher são a mesma coisa. */
+.loja__grelha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.loja__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 /* ---------------- Cartões de contribuição ---------------- */
@@ -728,6 +1013,12 @@
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 16px;
   margin-top: 18px;
+}
+
+/* A lua de mel é um cartão só: sem a grelha automática ficaria esticado a
+   toda a largura da página. */
+.contrib__grelha--lua {
+  grid-template-columns: minmax(340px, 520px);
 }
 
 .contrib {

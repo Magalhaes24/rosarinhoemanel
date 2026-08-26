@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useConteudo, useTexto } from '../lib/conteudo.jsx'
 import { useEdicao } from '../lib/edicao.jsx'
 import AjustesTexto, { LIMITES, estiloDoTexto, numero } from './AjustesTexto.jsx'
+import { limparMarcacao, semMarcacao, temMarcacao } from '../lib/marcacao.js'
 
 /**
  * Ajustes que o admin pode dar a um texto, um a um, sem mexer no resto do
@@ -68,10 +69,14 @@ export default function T({ k, multilinha = true }) {
 
   // Só escreve no DOM quando o valor muda de fora. Escrever a cada tecla
   // partiria a posição do cursor.
+  // O que se grava pode trazer `<b>` lá dentro, por isso a comparação e a
+  // escrita são em HTML — e sempre pela limpeza, para o que entra no DOM ser
+  // exactamente o que ficaria gravado.
   useEffect(() => {
     if (!emEdicao) return
     const el = ref.current
-    if (el && el.textContent !== valor) el.textContent = valor
+    const limpo = limparMarcacao(valor)
+    if (el && el.innerHTML !== limpo) el.innerHTML = limpo
   }, [emEdicao, valor])
 
   // Eliminado é eliminado — também em edição. Se ficasse à vista, a caixa
@@ -80,8 +85,19 @@ export default function T({ k, multilinha = true }) {
   if (oculto) return null
 
   if (!emEdicao) {
-    if (!temEstilo) return valor
-    return <span style={estilo}>{valor}</span>
+    // Sem negrito por dentro, o texto vai como texto — é o React a escapá-lo,
+    // como sempre foi. Com negrito, vai como HTML, mas só depois de limpo.
+    if (!temMarcacao(valor)) {
+      const letras = semMarcacao(valor)
+      if (!temEstilo) return letras
+      return <span style={estilo}>{letras}</span>
+    }
+    return (
+      <span
+        style={temEstilo ? estilo : undefined}
+        dangerouslySetInnerHTML={{ __html: limparMarcacao(valor) }}
+      />
+    )
   }
 
   return (
@@ -98,7 +114,7 @@ export default function T({ k, multilinha = true }) {
         title={k}
         onFocus={() => setFocado(true)}
         onBlur={() => setFocado(false)}
-        onInput={(e) => alterarTexto(k, e.currentTarget.textContent)}
+        onInput={(e) => alterarTexto(k, limparMarcacao(e.currentTarget.innerHTML))}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             // Nunca a quebra do próprio contentEditable: essa mete <div>/<br> e
@@ -132,6 +148,7 @@ export default function T({ k, multilinha = true }) {
           fonte={fonte}
           oculto={oculto}
           aoEliminar={eliminar}
+          aoNegritoDaSelecao={() => alterarTexto(k, limparMarcacao(ref.current.innerHTML))}
           aoMudar={(tipo, v) => alterarTema(chaveAjuste(tipo, k), v)}
           aoRepor={repor}
         />
