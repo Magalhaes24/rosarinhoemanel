@@ -318,3 +318,15 @@ export function useConteudo() {
 export function useTexto() {
   return useConteudo().t
 }
+
+/**
+ * Atalho para traduzir o que está guardado num campo de fotografia.
+ *
+ * As secções e os blocos acrescentados guardam o valor cru — que tanto pode
+ * ser um endereço como `firestore:<id>`. Sem passar por aqui, uma fotografia
+ * enviada pelo admin ficava com `src="firestore:…"` e não aparecia.
+ */
+export function useResolverImagem() {
+  const { fotografias } = useConteudo()
+  return useCallback((src) => resolverImagem(src, fotografias), [fotografias])
+}

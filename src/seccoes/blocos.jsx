@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import AjustesTexto, { LIMITES, estiloDoTexto, numero } from '../components/AjustesTexto.jsx'
 import { limparMarcacao, semMarcacao, temMarcacao } from '../lib/marcacao.js'
+import { useResolverImagem } from '../lib/conteudo.jsx'
 
 /**
  * Blocos de conteúdo dentro de uma secção.
@@ -213,6 +214,7 @@ function BlocoDeTexto({ dados, indice, aoMudar, aoRemover }) {
 /** Um bloco. Tipo desconhecido não desenha nada, em vez de rebentar a página. */
 export function Bloco({ dados, indice }) {
   const edicao = useContext(ContextoBlocos)
+  const resolver = useResolverImagem()
   const alinhamento = dados.alinhamento || undefined
 
   // Em edição os blocos de texto escrevem-se no sítio. Um bloco vazio continua
@@ -279,7 +281,7 @@ export function Bloco({ dados, indice }) {
             textAlign: alinhamento,
           }}
         >
-          <img src={dados.fotografia} alt={dados.legenda || ''} loading="lazy" />
+          <img src={resolver(dados.fotografia)} alt={dados.legenda || ''} loading="lazy" />
           {dados.legenda && <figcaption className="corpo-sm">{dados.legenda}</figcaption>}
         </figure>
       ) : null

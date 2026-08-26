@@ -1,3 +1,4 @@
+import { useResolverImagem } from '../lib/conteudo.jsx'
 import Carousel from '../components/Carousel.jsx'
 import RsvpForm from '../components/RsvpForm.jsx'
 import PresenteForm from '../components/PresenteForm.jsx'
@@ -85,6 +86,7 @@ function ConteudoLivre({ dados }) {
 
 /** Uma fotografia sozinha, com legenda opcional. */
 function Fotografia({ dados }) {
+  const resolver = useResolverImagem()
   if (!dados.fotografia) return null
   const larguras = { pequena: '40%', media: '70%', inteira: '100%' }
   return (
@@ -98,7 +100,7 @@ function Fotografia({ dados }) {
             marginRight: dados.alinhamento === 'right' ? 0 : 'auto',
           }}
         >
-          <img src={dados.fotografia} alt={dados.legenda || ''} loading="lazy" />
+          <img src={resolver(dados.fotografia)} alt={dados.legenda || ''} loading="lazy" />
           {dados.legenda && <figcaption className="corpo-sm">{dados.legenda}</figcaption>}
         </figure>
       </div>
@@ -114,6 +116,7 @@ function Fotografia({ dados }) {
  * sempre a uma coluna, que é a única leitura possível num ecrã estreito.
  */
 function Grelha({ dados }) {
+  const resolver = useResolverImagem()
   const cartoes = Array.isArray(dados.cartoes) ? dados.cartoes : []
   const colunas = Number(dados.colunas) || 2
 
@@ -139,7 +142,12 @@ function Grelha({ dados }) {
                 }}
               >
                 {c.fotografia && (
-                  <img className="grelha__imagem" src={c.fotografia} alt="" loading="lazy" />
+                  <img
+                    className="grelha__imagem"
+                    src={resolver(c.fotografia)}
+                    alt=""
+                    loading="lazy"
+                  />
                 )}
                 {c.titulo && <h3 className="grelha__titulo">{c.titulo}</h3>}
                 {c.texto && <p className="corpo-sm grelha__texto">{c.texto}</p>}
@@ -173,9 +181,12 @@ function Formulario({ dados }) {
 
 /** Fotografia a toda a largura com uma caixa por cima — como a «Missa». */
 function Banda({ dados }) {
+  const resolver = useResolverImagem()
   return (
     <section className="seccao banda banda--personalizada">
-      {dados.fotografia && <img className="banda__bg" src={dados.fotografia} alt="" data-revelar-zoom />}
+      {dados.fotografia && (
+        <img className="banda__bg" src={resolver(dados.fotografia)} alt="" data-revelar-zoom />
+      )}
       <div className="banda__caixa" data-revelar>
         <Titulo texto={dados.titulo} className="banda__titulo" />
         {dados.linha1 && <p className="corpo banda__local">{dados.linha1}</p>}
@@ -187,6 +198,7 @@ function Banda({ dados }) {
 
 /** Texto de um lado, fotografia do outro — como os anos na página dos noivos. */
 function TextoEFotografia({ dados }) {
+  const resolver = useResolverImagem()
   const fotografiaADireita = dados.lado !== 'esquerda'
   return (
     <section
@@ -199,7 +211,7 @@ function TextoEFotografia({ dados }) {
         {dados.corpo && <p className="corpo-sm seccao__corpo">{dados.corpo}</p>}
       </div>
       <div className="seccao__fotografia" data-revelar style={{ '--atraso': '0.16s' }}>
-        {dados.fotografia && <img src={dados.fotografia} alt={dados.legenda || ''} />}
+        {dados.fotografia && <img src={resolver(dados.fotografia)} alt={dados.legenda || ''} />}
       </div>
     </section>
   )
@@ -207,11 +219,12 @@ function TextoEFotografia({ dados }) {
 
 /** Carrossel de fotografias. */
 function Galeria({ dados }) {
+  const resolver = useResolverImagem()
   const fotografias = (dados.fotografias || '')
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean)
-    .map((src) => ({ src, alt: '' }))
+    .map((src) => ({ src: resolver(src), alt: '' }))
 
   return (
     <section className={`seccao seccao--galeria ${classesFundo(dados.fundo)}`}>
