@@ -74,8 +74,11 @@
   }
 }
 
+/* A fita fica entre o botão e as fotografias, e a folga é a mesma dos dois
+   lados: encostada às fotografias, como estava, lia-se como uma legenda delas
+   em vez da linha que separa uma coisa da outra. */
 #lua .destinos {
-  margin-top: calc(60 * var(--esp));
+  margin-top: calc(72 * var(--esp));
 }
 
 /* ---------------- Lista de presentes "Para a casa" ---------------- */
@@ -313,7 +316,7 @@
 
 /* No rascunho as fotografias dos destinos vão de ponta a ponta, sem folga. */
 .presentes__carrossel {
-  margin-top: calc(26 * var(--esp));
+  margin-top: calc(60 * var(--esp));
   margin-left: calc(-40 * var(--pt));
   margin-right: calc(-40 * var(--pt));
   color: var(--verde);
