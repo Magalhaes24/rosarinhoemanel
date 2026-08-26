@@ -1,0 +1,159 @@
+/* Página «Onde ficar?».
+   As regras vieram da página inicial, onde a lista vivia até agora: o desenho
+   é o mesmo, mudou só a página que a mostra. */
+
+.onde-ficar {
+  background: var(--creme-2);
+}
+
+.hoteis {
+  background: var(--creme-2);
+  min-height: calc(576 * var(--esp));
+  padding: calc(76 * var(--esp)) calc(40 * var(--pt));
+  text-align: center;
+}
+
+.hoteis__titulo {
+  color: #000;
+  white-space: pre-line;
+}
+
+.hoteis__intro {
+  max-width: calc(640 * var(--pt));
+  margin: calc(34 * var(--esp)) auto 0;
+  font-family: var(--sans);
+  font-size: calc(22 * var(--pt) * var(--escala-corpo));
+  line-height: 1.6;
+  text-align: center;
+  color: var(--castanho-escuro);
+  white-space: pre-line;
+}
+
+/* `auto-fit` em vez de um número de colunas: assim tanto faz virem oito
+   hotéis como cinco, e a última linha nunca fica com um cartão esticado. */
+.hoteis__lista {
+  list-style: none;
+  margin: calc(46 * var(--esp)) auto 0;
+  padding: 0;
+  max-width: calc(1000 * var(--pt));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(190 * var(--pt)), 1fr));
+  gap: calc(18 * var(--pt));
+  text-align: left;
+}
+
+.hoteis__cartao {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(141, 112, 80, 0.22);
+  border-radius: calc(14 * var(--pt));
+  padding: calc(17 * var(--esp)) calc(18 * var(--pt));
+  overflow: hidden;
+}
+
+
+
+.hoteis__nome {
+  margin: 0;
+  font-family: var(--form-serif);
+  font-size: calc(18 * var(--pt) * var(--escala-titulos));
+  line-height: 1.25;
+  color: var(--castanho-escuro);
+}
+
+.hoteis__tipo {
+  margin: calc(4 * var(--esp)) 0 0;
+  font-family: var(--sans);
+  font-size: calc(12 * var(--pt) * var(--escala-corpo));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--castanho);
+}
+
+/* Cada contacto na sua linha: um número e um email lado a lado ficavam a
+   parecer um só, e no telemóvel não havia onde acertar o dedo. */
+.hoteis__contacto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(4 * var(--esp));
+  margin: calc(11 * var(--esp)) 0 0;
+  font-family: var(--sans);
+  font-size: calc(13 * var(--pt) * var(--escala-corpo));
+}
+
+.hoteis__contacto a {
+  max-width: 100%;
+  color: var(--dourado);
+  text-decoration: none;
+  word-break: break-word;
+  border-bottom: calc(2 * var(--pt)) solid transparent;
+}
+
+.hoteis__contacto a:hover {
+  border-bottom-color: currentColor;
+}
+
+/* `margin-top: auto` cola-o ao fundo do cartão; a margem negativa dos lados
+   faz a risca de cima atravessar o cartão todo, como um rodapé. */
+.hoteis__espaco {
+  margin: auto calc(-18 * var(--pt)) calc(-17 * var(--esp));
+  padding: calc(13 * var(--esp)) calc(18 * var(--pt));
+  border-top: 1px solid rgba(141, 112, 80, 0.18);
+  font-family: var(--sans);
+  font-size: calc(13 * var(--pt) * var(--escala-corpo));
+  color: var(--castanho-escuro);
+  text-decoration: none;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.hoteis__espaco:hover {
+  background: rgba(141, 112, 80, 0.08);
+  color: var(--dourado);
+}
+
+/* Sem isto o link do fundo encostava aos contactos quando o cartão é o mais
+   alto da linha e não sobra espaço nenhum para o `auto` distribuir. */
+.hoteis__contacto {
+  margin-bottom: calc(14 * var(--esp));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hoteis__espaco {
+    transition: none;
+  }
+}
+
+/* ---------------- Telemóvel ---------------- */
+@media (max-width: 760px) {
+  .hoteis {
+    min-height: 0;
+    padding: calc(66 * var(--esp)) calc(24 * var(--pt));
+  }
+  .hoteis__lista {
+    grid-template-columns: 1fr;
+    gap: calc(16 * var(--pt));
+  }
+  .hoteis__contacto {
+    gap: 0;
+  }
+  .hoteis__contacto a {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    font-size: max(13px, calc(13 * var(--pt) * var(--escala-corpo)));
+  }
+  .hoteis__espaco {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: max(13px, calc(13 * var(--pt) * var(--escala-corpo)));
+  }
+  .hoteis__nome {
+    font-size: max(17px, calc(18 * var(--pt) * var(--escala-titulos)));
+  }
+  .hoteis__tipo {
+    font-size: max(11px, calc(12 * var(--pt) * var(--escala-corpo)));
+  }
+}

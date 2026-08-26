@@ -7,6 +7,7 @@ import VoltarAoTopo from './components/VoltarAoTopo.jsx'
 import Home from './pages/Home.jsx'
 import Noivos from './pages/Noivos.jsx'
 import Presentes from './pages/Presentes.jsx'
+import OndeFicar from './pages/OndeFicar.jsx'
 import useRevelar from './hooks/useRevelar.js'
 import './styles/animacoes.css'
 
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/noivos" element={<Noivos />} />
         <Route path="/presentes" element={<Presentes />} />
+        <Route path="/onde-ficar" element={<OndeFicar />} />
         {/* Não aparece no menu de propósito: os convidados nunca lhe chegam. */}
         <Route
           path="/admin"

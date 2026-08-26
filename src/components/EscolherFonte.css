@@ -1,0 +1,60 @@
+/* ---------------- Escolher o tipo de letra ---------------- */
+/* Só se vê em modo de edição, dentro da barra de ajustes de um texto. */
+
+.fonte {
+  position: relative;
+  display: inline-flex;
+}
+
+.fonte .fonte__botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  border: 1px solid rgba(41, 38, 33, 0.18);
+  background: #fff;
+  border-radius: 7px;
+  padding: 4px 7px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--quase-preto);
+}
+
+.fonte .fonte__botao:hover {
+  background: var(--botao-creme);
+}
+
+.fonte__lista {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 176px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid rgba(41, 38, 33, 0.16);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(41, 38, 33, 0.18);
+}
+
+.fonte__opcao {
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  padding: 7px 9px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--quase-preto);
+}
+
+.fonte__opcao:hover {
+  background: var(--botao-creme);
+}
+
+.fonte__opcao.is-ativa {
+  background: rgba(190, 168, 128, 0.32);
+}

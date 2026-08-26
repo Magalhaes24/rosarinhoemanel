@@ -245,17 +245,31 @@
 /* ---------------- Lista de presentes ---------------- */
 .presentes-cta {
   background: var(--verde-fundo);
-  min-height: calc(460 * var(--esp));
+  min-height: calc(360 * var(--esp));
   padding: calc(52 * var(--esp)) calc(40 * var(--pt)) calc(70 * var(--esp));
   text-align: center;
 }
 
-.presentes-cta__titulo {
+.presentes-cta .presentes-cta__titulo {
   color: var(--creme-texto);
+  /* Deixou de ser título: é texto corrido em Garet, como o resto do corpo.
+     Quem faz de título agora é a chamada por cima. */
+  font-weight: 400;
+  max-width: calc(1100 * var(--pt));
+  margin-inline: auto;
+}
+
+.presentes-cta__chamada {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: calc(46 * var(--pt) * var(--escala-titulos));
+  line-height: 1.2;
+  color: var(--creme-texto);
+  margin: 0 0 calc(28 * var(--esp));
 }
 
 .presentes-cta__botoes {
-  margin-top: calc(120 * var(--esp));
+  margin-top: calc(56 * var(--esp));
   display: flex;
   justify-content: center;
   gap: calc(199 * var(--pt));
@@ -312,146 +326,34 @@
   margin-top: calc(28 * var(--esp));
 }
 
-/* ---------------- Onde ficar ---------------- */
-.hoteis {
+/* ---------------- Onde ficar (chamada) ----------------
+   A lista de hotéis mudou-se para a sua própria página; aqui fica só o convite,
+   no mesmo bege do resto do site e logo a seguir aos drivers. */
+.hoteis-cta {
   background: var(--creme-2);
-  min-height: calc(576 * var(--esp));
-  padding: calc(76 * var(--esp)) calc(40 * var(--pt));
+  padding: calc(64 * var(--esp)) calc(40 * var(--pt)) calc(72 * var(--esp));
   text-align: center;
 }
 
-.hoteis__titulo {
-  color: #000;
-  white-space: pre-line;
-}
-
-.hoteis__intro {
-  max-width: calc(640 * var(--pt));
-  margin: calc(34 * var(--esp)) auto 0;
-  font-family: var(--sans);
-  font-size: calc(22 * var(--pt) * var(--escala-corpo));
-  line-height: 1.6;
-  text-align: center;
-  color: var(--castanho-escuro);
-  white-space: pre-line;
-}
-
-/* `auto-fit` em vez de um número de colunas: assim tanto faz virem oito
-   hotéis como cinco, e a última linha nunca fica com um cartão esticado. */
-.hoteis__lista {
-  list-style: none;
-  margin: calc(46 * var(--esp)) auto 0;
-  padding: 0;
-  max-width: calc(1000 * var(--pt));
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(190 * var(--pt)), 1fr));
-  gap: calc(18 * var(--pt));
-  text-align: left;
-}
-
-.hoteis__cartao {
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(141, 112, 80, 0.22);
-  border-radius: calc(14 * var(--pt));
-  padding: calc(17 * var(--esp)) calc(18 * var(--pt));
-  overflow: hidden;
-}
-
-.hoteis__foto {
-  margin: calc(-17 * var(--esp)) calc(-18 * var(--pt)) calc(16 * var(--esp));
-  aspect-ratio: 4 / 3;
-  background: rgba(141, 112, 80, 0.08);
-}
-
-.hoteis__foto img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* O aviso de fotografia em falta só se vê em edição — fora dela o cartão
-   nem chega a desenhar a caixa. */
-.hoteis__foto .img-em-falta {
-  width: 100%;
-  height: 100%;
-}
-
-.hoteis__nome {
-  margin: 0;
-  font-family: var(--form-serif);
-  font-size: calc(18 * var(--pt) * var(--escala-titulos));
-  line-height: 1.25;
+/* Escrito a partir da secção: a `.corpo` do global.css vem depois na folha e
+   com a mesma força, e sozinho o `.hoteis-cta__texto` perdia as margens
+   automáticas — a caixa ficava encostada à esquerda em vez de ao meio. */
+.hoteis-cta .hoteis-cta__texto {
+  max-width: calc(700 * var(--pt));
+  margin: 0 auto;
   color: var(--castanho-escuro);
 }
 
-.hoteis__tipo {
-  margin: calc(4 * var(--esp)) 0 0;
-  font-family: var(--sans);
-  font-size: calc(12 * var(--pt) * var(--escala-corpo));
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--castanho);
-}
-
-/* Cada contacto na sua linha: um número e um email lado a lado ficavam a
-   parecer um só, e no telemóvel não havia onde acertar o dedo. */
-.hoteis__contacto {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: calc(4 * var(--esp));
-  margin: calc(11 * var(--esp)) 0 0;
-  font-family: var(--sans);
-  font-size: calc(13 * var(--pt) * var(--escala-corpo));
-}
-
-.hoteis__contacto a {
-  max-width: 100%;
-  color: var(--dourado);
-  text-decoration: none;
-  word-break: break-word;
-  border-bottom: calc(2 * var(--pt)) solid transparent;
-}
-
-.hoteis__contacto a:hover {
-  border-bottom-color: currentColor;
-}
-
-/* `margin-top: auto` cola-o ao fundo do cartão; a margem negativa dos lados
-   faz a risca de cima atravessar o cartão todo, como um rodapé. */
-.hoteis__espaco {
-  margin: auto calc(-18 * var(--pt)) calc(-17 * var(--esp));
-  padding: calc(13 * var(--esp)) calc(18 * var(--pt));
-  border-top: 1px solid rgba(141, 112, 80, 0.18);
-  font-family: var(--sans);
-  font-size: calc(13 * var(--pt) * var(--escala-corpo));
-  color: var(--castanho-escuro);
-  text-decoration: none;
-  transition: background 0.16s ease, color 0.16s ease;
-}
-
-.hoteis__espaco:hover {
-  background: rgba(141, 112, 80, 0.08);
-  color: var(--dourado);
-}
-
-/* Sem isto o link do fundo encostava aos contactos quando o cartão é o mais
-   alto da linha e não sobra espaço nenhum para o `auto` distribuir. */
-.hoteis__contacto {
-  margin-bottom: calc(14 * var(--esp));
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hoteis__espaco {
-    transition: none;
-  }
+.hoteis-cta__botao {
+  margin-top: calc(26 * var(--esp));
 }
 
 /* ---------------- Telemóvel ---------------- */
 @media (max-width: 760px) {
+  .hoteis-cta {
+    padding: calc(52 * var(--esp)) calc(24 * var(--pt)) calc(56 * var(--esp));
+  }
+
   .hero {
     grid-template-columns: 1fr;
     min-height: 0;
@@ -500,7 +402,7 @@
   }
 
   .presentes-cta__botoes {
-    margin-top: calc(64 * var(--esp));
+    margin-top: calc(36 * var(--esp));
     gap: calc(30 * var(--pt));
   }
 
@@ -514,33 +416,4 @@
     min-height: 44px;
   }
 
-  .hoteis {
-    min-height: 0;
-    padding: calc(66 * var(--esp)) calc(24 * var(--pt));
-  }
-  .hoteis__lista {
-    grid-template-columns: 1fr;
-    gap: calc(16 * var(--pt));
-  }
-  .hoteis__contacto {
-    gap: 0;
-  }
-  .hoteis__contacto a {
-    display: flex;
-    align-items: center;
-    min-height: 40px;
-    font-size: max(13px, calc(13 * var(--pt) * var(--escala-corpo)));
-  }
-  .hoteis__espaco {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    font-size: max(13px, calc(13 * var(--pt) * var(--escala-corpo)));
-  }
-  .hoteis__nome {
-    font-size: max(17px, calc(18 * var(--pt) * var(--escala-titulos)));
-  }
-  .hoteis__tipo {
-    font-size: max(11px, calc(12 * var(--pt) * var(--escala-corpo)));
-  }
 }

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { app } from './firebase.js'
 import { temaPadrao, textosPadrao, imagensPadrao, variavelCss } from '../data/conteudoPadrao.js'
-import { paginasPadrao } from '../data/paginasPadrao.js'
+import { paginasPadrao, migrarPaginas } from '../data/paginasPadrao.js'
 import { galeriasPadrao } from '../data/galeriasPadrao.js'
 import { caminho } from './caminho.js'
 
@@ -83,7 +83,7 @@ export function ConteudoProvider({ children }) {
 
   const [tema, setTema] = useState({ ...temaPadrao, ...(guardado?.tema || {}) })
   const [textos, setTextos] = useState({ ...textosPadrao, ...(guardado?.textos || {}) })
-  const [paginas, setPaginas] = useState({ ...paginasPadrao, ...(guardado?.paginas || {}) })
+  const [paginas, setPaginas] = useState(migrarPaginas({ ...paginasPadrao, ...(guardado?.paginas || {}) }))
   const [imagens, setImagens] = useState({ ...imagensPadrao, ...(guardado?.imagens || {}) })
   const [galerias, setGalerias] = useState({ ...galeriasPadrao, ...(guardado?.galerias || {}) })
   // Alterações do modo de edição, ainda por gravar. Sobrepõem-se ao que está
@@ -154,7 +154,7 @@ export function ConteudoProvider({ children }) {
             setTextos({ ...textosPadrao, ...(d.textos || {}) })
             // As páginas substituem-se inteiras, não se fundem: uma lista de
             // secções fundida com a original daria uma ordem sem sentido.
-            setPaginas({ ...paginasPadrao, ...(d.paginas || {}) })
+            setPaginas(migrarPaginas({ ...paginasPadrao, ...(d.paginas || {}) }))
             setImagens({ ...imagensPadrao, ...(d.imagens || {}) })
             setGalerias({ ...galeriasPadrao, ...(d.galerias || {}) })
             guardarCache({

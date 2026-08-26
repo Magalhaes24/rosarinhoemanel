@@ -113,8 +113,16 @@ export function Seccao({ seccao, aoMudar }) {
     aoMudar({ ...seccao, blocos: lista })
   }
 
+  const aoRemoverBloco = (indice) => {
+    const lista = Array.isArray(seccao.blocos) ? [...seccao.blocos] : []
+    lista.splice(indice, 1)
+    aoMudar({ ...seccao, blocos: lista })
+  }
+
   return (
-    <ContextoBlocos.Provider value={{ aoMudarBloco }}>{desenho}</ContextoBlocos.Provider>
+    <ContextoBlocos.Provider value={{ aoMudarBloco, aoRemoverBloco }}>
+      {desenho}
+    </ContextoBlocos.Provider>
   )
 }
 
@@ -343,7 +351,7 @@ export function Pagina({ pagina, seccoes }) {
   )
 }
 
-/** Atalho usado pelas três páginas. */
+/** Atalho usado pelas páginas do site. */
 export function PaginaDoConteudo({ id }) {
   const { paginas } = useConteudo()
   return <Pagina pagina={id} seccoes={paginas[id] || []} />

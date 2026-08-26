@@ -20,6 +20,11 @@
   width: auto;
 }
 
+/* Só existe no telemóvel; no computador não há nada para abrir. */
+.nav__hamburger {
+  display: none;
+}
+
 .nav__links {
   display: flex;
   align-items: center;
@@ -48,27 +53,99 @@
     padding: 0 12px;
     gap: 8px;
   }
-  .nav__logo img {
-    height: 20px;
-  }
-  .nav__links {
-    gap: 10px;
-    min-width: 0;
-  }
-  /* Acompanha a largura do ecrã, mas nunca fica ilegível nem desproporcionado.
-     Os três rótulos são longos e têm de caber numa linha até aos 320px. */
-  .nav__link {
-    font-size: clamp(9px, 2.9vw, 13px);
-    display: flex;
-    align-items: center;
-    height: var(--nav-h);
-    padding: 0 2px;
-  }
   .nav__logo {
     display: flex;
     align-items: center;
     height: var(--nav-h);
-    padding-right: 4px;
+  }
+  .nav__logo img {
+    height: 20px;
+  }
+
+  /* Três riscas desenhadas com os próprios `span`, para não trazer um ficheiro
+     de ícones só por causa disto. Alvo de dedo com folga: 44px. */
+  .nav__hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 0 10px;
+    border: 0;
+    background: transparent;
+  }
+
+  .nav__hamburger span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    border-radius: 2px;
+    background: #4a4643;
+    transition: transform 0.2s ease, opacity 0.15s ease;
+  }
+
+  /* Aberto, as riscas viram cruz: diz sozinho que o mesmo botão fecha. */
+  .nav.is-aberta .nav__hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav.is-aberta .nav__hamburger span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav.is-aberta .nav__hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* O painel desce por baixo da barra. Fechado não ocupa espaço nenhum e sai
+     do alcance do teclado e dos leitores de ecrã. */
+  .nav__links {
+    position: absolute;
+    top: var(--nav-h);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    /* Sem folga no topo: a primeira linha encosta à risca por baixo da barra.
+       Com ela ficava uma tira de fundo à vista por cima do primeiro link, que
+       dava a ideia de que o menu estava desalinhado da barra. */
+    padding: 0 0 6px;
+    background: var(--creme-nav);
+    box-shadow: 0 12px 24px rgba(60, 45, 30, 0.16);
+    border-top: 1px solid rgba(141, 112, 80, 0.16);
+    z-index: 2;
+    display: none;
+  }
+
+  .nav.is-aberta .nav__links {
+    display: flex;
+  }
+
+  .nav__link {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 20px;
+    font-size: max(15px, calc(16 * var(--pt)));
+  }
+
+  .nav__link.is-active {
+    background: rgba(141, 112, 80, 0.08);
+  }
+
+  /* Apanha os cliques fora do painel sem tapar a barra. */
+  .nav__fundo {
+    position: fixed;
+    inset: var(--nav-h) 0 0;
+    border: 0;
+    background: transparent;
+    z-index: 1;
+  }
+}
+
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  .nav__hamburger span {
+    transition: none;
   }
 }
 
@@ -78,8 +155,5 @@
   }
   .nav__logo img {
     height: 17px;
-  }
-  .nav__links {
-    gap: 7px;
   }
 }

@@ -25,6 +25,27 @@ import iconeWaze from '../assets/mapas/waze.svg'
 
 // ---------------------------------------------------------------- Início
 
+/**
+ * Um título que desaparece quando fica sem texto.
+ *
+ * Apagar o texto de um título é a forma de o tirar da página — não há caixa
+ * para apagar, porque a caixa é da secção. Sem isto ficava o espaço da linha
+ * (e a margem) de um título vazio. Em edição continua a aparecer, senão
+ * deixava de haver onde carregar para o voltar a escrever.
+ */
+function Titulo({ como: Etiqueta = 'h2', k, className, ...resto }) {
+  const t = useTexto()
+  const { emEdicao } = useEdicao()
+
+  if (!emEdicao && !(t(k) || '').trim()) return null
+
+  return (
+    <Etiqueta className={className} {...resto}>
+      <T k={k} />
+    </Etiqueta>
+  )
+}
+
 function Hero() {
   return (
     <section className="hero">
@@ -88,7 +109,7 @@ function BandaMissa() {
     <section className="banda banda--missa">
       <Img k="missa.fundo" className="banda__bg" alt="" data-revelar-zoom />
       <div className="banda__caixa" data-revelar>
-        <h2 className="display banda__titulo"><T k="missa.titulo" /></h2>
+        <Titulo como="h2" k="missa.titulo" className="display banda__titulo" />
         <p className="corpo banda__local"><T k="missa.local" /></p>
         <p className="corpo banda__hora"><T k="missa.hora" multilinha={false} /></p>
         <ComoChegar chaveMorada="missa.morada" />
@@ -102,7 +123,7 @@ function BandaCopo() {
     <section className="banda banda--copo">
       <Img k="copo.fundo" className="banda__bg" alt="" data-revelar-zoom />
       <div className="banda__caixa" data-revelar>
-        <h2 className="display banda__titulo"><T k="copo.titulo" /></h2>
+        <Titulo como="h2" k="copo.titulo" className="display banda__titulo" />
         <p className="corpo banda__local"><T k="copo.local" /></p>
         <p className="corpo banda__hora"><T k="copo.hora" multilinha={false} /></p>
         <ComoChegar chaveMorada="copo.morada" />
@@ -147,9 +168,13 @@ function Historia() {
 function PresentesCta() {
   return (
     <section className="presentes-cta">
-      <h2 className="display presentes-cta__titulo" data-revelar>
-        <T k="presentes.titulo" />
-      </h2>
+      <Titulo
+        como="h2"
+        k="presentes.chamada"
+        className="presentes-cta__chamada"
+        data-revelar
+      />
+      <Titulo como="p" k="presentes.titulo" className="corpo presentes-cta__titulo" data-revelar />
       <div className="presentes-cta__botoes" data-revelar style={{ '--atraso': '0.16s' }}>
         <Link className="botao-contorno" to="/presentes#casa">
           <T k="presentes.botaoCasa" />
@@ -189,6 +214,28 @@ function Drivers() {
 }
 
 /**
+ * A chamada para a página «Onde ficar?».
+ *
+ * Os hotéis saíram da página inicial: quem precisa de dormir perto da quinta é
+ * uma parte dos convidados, e a lista toda ali no meio pesava a página a
+ * todos. Fica só o convite e o botão.
+ */
+function HoteisCta() {
+  return (
+    <section className="hoteis-cta">
+      <p className="corpo hoteis-cta__texto" data-revelar>
+        <T k="hoteis.chamadaTexto" />
+      </p>
+      <div className="hoteis-cta__botao" data-revelar style={{ '--atraso': '0.1s' }}>
+        <Link className="botao-aqui" to="/onde-ficar">
+          <T k="hoteis.chamadaBotao" multilinha={false} />
+        </Link>
+      </div>
+    </section>
+  )
+}
+
+/**
  * Contactos de um hotel.
  *
  * Cada valor pode trazer mais do que um contacto separados por `/` — há
@@ -223,27 +270,6 @@ function Contactos({ telefone, email }) {
 }
 
 /**
- * A fotografia de um hotel.
- *
- * Não vem nenhuma de origem: cada uma é carregada na administração, no
- * botão «Trocar fotografia» que aparece sobre o cartão em modo de edição.
- * Enquanto não houver, o cartão fica só com o texto — mais vale isso do que
- * oito lugares vazios a dizer que falta uma fotografia.
- */
-function FotoHotel({ chave, nome }) {
-  const { img } = useConteudo()
-  const { emEdicao } = useEdicao()
-
-  if (!img(chave) && !emEdicao) return null
-
-  return (
-    <div className="hoteis__foto">
-      <Img k={chave} alt={nome} ancora="centro" loading="lazy" />
-    </div>
-  )
-}
-
-/**
  * Onde ver o espaço.
  *
  * Quatro destas casas não têm sítio próprio nenhum — são quintas que só
@@ -264,9 +290,7 @@ function Hoteis() {
   // para o título continuar editável no sítio como um bloco só.
   return (
     <section className="hoteis">
-      <h2 className="display hoteis__titulo" data-revelar>
-        <T k="hoteis.titulo" multilinha />
-      </h2>
+      <Titulo como="h2" k="hoteis.titulo" className="display hoteis__titulo" data-revelar />
 
       <p className="hoteis__intro" data-revelar style={{ '--atraso': '0.08s' }}>
         <T k="hoteis.intro" />
@@ -279,7 +303,6 @@ function Hoteis() {
           .filter((n) => t(`hoteis.${n}.nome`))
           .map((n) => (
             <li key={n} className="hoteis__cartao">
-              <FotoHotel chave={`hoteis.${n}.foto`} nome={t(`hoteis.${n}.nome`)} />
               <h3 className="hoteis__nome">
                 <T k={`hoteis.${n}.nome`} multilinha={false} />
               </h3>
@@ -315,9 +338,7 @@ function Hoteis() {
 function NoivosIntro() {
   return (
     <section className="noivos__intro">
-      <h1 className="display noivos__titulo" data-revelar>
-        <T k="noivos.titulo" />
-      </h1>
+      <Titulo como="h1" k="noivos.titulo" className="display noivos__titulo" data-revelar />
       <Galeria nome="infancia" fit="natural" height={260} auto label="Fotografias de infância" />
     </section>
   )
@@ -481,9 +502,7 @@ function ParaACasa() {
 
   return (
     <section className="presentes__bloco" id="casa">
-      <h1 className="display presentes__titulo" data-revelar>
-        <T k="casa.titulo" />
-      </h1>
+      <Titulo como="h1" k="casa.titulo" className="display presentes__titulo" data-revelar />
 
       <p className="presentes__intro" data-revelar style={{ '--atraso': '0.08s' }}>
         <T k="casa.intro" />
@@ -554,9 +573,7 @@ function LuaDeMel() {
 
   return (
     <section className="presentes__bloco" id="lua">
-      <h2 className="display presentes__titulo" data-revelar>
-        <T k="lua.titulo" />
-      </h2>
+      <Titulo como="h2" k="lua.titulo" className="display presentes__titulo" data-revelar />
 
       <p className="presentes__intro" data-revelar style={{ '--atraso': '0.08s' }}>
         <T k="lua.intro" />
@@ -636,7 +653,8 @@ export const tiposNativos = {
   historia: { nome: 'História', Componente: Historia },
   presentesCta: { nome: 'Lista de presentes (chamada)', Componente: PresentesCta },
   drivers: { nome: 'Drivers', Componente: Drivers },
-  hoteis: { nome: 'Onde ficar', Componente: Hoteis },
+  hoteisCta: { nome: 'Onde ficar (chamada)', Componente: HoteisCta },
+  hoteis: { nome: 'Onde ficar — lista', Componente: Hoteis },
 
   noivosIntro: { nome: 'Noivos — título e infância', Componente: NoivosIntro },
   ano2018: { nome: '2018', Componente: Ano2018 },

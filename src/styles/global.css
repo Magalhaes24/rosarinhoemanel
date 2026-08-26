@@ -161,6 +161,18 @@ button {
   white-space: pre-line;
 }
 
+/* Um título ou um parágrafo cujo texto foi apagado (ou eliminado na edição)
+   fica sem filhos nenhuns: aí não ocupa linha nem margem. Em edição não
+   acontece, porque o campo editável é sempre um elemento. */
+h1:empty,
+h2:empty,
+h3:empty,
+h4:empty,
+p:empty,
+figcaption:empty {
+  display: none;
+}
+
 .corpo {
   font-family: var(--sans);
   font-size: calc(30 * var(--pt) * var(--escala-corpo));

@@ -1,5 +1,6 @@
 import { useLayoutEffect, useState } from 'react'
 import EscolherCor from './EscolherCor.jsx'
+import EscolherFonte from './EscolherFonte.jsx'
 
 /**
  * Quanto vale, em pixels, um ponto da medida do site (`--pt`).
@@ -101,10 +102,14 @@ export function numero(v, { min, max, omissao }) {
  * número sem unidade, acompanha sozinha nos dois casos.
  */
 export function estiloDoTexto(
-  { tamanho = 1, largura = 100, alinhar = '', cor = '', fundo = '', espaco = '' },
+  { tamanho = 1, largura = 100, alinhar = '', cor = '', fundo = '', espaco = '', peso = '', fonte = '' },
   embrulhado = false
 ) {
   const estilo = {}
+  // Vazio quer dizer «o peso que a folha de estilo lhe dá»; só se escreve
+  // `font-weight` quando o admin escolheu um.
+  if (peso) estilo.fontWeight = Number(peso)
+  if (fonte) estilo.fontFamily = fonte
   // `espaco` vazio quer dizer «não lhe toquei»; um zero escrito à mão é uma
   // escolha, e cola mesmo o item ao seguinte.
   if (espaco !== '' && espaco !== null && espaco !== undefined) {
@@ -154,8 +159,12 @@ export default function AjustesTexto({
   cor,
   fundo,
   espaco,
+  peso,
+  fonte,
+  oculto = false,
   aoMudar,
   aoRepor,
+  aoEliminar,
 }) {
   const [pos, setPos] = useState(null)
   const [pt, setPt] = useState(null)
@@ -249,6 +258,23 @@ export default function AjustesTexto({
       </span>
 
       <span className="ajuste-texto__grupo">
+        {/* Carregar uma vez põe a negrito; carregar outra devolve o peso de
+            origem, que nuns sítios é fino e noutros já era grosso. */}
+        {botao(
+          'B',
+          Number(peso) === 700 ? 'Tirar o negrito' : 'Pôr a negrito',
+          () => aoMudar('peso', Number(peso) === 700 ? '' : 700),
+          { ativo: Number(peso) === 700 }
+        )}
+        {botao(
+          'n',
+          Number(peso) === 400 ? 'Voltar ao peso de origem' : 'Peso normal',
+          () => aoMudar('peso', Number(peso) === 400 ? '' : 400),
+          { ativo: Number(peso) === 400 }
+        )}
+      </span>
+
+      <span className="ajuste-texto__grupo">
         {ALINHAMENTOS.map(([valor, etiqueta, titulo]) =>
           botao(etiqueta, titulo, () => aoMudar('alinhar', valor), { ativo: alinhar === valor })
         )}
@@ -277,6 +303,7 @@ export default function AjustesTexto({
       </span>
 
       <span className="ajuste-texto__grupo">
+        <EscolherFonte valor={fonte} aoMudar={(v) => aoMudar('fonte', v)} />
         <EscolherCor
           etiqueta="Cor do texto"
           icone="A"
@@ -292,6 +319,13 @@ export default function AjustesTexto({
       </span>
 
       {botao('↺', 'Voltar ao normal', aoRepor)}
+      {/* Eliminar não apaga o texto: tira o item da página. Nos originais do
+          site é uma escolha que se pode desfazer aqui mesmo, porque em edição
+          o item continua visível — apagado, mas visível. */}
+      {aoEliminar &&
+        botao(oculto ? '⤾' : '🗑', oculto ? 'Repor este item' : 'Eliminar este item', aoEliminar, {
+          ativo: oculto,
+        })}
     </div>
   )
 }

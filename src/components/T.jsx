@@ -41,10 +41,16 @@ export default function T({ k, multilinha = true }) {
   const cor = tema[chaveAjuste('cor', k)] || ''
   const fundo = tema[chaveAjuste('fundo', k)] || ''
   const espaco = tema[chaveAjuste('espaco', k)] ?? ''
+  const peso = tema[chaveAjuste('peso', k)] || ''
+  const fonte = tema[chaveAjuste('fonte', k)] || ''
+  // Eliminar um texto do site é escondê-lo: o original continua no sítio, para
+  // se poder repor, mas deixa de sair na página. O elemento à volta cai
+  // sozinho — a folha de estilo esconde títulos e parágrafos que ficam vazios.
+  const oculto = !!tema[chaveAjuste('oculto', k)]
 
   // Aqui o texto vive dentro de uma `span` no meio de um parágrafo, e por isso
   // precisa de caixa de linhas própria quando muda de tamanho.
-  const estilo = estiloDoTexto({ tamanho, largura, alinhar, cor, fundo, espaco }, true)
+  const estilo = estiloDoTexto({ tamanho, largura, alinhar, cor, fundo, espaco, peso, fonte }, true)
   const temEstilo = Object.keys(estilo).length > 0
 
   const repor = () => {
@@ -54,7 +60,11 @@ export default function T({ k, multilinha = true }) {
     alterarTema(chaveAjuste('cor', k), '')
     alterarTema(chaveAjuste('fundo', k), '')
     alterarTema(chaveAjuste('espaco', k), '')
+    alterarTema(chaveAjuste('peso', k), '')
+    alterarTema(chaveAjuste('fonte', k), '')
   }
+
+  const eliminar = () => alterarTema(chaveAjuste('oculto', k), oculto ? '' : 1)
 
   // Só escreve no DOM quando o valor muda de fora. Escrever a cada tecla
   // partiria a posição do cursor.
@@ -63,6 +73,11 @@ export default function T({ k, multilinha = true }) {
     const el = ref.current
     if (el && el.textContent !== valor) el.textContent = valor
   }, [emEdicao, valor])
+
+  // Eliminado é eliminado — também em edição. Se ficasse à vista, a caixa
+  // continuava a ocupar o lugar e ninguém percebia que o botão tinha feito
+  // alguma coisa. Repõe-se no painel «Aparência», que lista os eliminados.
+  if (oculto) return null
 
   if (!emEdicao) {
     if (!temEstilo) return valor
@@ -113,6 +128,10 @@ export default function T({ k, multilinha = true }) {
           cor={cor}
           fundo={fundo}
           espaco={espaco}
+          peso={peso}
+          fonte={fonte}
+          oculto={oculto}
+          aoEliminar={eliminar}
           aoMudar={(tipo, v) => alterarTema(chaveAjuste(tipo, k), v)}
           aoRepor={repor}
         />

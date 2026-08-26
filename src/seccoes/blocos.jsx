@@ -110,7 +110,7 @@ const BLOCOS_DE_TEXTO = {
  * valores ficam — aqui viajam dentro do próprio bloco, e não no tema, porque
  * um bloco não tem chave de texto que sirva de nome.
  */
-function BlocoDeTexto({ dados, indice, aoMudar }) {
+function BlocoDeTexto({ dados, indice, aoMudar, aoRemover }) {
   const [Etiqueta, classe] = BLOCOS_DE_TEXTO[dados.tipo]
   const ref = useRef(null)
   const [focado, setFocado] = useState(false)
@@ -129,6 +129,8 @@ function BlocoDeTexto({ dados, indice, aoMudar }) {
       cor: dados.cor || '',
       fundo: dados.fundo || '',
       espaco: dados.espaco ?? '',
+      peso: dados.peso || '',
+      fonte: dados.fonte || '',
     },
     false
   )
@@ -179,6 +181,9 @@ function BlocoDeTexto({ dados, indice, aoMudar }) {
           cor={dados.cor || ''}
           fundo={dados.fundo || ''}
           espaco={dados.espaco ?? ''}
+          peso={dados.peso || ''}
+          fonte={dados.fonte || ''}
+          aoEliminar={aoRemover ? () => aoRemover(indice) : undefined}
           aoRepor={() =>
             aoMudar(indice, {
               ...dados,
@@ -188,6 +193,8 @@ function BlocoDeTexto({ dados, indice, aoMudar }) {
               cor: '',
               fundo: '',
               espaco: '',
+              peso: '',
+              fonte: '',
             })
           }
         />
@@ -205,7 +212,14 @@ export function Bloco({ dados, indice }) {
   // a aparecer, senão um parágrafo acabado de acrescentar não teria onde se
   // carregar para o escrever.
   if (edicao && BLOCOS_DE_TEXTO[dados.tipo]) {
-    return <BlocoDeTexto dados={dados} indice={indice} aoMudar={edicao.aoMudarBloco} />
+    return (
+      <BlocoDeTexto
+        dados={dados}
+        indice={indice}
+        aoMudar={edicao.aoMudarBloco}
+        aoRemover={edicao.aoRemoverBloco}
+      />
+    )
   }
 
   // Só declara `text-align` quando o bloco tem alinhamento próprio; sem isso
@@ -218,6 +232,8 @@ export function Bloco({ dados, indice }) {
       cor: dados.cor || '',
       fundo: dados.fundo || '',
       espaco: dados.espaco ?? '',
+      peso: dados.peso || '',
+      fonte: dados.fonte || '',
     },
     false
   )

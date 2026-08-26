@@ -40,6 +40,7 @@ export const textosPadrao = {
   'nav.inicio': 'Por onde começar?',
   'nav.noivos': 'Quem são os noivos?',
   'nav.presentes': 'O que dar?',
+  'nav.hoteis': 'Onde ficar?',
 
   'hero.nome1': 'Rosarinho',
   'hero.nome2': 'e Manel',
@@ -67,6 +68,7 @@ export const textosPadrao = {
   'historia.destaque': 'para que nos possam conhecer melhor.',
   'historia.botao': 'Aqui!',
 
+  'presentes.chamada': 'Lista de presentes',
   'presentes.titulo': 'Lista de presentes',
   'presentes.etiquetaJanela': 'Contribuição',
   'presentes.registar': 'Registar contribuição',
@@ -79,11 +81,17 @@ export const textosPadrao = {
   'drivers.contactoNome': 'Manel Sousa Guedes',
   'drivers.telefone': '967 590 817',
 
-  'hoteis.titulo': 'Onde\nficar?\nHoteis',
+  // Sem título de origem: a página já se chama «Onde ficar?» no menu e o
+  // título por cima da lista dizia duas vezes a mesma coisa. Escrever aqui
+  // alguma coisa na administração fá-lo voltar.
+  'hoteis.titulo': '',
 
   'hoteis.intro':
     'Aqui ficam algumas sugestões para quem estiver a pensar dormir perto da quinta.',
   'hoteis.verEspaco': 'Ver o hotel',
+  'hoteis.chamadaTexto':
+    'Para quem estiver a pensar dormir perto da quinta, deixamos aqui algumas sugestões de sítios onde ficar.',
+  'hoteis.chamadaBotao': 'Aqui!',
   // Junta-se ao nome na procura do Google Maps, para o botão não cair numa
   // casa com o mesmo nome do outro lado do país.
   'hoteis.regiao': 'Alenquer',
@@ -112,29 +120,9 @@ export const textosPadrao = {
   'hoteis.h4.email': 'reservas@quintadacarlota.com',
   'hoteis.h4.site': '',
 
-  'hoteis.h5.nome': 'Páteo das Laranjeiras',
-  'hoteis.h5.tipo': 'Casa (3 quartos)',
-  'hoteis.h5.telefone': '914 452 774',
-  'hoteis.h5.email': 'info.pateodaslaranjeiras@gmail.com',
-  'hoteis.h5.site': '',
 
-  'hoteis.h6.nome': 'Quinta da Palhacana',
-  'hoteis.h6.tipo': 'Casa (4 quartos)',
-  'hoteis.h6.telefone': '917 529 243',
-  'hoteis.h6.email': '',
-  'hoteis.h6.site': '',
 
-  'hoteis.h7.nome': 'Quinta dos Pucarinhos',
-  'hoteis.h7.tipo': 'Casa',
-  'hoteis.h7.telefone': '969 968 075 / 927 660 066',
-  'hoteis.h7.email': '',
-  'hoteis.h7.site': '',
 
-  'hoteis.h8.nome': 'Pomar da Choca',
-  'hoteis.h8.tipo': 'Country House',
-  'hoteis.h8.telefone': '936 584 343',
-  'hoteis.h8.email': 'pomardachoca@gmail.com',
-  'hoteis.h8.site': 'https://www.instagram.com/pomardachoca/',
 
   'casa.titulo': 'Para a casa',
   'casa.intro':
@@ -229,11 +217,16 @@ export const imagensEditaveis = [
  * A secção e o editor de textos leem esta mesma lista, para não ficarem a
  * divergir quando se acrescentar ou tirar um.
  */
-export const hoteisIds = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8']
+/**
+ * Os hotéis que saem na página. Eram oito e ficaram quatro — a lista completa
+ * assustava mais do que ajudava. Acrescentar aqui um `h5` e escrever-lhe os
+ * textos na administração chega para o trazer de volta.
+ */
+export const hoteisIds = ['h1', 'h2', 'h3', 'h4']
 
 /** Etiquetas legíveis para o editor de textos da administração. */
 export const gruposDeTexto = [
-  { titulo: 'Menu', chaves: ['nav.inicio', 'nav.noivos', 'nav.presentes'] },
+  { titulo: 'Menu', chaves: ['nav.inicio', 'nav.noivos', 'nav.presentes', 'nav.hoteis'] },
   { titulo: 'Início', chaves: ['hero.nome1', 'hero.nome2', 'hero.data'] },
   { titulo: 'Missa', chaves: ['missa.titulo', 'missa.local', 'missa.hora', 'missa.morada'] },
   { titulo: 'Copo d’água', chaves: ['copo.titulo', 'copo.local', 'copo.hora', 'copo.morada'] },
@@ -255,6 +248,7 @@ export const gruposDeTexto = [
   {
     titulo: 'Lista de presentes',
     chaves: [
+      'presentes.chamada',
       'presentes.titulo',
       'presentes.botaoCasa',
       'presentes.botaoLua',
@@ -276,6 +270,8 @@ export const gruposDeTexto = [
     chaves: [
       'hoteis.titulo',
       'hoteis.intro',
+      'hoteis.chamadaTexto',
+      'hoteis.chamadaBotao',
       'hoteis.verEspaco',
       'hoteis.regiao',
       ...hoteisIds.flatMap((n) => [
