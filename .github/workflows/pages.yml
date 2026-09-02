@@ -1,12 +1,15 @@
 name: GitHub Pages
 
-# Publica o site em https://magalhaes24.github.io/rosarinhoemanel/
+# Publica o site em https://rosarinhoemanel.pt
 #
-# Antes da primeira corrida, no repositório:
+# No repositório:
 #   Settings > Pages > Build and deployment > Source: "GitHub Actions"
+#   Settings > Pages > Custom domain: rosarinhoemanel.pt (e Enforce HTTPS)
 #
-# Se mais tarde ligares um domínio próprio, muda VITE_BASE para "/" e põe o
-# domínio em Settings > Pages > Custom domain.
+# O ficheiro public/CNAME leva o domínio para dentro do artefacto publicado.
+# Se algum dia se voltar ao github.io sem domínio próprio, o VITE_BASE tem de
+# passar a "/${{ github.event.repository.name }}/" — senão o browser procura os
+# ficheiros na raiz do github.io e não no subdiretório.
 
 on:
   push:
@@ -41,9 +44,9 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # O site vive num subdiretório com o nome do repositório. Sem isto,
-          # o browser iria buscar os ficheiros à raiz do github.io.
-          VITE_BASE: /${{ github.event.repository.name }}/
+          # Domínio próprio: o site vive na raiz. (Sem domínio próprio seria
+          # /${{ github.event.repository.name }}/, o subdiretório do github.io.)
+          VITE_BASE: /
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
