@@ -103,7 +103,6 @@ export default function PresenteForm() {
       {estado === 'ok' && <p className="form-feedback is-ok">{t('presente.ok')}</p>}
       {estado === 'erro' && <p className="form-feedback is-error">{t('presente.erro')}</p>}
 
-      <p className="form-note">{t('form.nota')}</p>
     </form>
   )
 }

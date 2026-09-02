@@ -103,7 +103,6 @@ export default function RsvpForm() {
       {estado === 'ok' && <p className="form-feedback is-ok">{t('rsvp.ok')}</p>}
       {estado === 'erro' && <p className="form-feedback is-error">{t('rsvp.erro')}</p>}
 
-      <p className="form-note">{t('form.nota')}</p>
     </form>
   )
 }
