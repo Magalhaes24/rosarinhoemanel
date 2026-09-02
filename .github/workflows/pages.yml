@@ -30,11 +30,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -61,9 +61,14 @@ jobs:
       - name: .nojekyll
         run: touch dist/.nojekyll
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
+          # A partir da v4 esta action deixa de meter ficheiros escondidos no
+          # artefacto — e o .nojekyll acima é um deles. Sem isto, ia-se abaixo
+          # em silêncio: o build passava, a publicação passava, e só se dava
+          # por ela num nome de ficheiro com _.
+          include-hidden-files: true
 
   deploy:
     name: Publicar
@@ -77,4 +82,4 @@ jobs:
       id-token: write
     steps:
       - id: pages
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
