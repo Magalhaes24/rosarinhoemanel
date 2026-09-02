@@ -90,7 +90,14 @@ function lerCsv(texto) {
   return linhas
 }
 
-/** Lê um .xlsx/.xls com o SheetJS, que só é descarregado aqui. */
+/**
+ * Lê um .xlsx/.xls com o SheetJS, que só é descarregado aqui.
+ *
+ * O pacote vem do CDN oficial do SheetJS (ver package.json), e não do npm. O
+ * «xlsx» que está no npm parou na 0.18.5 e ficou com duas falhas por
+ * corrigir — poluição de prototype e um ReDoS — que faziam a auditoria do CI
+ * falhar em todos os pushes. A API é a mesma; muda só a origem.
+ */
 async function lerExcel(ficheiro) {
   const XLSX = await import('xlsx')
   const livro = XLSX.read(await ficheiro.arrayBuffer(), { type: 'array' })
