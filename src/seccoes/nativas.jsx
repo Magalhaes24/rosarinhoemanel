@@ -410,10 +410,20 @@ function precoPt(valor) {
  * caro deixa de ser um bloco de pedra e passa a ser uma coisa para a qual se
  * pode dar vinte euros.
  */
+/**
+ * Um presente está completo quando foi reservado à mão ou quando já se reuniu
+ * o preço todo. Vive fora do cartão porque a lista também precisa de saber,
+ * para os arrumar no fim.
+ */
+function estaCompleto(item, jaContribuido) {
+  const preco = Number(item.preco) || 0
+  return Boolean(item.reservado) || (preco > 0 && jaContribuido >= preco)
+}
+
 function CartaoPresente({ item, jaContribuido, aoOferecer }) {
   const t = useTexto()
   const preco = Number(item.preco) || 0
-  const completo = item.reservado || (preco > 0 && jaContribuido >= preco)
+  const completo = estaCompleto(item, jaContribuido)
   const falta = Math.max(0, preco - jaContribuido)
 
   const classe = 'loja__item' + (completo ? ' is-reservado' : '')
@@ -495,10 +505,18 @@ function ParaACasa() {
   // A fotografia é resolvida aqui, uma vez, e não em cada sítio que a mostra:
   // o que está gravado no presente pode ser `firestore:<id>`, que não serve
   // como `src` — era assim que as fotografias enviadas apareciam em branco.
-  const itens = (presentesCasa || []).map((item) => ({
-    ...item,
-    imagem: resolverImagem(item.imagem, fotografias),
-  }))
+  //
+  // Os presentes já oferecidos vão para o fim da lista: quem chega quer ver
+  // primeiro aquilo que ainda pode dar. Dentro de cada grupo mantém-se a ordem
+  // definida na loja.
+  const itens = (presentesCasa || [])
+    .map((item) => ({
+      ...item,
+      imagem: resolverImagem(item.imagem, fotografias),
+    }))
+    .map((item, ordem) => ({ item, ordem, completo: estaCompleto(item, contribuido[item.id] || 0) }))
+    .sort((a, b) => a.completo - b.completo || a.ordem - b.ordem)
+    .map(({ item }) => item)
 
   return (
     <section className="presentes__bloco" id="casa">
