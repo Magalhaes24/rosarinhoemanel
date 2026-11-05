@@ -374,7 +374,7 @@
   }
 
   /* Pisos mínimos no cartão: o `--pt` do telemóvel levava o «Faltam X €» para
-     os 10px e o «Oferecer» para os 10,6px. O cartão inteiro é clicável, mas o
+     os 10px e o «Contribuir» para os 10,6px. O cartão inteiro é clicável, mas o
      botão tem de se ler. */
   .loja__nome {
     font-size: max(15px, calc(17 * var(--pt) * var(--escala-corpo)));

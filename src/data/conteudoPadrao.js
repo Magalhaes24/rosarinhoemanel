@@ -126,7 +126,7 @@ export const textosPadrao = {
 
   'casa.titulo': 'Para a casa',
   'casa.intro':
-    'Estamos muito felizes por poder contar convosco para celebrar este dia e dar início a esta nova fase da nossa vida.\n\nTivemos a sorte de encontrar um T2 na Ajuda. A casa já vem mobilada, mas ainda há algumas coisas que gostaríamos de acrescentar para a tornar mais nossa e prepará-la para esta nova fase. Para quem nos quiser ajudar neste projeto, deixamos aqui algumas sugestões.\n\nComo funciona:\n\n1.º Escolher um presente e clicar em “Oferecer”\n2.º Preencher o formulário com o vosso nome e o presente escolhido (podem contribuir apenas com uma parte do valor)\n3.º Fazer a transferência para os dados indicados no formulário',
+    'Estamos muito felizes por poder contar convosco para celebrar este dia e dar início a esta nova fase da nossa vida.\n\nTivemos a sorte de encontrar um T2 na Ajuda. A casa já vem mobilada, mas ainda há algumas coisas que gostaríamos de acrescentar para a tornar mais nossa e prepará-la para esta nova fase. Para quem nos quiser ajudar neste projeto, deixamos aqui algumas sugestões.\n\nComo funciona:\n\n1.º Escolher um presente e clicar em “Contribuir”\n2.º Preencher o formulário com o vosso nome e o presente escolhido (podem contribuir apenas com uma parte do valor)\n3.º Fazer a transferência para os dados indicados no formulário',
   'casa.vazio': 'A lista de presentes está a ser preparada.',
   'casa.verMais': 'Ver mais presentes',
   'casa.verMenos': 'Ver menos',

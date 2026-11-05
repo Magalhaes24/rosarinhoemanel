@@ -459,7 +459,7 @@ function CartaoPresente({ item, jaContribuido, aoOferecer }) {
         </div>
       )}
 
-      {!completo && <span className="loja__oferecer">Oferecer</span>}
+      {!completo && <span className="loja__oferecer">Contribuir</span>}
     </button>
   )
 }
